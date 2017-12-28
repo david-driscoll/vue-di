@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "es2017"
+        ],
+        "target": "es5",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "diagnostics": true,
+        "downlevelIteration": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "forceConsistentCasingInFileNames": true,
+        "inlineSourceMap": true,
+        "importHelpers": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "preserveConstEnums": true,
+        "strictFunctionTypes": true,
+        "strictNullChecks": true,
+        "stripInternal": true
+    },
+    "typeAcquisition": {
+        "enable": true
+    }
+}
