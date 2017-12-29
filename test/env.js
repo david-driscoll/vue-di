@@ -1,7 +1,13 @@
 // strange bug
 
+require('jsdom-global')();
+
+const vueFull = require('vue/dist/vue.common.js');
+vueFull.default = vueFull;
+vueFull.full = 'full';
+
 const vue = require('vue');
-vue.default = vue;
+Object.assign(vue, vueFull);
 
 var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');

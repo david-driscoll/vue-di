@@ -14,27 +14,34 @@ import {
     transient,
 } from 'aurelia-dependency-injection';
 import Vue, { VueConstructor } from 'vue';
-import { DisposableContainer } from './DisposableContainer';
+import './DisposableContainer';
 
 import 'reflect-metadata';
+import { isDisposable, Disposable, CompositeDisposable } from 'ts-disposables';
 
 export function install(Vue: VueConstructor, options: any) {
-    const container = (Vue.container = new Container());
-    container.makeGlobal();
+    (Vue.container = new Container()).makeGlobal();
 
     function getDependencies(
         instance: Vue & { container: Container },
-        dependencies: { [key: string]: symbol | string | { new (...args: any[]): any } } | undefined
+        disposable: CompositeDisposable,
+        dependencies:
+            | { [key: string]: symbol | string | { new (...args: any[]): any } }
+            | undefined
     ) {
         if (!dependencies) return;
 
         for (const key in dependencies) {
             if (dependencies.hasOwnProperty(key)) {
+                const value = instance.container.get(dependencies[key]);
+                if (isDisposable(value)) {
+                    disposable.add(value);
+                }
                 Object.defineProperty(instance, key, {
                     enumerable: true,
                     configurable: false,
                     writable: false,
-                    value: instance.container.get(dependencies[key]),
+                    value,
                 });
             }
         }
@@ -42,14 +49,30 @@ export function install(Vue: VueConstructor, options: any) {
 
     Vue.mixin({
         beforeCreate() {
-            this.container = DisposableContainer.wrap(
-                (this.$parent && this.$parent.container || Vue.container).createChild()
-            );
-            getDependencies(this, (this as any).dependencies);
-            getDependencies(this, this.$options.dependencies);
+            const container =
+                this.$parent && this.$parent.container
+                    ? this.$parent.container
+                    : Vue.container;
+            const containerInstance =
+                (this as any).dependencies || this.$options.dependencies
+                    ? container.createChild()
+                    : container;
+
+            Object.defineProperty(this, 'container', {
+                enumerable: true,
+                configurable: false,
+                writable: false,
+                value: containerInstance,
+            });
+
+            const disposable = new CompositeDisposable();
+            (this as any)['__$disposable'] = disposable;
+            getDependencies(this, disposable, (this as any).dependencies);
+            getDependencies(this, disposable, this.$options.dependencies);
         },
-        destroyed(this: { container: DisposableContainer }) {
+        destroyed(this: { container: Container }) {
             this.container.dispose();
+            (this as any)['__$disposable'].dispose();
         },
     });
 }
