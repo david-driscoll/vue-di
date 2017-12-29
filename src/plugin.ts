@@ -23,17 +23,16 @@ export function install(Vue: VueConstructor, options: any) {
     (Vue.container = new Container()).makeGlobal();
 
     function getDependencies(
-        instance: Vue & { container: Container },
+        instance: Vue & { container?: Container },
         disposable: CompositeDisposable,
-        dependencies:
-            | { [key: string]: symbol | string | { new (...args: any[]): any } }
-            | undefined
+        dependencies: { [key: string]: symbol | string | { new (...args: any[]): any } } | undefined
     ) {
         if (!dependencies) return;
 
         for (const key in dependencies) {
             if (dependencies.hasOwnProperty(key)) {
-                const value = instance.container.get(dependencies[key]);
+                // tslint:disable-next-line:no-non-null-assertion
+                const value = instance.container!.get(dependencies[key]);
                 if (isDisposable(value)) {
                     disposable.add(value);
                 }
@@ -47,31 +46,43 @@ export function install(Vue: VueConstructor, options: any) {
         }
     }
 
+    function findContainer(instance: Vue): Container {
+        if (instance.container) {
+            return instance.container;
+        }
+
+        if (instance.$parent) {
+            return findContainer(instance.$parent);
+        }
+
+        return Vue.container;
+    }
+
     Vue.mixin({
         beforeCreate() {
-            const container =
-                this.$parent && this.$parent.container
-                    ? this.$parent.container
-                    : Vue.container;
-            const containerInstance =
-                (this as any).dependencies || this.$options.dependencies
-                    ? container.createChild()
-                    : container;
+            const createContainer = !!((this as any).dependencies || this.$options.dependencies);
+            const container = findContainer(this);
 
-            Object.defineProperty(this, 'container', {
-                enumerable: true,
-                configurable: false,
-                writable: false,
-                value: containerInstance,
-            });
+            if (createContainer) {
+                const containerInstance = createContainer ? container.createChild() : container;
 
-            const disposable = new CompositeDisposable();
-            (this as any)['__$disposable'] = disposable;
-            getDependencies(this, disposable, (this as any).dependencies);
-            getDependencies(this, disposable, this.$options.dependencies);
+                Object.defineProperty(this, 'container', {
+                    enumerable: true,
+                    configurable: false,
+                    writable: false,
+                    value: containerInstance,
+                });
+
+                const disposable = new CompositeDisposable();
+                (this as any)['__$disposable'] = disposable;
+                if (createContainer) {
+                    disposable.add(containerInstance);
+                }
+                getDependencies(this, disposable, (this as any).dependencies);
+                getDependencies(this, disposable, this.$options.dependencies);
+            }
         },
         destroyed(this: { container: Container }) {
-            this.container.dispose();
             (this as any)['__$disposable'].dispose();
         },
     });
@@ -85,7 +96,7 @@ declare module 'vue/types/vue' {
     }
 
     interface Vue {
-        container: Container;
+        container?: Container;
     }
 }
 

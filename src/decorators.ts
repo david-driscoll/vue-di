@@ -85,8 +85,10 @@ export function all(keyValue: string | symbol | Function) {
  *
  * @export
  */
+export function optional(checkParentOrTarget: boolean): PropertyDecorator;
 export function optional(checkParentOrTarget: boolean): ParameterDecorator;
 export function optional(target: Object, key: string | symbol, index: number): void;
+export function optional(target: Object, key: string | symbol): void;
 export function optional(
     target: Object | boolean,
     key?: string | symbol,
@@ -104,7 +106,9 @@ export function optional(
  *
  * @export
  */
-export function parent(target: Object, key: string | symbol, index: number) {
+export function parent(target: Object, key: string | symbol): void;
+export function parent(target: Object, key: string | symbol, index: number): void;
+export function parent(target: Object, key: string | symbol, index?: number) {
     return parentDeco(target, key, index);
 }
 
@@ -115,6 +119,7 @@ export function parent(target: Object, key: string | symbol, index: number) {
  */
 export function newInstance(asKeyOrTarget?: string | symbol, ...dynamicDependencies: any[]): ParameterDecorator;
 export function newInstance(target: Object, key: string | symbol, index: number) : void;
+export function newInstance(target: Object, key: string | symbol) : void;
 export function newInstance(asKeyOrTarget?: string | symbol | Function | Object, ...dynamicDependencies: any[]): void | ParameterDecorator {
     if (typeof asKeyOrTarget === 'function') {
         return newInstanceDeco()(asKeyOrTarget, dynamicDependencies[0], dynamicDependencies[1]);
