@@ -19,7 +19,7 @@ module.exports = function(wallaby) {
         },
 
         setup: function(wallaby) {
-            require('./test/env');
+            require(wallaby.localProjectDir  + '/test/env.js');
             // wallaby.testFramework is jasmine/QUnit/mocha object
             // you can access 'window' object in a browser environment,
             // 'global' object or require(...) something in node environment
