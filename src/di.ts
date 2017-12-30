@@ -4,6 +4,7 @@ import Vue from 'vue';
 import {
     All,
     AutoInject,
+    Inject,
     Lazy,
     NewInstance,
     Optional,
@@ -19,6 +20,7 @@ export default {
     install,
     All,
     AutoInject,
+    Inject,
     Lazy,
     NewInstance,
     Optional,
@@ -33,6 +35,7 @@ export {
     All,
     AutoInject,
     Lazy,
+    Inject,
     NewInstance,
     Optional,
     Parent,

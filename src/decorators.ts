@@ -95,9 +95,16 @@ function decorateParameterOrProperty(resolver: (type: any) => Resolver, name: st
  *
  * @export
  */
-export function Resolve() {
-    return decorateParameterOrProperty(x => x, 'resolve');
+export function Resolve(key: string | symbol | Function) {
+    return decorateParameterOrProperty(x => key || x, 'resolve');
 }
+
+/**
+ * Decorator: Specifies the dependency to be resolved.
+ *
+ * @export
+ */
+export const Inject = Resolve;
 
 /**
  * Decorator: Specifies the dependency should be lazy loaded.
