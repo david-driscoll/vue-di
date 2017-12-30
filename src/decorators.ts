@@ -30,7 +30,7 @@ export { AutoInject };
  *
  * @export
  */
-export function Registration(value: RegistrationProvider): ClassDecorator {
+export function Registration(value: any): ClassDecorator {
     return registrationDeco(value);
 }
 

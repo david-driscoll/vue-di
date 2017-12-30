@@ -1,4 +1,4 @@
-import typescript from 'rollup-plugin-typescript';
+import typescript from 'rollup-plugin-typescript2';
 
 export default {
     input: './src/di.ts',
@@ -18,6 +18,12 @@ export default {
     ],
     plugins: [
         typescript({
+            tsconfigOverride: {
+                compilerOptions: {
+                    declaration: true,
+                },
+                include: ["src/**/*.ts"]
+            },
             typescript: require('typescript'),
         }),
     ],

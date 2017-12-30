@@ -1,15 +1,15 @@
 import { Container, Resolver } from 'aurelia-dependency-injection';
-import Vue, { VueConstructor } from 'vue';
-import './DisposableContainer';
-
 import 'reflect-metadata';
 import { CompositeDisposable, Disposable, isDisposable } from 'ts-disposables';
+import Vue, { VueConstructor } from 'vue';
+import './DisposableContainer';
 
 function isResolver(value: any): value is Resolver {
     return value.get && typeof value.get === 'function';
 }
 
-export function install(Vue: VueConstructor, options: any) {
+export function install(innerVue: any, options: any) {
+    const Vue: VueConstructor = innerVue;
     (Vue.container = new Container()).makeGlobal();
 
     function getDependencies(
@@ -87,24 +87,4 @@ export function install(Vue: VueConstructor, options: any) {
             (this as any)['__$disposable'].dispose();
         },
     });
-}
-
-declare module 'vue/types/vue' {
-    interface VueConstructor {
-        container: Container;
-    }
-
-    interface Vue {
-        container?: Container;
-    }
-}
-
-declare module 'vue/types/options' {
-    interface ComponentOptions<V extends Vue> {
-        dependencies?: {
-            [key: string]: symbol | string | { new (...args: any[]): any } | Resolver;
-        };
-        createChildContainer?: boolean;
-        registerServices?(container: Container): void;
-    }
 }
