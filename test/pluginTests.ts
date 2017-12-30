@@ -5,21 +5,21 @@ import { DisposableBase, IDisposable } from 'ts-disposables';
 import { createLocalVue, mount } from 'vue-test-utils';
 // tslint:disable:max-classes-per-file
 
-import VueContainer from '../src/plugin';
-import { autoinject, Lazy } from './../src/decorators';
+import VueContainer from '../src/di';
+import { AutoInject, Lazy } from './../src/decorators';
 
-@autoinject
+@AutoInject
 class Stuff {
     public constructor() {}
     public value = 123;
 }
 
-@autoinject
+@AutoInject
 class Item {
     public constructor(public stuff: Stuff) {}
 }
 
-@autoinject
+@AutoInject
 class DisposableItem implements IDisposable {
     public _disposed = false;
     public constructor(public stuff: Stuff) {}

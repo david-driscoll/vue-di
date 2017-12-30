@@ -4,8 +4,8 @@ import { DisposableBase, IDisposable } from 'ts-disposables';
 import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 
-import { autoinject, Lazy, Singleton, Transient } from '../../src/decorators';
-import VueContainer from '../../src/plugin';
+import { AutoInject, Lazy, Singleton, Transient } from '../../src/decorators';
+import VueContainer from '../../src/di';
 
 describe('Lazy property decorator', () => {
     it('should work with a singleton service', () => {

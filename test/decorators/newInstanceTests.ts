@@ -4,8 +4,8 @@ import { DisposableBase, IDisposable } from 'ts-disposables';
 import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 
-import { autoinject, NewInstance, Singleton, Transient, Resolve } from '../../src/decorators';
-import VueContainer from '../../src/plugin';
+import { AutoInject, NewInstance, Singleton, Transient, Resolve } from '../../src/decorators';
+import VueContainer from '../../src/di';
 
 describe('NewInstance property decorator', () => {
     it('should work with a singleton service', () => {

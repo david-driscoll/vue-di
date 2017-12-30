@@ -4,7 +4,7 @@ import { DisposableBase, IDisposable } from 'ts-disposables';
 import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 
-import { autoinject, All, Singleton, Transient } from '../../src/decorators';
+import { AutoInject, All, Singleton, Transient } from '../../src/decorators';
 import VueContainer from '../../src/di';
 
 describe('All property decorator', () => {

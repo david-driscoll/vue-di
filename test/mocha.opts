@@ -1,0 +1,4 @@
+--require ./test/env.js
+--require ts-node/register
+--require tslib
+./test/**/*Tests.ts

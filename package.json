@@ -6,7 +6,8 @@
     "module": "dist/rollup-plugin-typescript.es.js",
     "jsnext:main": "dist/rollup-plugin-typescript.es.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "build": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
+        "test": "mocha"
     },
     "author": "",
     "license": "MIT",
