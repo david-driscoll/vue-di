@@ -19,7 +19,9 @@ const resolverKey = 'vue:resolver';
 const paramTypesKey = 'design:paramtypes';
 const propertyTypeKey = 'design:type';
 
-export { autoinject };
+const AutoInject = autoinject;
+
+export { AutoInject };
 
 // tslint:disable:ban-types
 

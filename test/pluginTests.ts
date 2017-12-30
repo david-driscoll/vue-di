@@ -30,12 +30,9 @@ class DisposableItem implements IDisposable {
 }
 
 class Property {
-    @Lazy('abcd')
-    public value: string;
-    @Lazy('abcd')
-    public item: Item;
-    @Lazy('abcd')
-    public funcItem: () => Item;
+    @Lazy('abcd') public value: string;
+    @Lazy('abcd') public item: Item;
+    @Lazy('abcd') public funcItem: () => Item;
 }
 
 describe('pluginTests', () => {
@@ -66,10 +63,8 @@ describe('pluginTests', () => {
         NewVue.use(VueContainer);
 
         const vm: any = new NewVue({
-            registerServices: sinon.spy()
+            registerServices: sinon.spy(),
         });
-
-
     });
 
     it('should work with child components (and use $parent)', () => {
@@ -104,6 +99,7 @@ describe('pluginTests', () => {
         const item = mount(
             {
                 template: '<div>test123 <child-vue></child-vue></div>',
+                createChildContainer: true,
                 dependencies: {
                     things: DisposableItem,
                 },
@@ -147,9 +143,7 @@ describe('pluginTests', () => {
             { localVue: NewVue }
         );
 
-        item.vm.$children[0] /*?*/
-
-        let things: DisposableItem = (item.vm.$children[0]  as any).things;
+        let things: DisposableItem = (item.vm.$children[0] as any).things;
         things.stuff.value.should.be.eq(123);
 
         item.destroy();

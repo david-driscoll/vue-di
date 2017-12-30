@@ -5,7 +5,7 @@ import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 
 import { autoinject, All, Singleton, Transient } from '../../src/decorators';
-import VueContainer from '../../src/plugin';
+import VueContainer from '../../src/di';
 
 describe('All property decorator', () => {
     it('should work with a singleton service', () => {

@@ -89,8 +89,6 @@ export function install(Vue: VueConstructor, options: any) {
     });
 }
 
-export default { install };
-
 declare module 'vue/types/vue' {
     interface VueConstructor {
         container: Container;
