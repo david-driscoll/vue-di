@@ -4,7 +4,7 @@ import { DisposableBase, IDisposable } from 'ts-disposables';
 import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 
-import { autoinject, NewInstance, Singleton, Transient } from '../../src/decorators';
+import { autoinject, NewInstance, Singleton, Transient, Resolve } from '../../src/decorators';
 import VueContainer from '../../src/plugin';
 
 describe('NewInstance property decorator', () => {
@@ -18,16 +18,21 @@ describe('NewInstance property decorator', () => {
         }
 
         @Component
+        class MyComponent2 extends NewVue {
+            @Resolve() public service: Service;
+        }
+
+        @Component
         class MyComponent extends NewVue {
             @NewInstance() public service: Service;
         }
 
         const wrapper = mount<MyComponent>(MyComponent);
         const wrapper2 = mount<MyComponent>(MyComponent);
+        const wrapper2a = mount<MyComponent2>(MyComponent2);
+        const wrapper2b = mount<MyComponent2>(MyComponent2);
 
-        // wrapper.vm.$options /*?*/
-        // wrapper2.vm.$options /*?*/
-
+        wrapper2b.vm.service.should.be.eq(wrapper2a.vm.service);
         wrapper.vm.service.should.not.be.eq(wrapper2.vm.service);
     });
 });
