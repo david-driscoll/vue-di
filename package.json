@@ -1,12 +1,13 @@
 {
     "name": "vue-di",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "description": "",
     "main": "dist/vue-di.cjs.js",
     "module": "dist/rollup-plugin-typescript.es.js",
     "jsnext:main": "dist/rollup-plugin-typescript.es.js",
     "types": "dist/di.d.ts",
     "scripts": {
+        "prepublish": "npm test && npm run build",
         "build": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
         "test": "mocha"
     },

@@ -1,0 +1,12 @@
+src/
+test/
+package-lock.json
+rollup.config.js
+tsconfig.json
+tslint.json
+wallaby.conf.js
+.prettierrc
+.editorconfig
+.gitignore
+.rpt2_cache/
+*.tgz
