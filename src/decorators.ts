@@ -1,17 +1,23 @@
 import {
-    all as allDeco,
+    All as AllProvider,
     autoinject,
-    factory as factoryDeco,
-    lazy as lazyDeco,
-    newInstance as newInstanceDeco,
-    optional as optionalDeco,
-    parent as parentDeco,
-    Registration,
+    getDecoratorDependencies,
+    Lazy as LazyProvider,
+    NewInstance as NewInstanceProvider,
+    Optional as OptionalProvider,
+    Parent as ParentProvider,
     registration as registrationDeco,
+    Registration as RegistrationProvider,
+    Resolver,
     SingletonRegistration,
     TransientRegistration,
 } from 'aurelia-dependency-injection';
-import { metadata } from 'aurelia-metadata';
+import Vue, { ComponentOptions } from 'vue';
+import { createVueDecorator } from './shim-component-decorators';
+
+const resolverKey = 'vue:resolver';
+const paramTypesKey = 'design:paramtypes';
+const propertyTypeKey = 'design:type';
 
 export { autoinject };
 
@@ -22,7 +28,7 @@ export { autoinject };
  *
  * @export
  */
-export function registration(value: Registration): ClassDecorator {
+export function Registration(value: RegistrationProvider): ClassDecorator {
     return registrationDeco(value);
 }
 
@@ -31,14 +37,14 @@ export function registration(value: Registration): ClassDecorator {
  *
  * @export
  */
-export function transient(key: string | symbol): ClassDecorator;
-export function transient<T extends Function>(ctor: T): T;
-export function transient(key: string | symbol | Function): any {
+export function Transient(key: string | symbol): ClassDecorator;
+export function Transient<T extends Function>(ctor: T): T;
+export function Transient(key: string | symbol | Function): any {
     if (typeof key === 'function') {
-        return registration(new TransientRegistration(key))(key);
+        return Registration(new TransientRegistration(key))(key);
     }
 
-    return registration(new TransientRegistration(key));
+    return Registration(new TransientRegistration(key));
 }
 
 /**
@@ -46,20 +52,40 @@ export function transient(key: string | symbol | Function): any {
  *
  * @export
  */
-export function singleton(registerInChild: boolean): ClassDecorator;
-export function singleton(key: string | symbol, registerInChild?: boolean): ClassDecorator;
-export function singleton<T extends Function>(ctor: T): T;
-export function singleton(
+export function Singleton(registerInChild: boolean): ClassDecorator;
+export function Singleton(key: string | symbol, registerInChild?: boolean): ClassDecorator;
+export function Singleton<T extends Function>(ctor: T): T;
+export function Singleton(
     keyOrRegisterInChild: string | symbol | Function | boolean,
     registerInChild = false
 ): any {
     if (typeof keyOrRegisterInChild === 'function') {
-        return registration(new SingletonRegistration(keyOrRegisterInChild, registerInChild))(
+        return Registration(new SingletonRegistration(keyOrRegisterInChild, registerInChild))(
             keyOrRegisterInChild
         );
     }
 
-    return registration(new SingletonRegistration(keyOrRegisterInChild, registerInChild));
+    return Registration(new SingletonRegistration(keyOrRegisterInChild, registerInChild));
+}
+
+function decorateParameterOrProperty(resolver: (type: any) => Resolver, name: string) {
+    return (target: Object, key: string | symbol, index?: number) => {
+        if (typeof index === 'number') {
+            const params = getDecoratorDependencies(target, name);
+            params[index] = resolver(params[index]);
+        } else {
+            const propertyType = Reflect.getOwnMetadata(propertyTypeKey, target, key);
+            const instance = resolver(propertyType);
+            Reflect.defineMetadata(resolverKey, instance, target, key);
+
+            return createVueDecorator((options: ComponentOptions<Vue>, key: string | symbol) => {
+                if (!options.dependencies) {
+                    options.dependencies = {};
+                }
+                options.dependencies[key] = instance;
+            })(target, key);
+        }
+    };
 }
 
 /**
@@ -67,8 +93,10 @@ export function singleton(
  *
  * @export
  */
-export function lazy(keyValue: string | symbol | Function) {
-    return lazyDeco(keyValue);
+export function Lazy(keyValue: string | symbol | Function) {
+    const resolver = LazyProvider.of(keyValue);
+
+    return decorateParameterOrProperty(x => resolver, 'lazy');
 }
 
 /**
@@ -76,8 +104,10 @@ export function lazy(keyValue: string | symbol | Function) {
  *
  * @export
  */
-export function all(keyValue: string | symbol | Function) {
-    return allDeco(keyValue);
+export function All(keyValue: string | symbol | Function) {
+    const resolver = AllProvider.of(keyValue);
+
+    return decorateParameterOrProperty(x => resolver, 'all');
 }
 
 /**
@@ -85,20 +115,10 @@ export function all(keyValue: string | symbol | Function) {
  *
  * @export
  */
-export function optional(checkParentOrTarget: boolean): PropertyDecorator;
-export function optional(checkParentOrTarget: boolean): ParameterDecorator;
-export function optional(target: Object, key: string | symbol, index: number): void;
-export function optional(target: Object, key: string | symbol): void;
-export function optional(
-    target: Object | boolean,
-    key?: string | symbol,
-    index?: number
-): void | ParameterDecorator {
-    if (typeof target === 'boolean') {
-        return optionalDeco(target);
-    }
+export function Optional(checkParent: boolean = true) {
+    const resolver = (x: any) => OptionalProvider.of(x, checkParent);
 
-    return optionalDeco(true)(target, key, index);
+    return decorateParameterOrProperty(resolver, 'optional');
 }
 
 /**
@@ -106,10 +126,10 @@ export function optional(
  *
  * @export
  */
-export function parent(target: Object, key: string | symbol): void;
-export function parent(target: Object, key: string | symbol, index: number): void;
-export function parent(target: Object, key: string | symbol, index?: number) {
-    return parentDeco(target, key, index);
+export function Parent() {
+    const resolver = (x: any) => ParentProvider.of(x);
+
+    return decorateParameterOrProperty(resolver, 'parent');
 }
 
 /**
@@ -117,13 +137,16 @@ export function parent(target: Object, key: string | symbol, index?: number) {
  *
  * @export
  */
-export function newInstance(asKeyOrTarget?: string | symbol, ...dynamicDependencies: any[]): ParameterDecorator;
-export function newInstance(target: Object, key: string | symbol, index: number) : void;
-export function newInstance(target: Object, key: string | symbol) : void;
-export function newInstance(asKeyOrTarget?: string | symbol | Function | Object, ...dynamicDependencies: any[]): void | ParameterDecorator {
-    if (typeof asKeyOrTarget === 'function') {
-        return newInstanceDeco()(asKeyOrTarget, dynamicDependencies[0], dynamicDependencies[1]);
-    }
+export function NewInstance(asKey?: string | symbol, ...dynamicDeps: any[]) {
+    const resolver = (x: any) => {
+        const value = NewInstanceProvider.of(x, ...dynamicDeps);
 
-    return newInstanceDeco(asKeyOrTarget, ...dynamicDependencies);
+        if (!!asKey) {
+            value.as(asKey);
+        }
+
+        return value;
+    };
+
+    return decorateParameterOrProperty(resolver, 'newInstance');
 }

@@ -1,10 +1,12 @@
-import { autoinject, singleton, transient } from 'aurelia-dependency-injection';
+import { Container } from 'aurelia-dependency-injection';
 import { expect } from 'chai';
+import * as sinon from 'sinon';
 import { DisposableBase, IDisposable } from 'ts-disposables';
 import { createLocalVue, mount } from 'vue-test-utils';
 // tslint:disable:max-classes-per-file
 
 import VueContainer from '../src/plugin';
+import { autoinject, Lazy } from './../src/decorators';
 
 @autoinject
 class Stuff {
@@ -25,6 +27,15 @@ class DisposableItem implements IDisposable {
     public dispose() {
         this._disposed = true;
     }
+}
+
+class Property {
+    @Lazy('abcd')
+    public value: string;
+    @Lazy('abcd')
+    public item: Item;
+    @Lazy('abcd')
+    public funcItem: () => Item;
 }
 
 describe('pluginTests', () => {
@@ -48,6 +59,17 @@ describe('pluginTests', () => {
 
         vm.things.should.not.be.null;
         vm.things.stuff.value.should.be.eq(123);
+    });
+
+    it('should register services', () => {
+        const NewVue = createLocalVue();
+        NewVue.use(VueContainer);
+
+        const vm: any = new NewVue({
+            registerServices: sinon.spy()
+        });
+
+
     });
 
     it('should work with child components (and use $parent)', () => {
@@ -114,6 +136,7 @@ describe('pluginTests', () => {
                 template: '<div>test123 <child-vue></child-vue></div>',
                 components: {
                     'child-vue': {
+                        // createChildContainer: true,
                         dependencies: {
                             things: DisposableItem,
                         },
@@ -124,10 +147,9 @@ describe('pluginTests', () => {
             { localVue: NewVue }
         );
 
-        item.html()
-        item.text() /*?*/
         item.vm.$children[0] /*?*/
-        let things: DisposableItem = (item.vm.$children[0] /*?*/ as any).things;
+
+        let things: DisposableItem = (item.vm.$children[0]  as any).things;
         things.stuff.value.should.be.eq(123);
 
         item.destroy();

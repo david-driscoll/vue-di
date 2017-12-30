@@ -1,41 +1,42 @@
-import {
-    all,
-    autoinject,
-    Container,
-    factory,
-    inject,
-    invoker,
-    lazy,
-    newInstance,
-    optional,
-    parent,
-    registration,
-    singleton,
-    transient,
-} from 'aurelia-dependency-injection';
+import { Container, Resolver } from 'aurelia-dependency-injection';
 import Vue, { VueConstructor } from 'vue';
 import './DisposableContainer';
 
 import 'reflect-metadata';
-import { isDisposable, Disposable, CompositeDisposable } from 'ts-disposables';
+import { CompositeDisposable, Disposable, isDisposable } from 'ts-disposables';
+
+function isResolver(value: any): value is Resolver {
+    return value.get && typeof value.get === 'function';
+}
 
 export function install(Vue: VueConstructor, options: any) {
     (Vue.container = new Container()).makeGlobal();
 
     function getDependencies(
-        instance: Vue & { container?: Container },
+        instance: Vue,
+        container: Container,
         disposable: CompositeDisposable,
-        dependencies: { [key: string]: symbol | string | { new (...args: any[]): any } } | undefined
+        dependencies:
+            | { [key: string]: symbol | string | { new (...args: any[]): any } | Resolver }
+            | undefined
     ) {
         if (!dependencies) return;
 
         for (const key in dependencies) {
             if (dependencies.hasOwnProperty(key)) {
                 // tslint:disable-next-line:no-non-null-assertion
-                const value = instance.container!.get(dependencies[key]);
-                if (isDisposable(value)) {
+                const resolverOrType = dependencies[key];
+                let value: any;
+                if (isResolver(resolverOrType)) {
+                    value = resolverOrType.get(container, undefined);
+                } else {
+                    value = container.get(dependencies[key]);
+                }
+
+                if (value && isDisposable(value)) {
                     disposable.add(value);
                 }
+
                 Object.defineProperty(instance, key, {
                     enumerable: true,
                     configurable: false,
@@ -60,27 +61,27 @@ export function install(Vue: VueConstructor, options: any) {
 
     Vue.mixin({
         beforeCreate() {
-            const createContainer = !!((this as any).dependencies || this.$options.dependencies);
-            const container = findContainer(this);
+            const createContainer = (this.$options.createChildContainer);
+
+            const disposable = (this as any)['__$disposable'] || new CompositeDisposable();
+            (this as any)['__$disposable'] = disposable;
+
+            const container = createContainer ? findContainer(this).createChild() : findContainer(this);
+
+            if (this.$options.registerServices) this.$options.registerServices(container);
 
             if (createContainer) {
-                const containerInstance = createContainer ? container.createChild() : container;
-
                 Object.defineProperty(this, 'container', {
                     enumerable: true,
                     configurable: false,
                     writable: false,
-                    value: containerInstance,
+                    value: container,
                 });
 
-                const disposable = new CompositeDisposable();
-                (this as any)['__$disposable'] = disposable;
-                if (createContainer) {
-                    disposable.add(containerInstance);
-                }
-                getDependencies(this, disposable, (this as any).dependencies);
-                getDependencies(this, disposable, this.$options.dependencies);
+                disposable.add(container);
             }
+
+            getDependencies(this, container, disposable, this.$options.dependencies);
         },
         destroyed(this: { container: Container }) {
             (this as any)['__$disposable'].dispose();
@@ -102,6 +103,10 @@ declare module 'vue/types/vue' {
 
 declare module 'vue/types/options' {
     interface ComponentOptions<V extends Vue> {
-        dependencies?: { [key: string]: symbol | string | { new (...args: any[]): any } };
+        dependencies?: {
+            [key: string]: symbol | string | { new (...args: any[]): any } | Resolver;
+        };
+        createChildContainer?: boolean;
+        registerServices?(container: Container): void;
     }
 }
