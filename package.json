@@ -14,11 +14,14 @@
     "author": "",
     "license": "MIT",
     "dependencies": {
+<<<<<<< Updated upstream
         "aurelia-dependency-injection": "^1.3.2",
         "aurelia-metadata": "^1.0.3",
         "reflect-metadata": "^0.1.10",
         "ts-disposables": "^2.2.3",
         "tslib": "^1.8.1",
+=======
+>>>>>>> Stashed changes
         "vue": "^2.5.13"
     },
     "devDependencies": {
