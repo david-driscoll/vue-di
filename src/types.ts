@@ -1,3 +1,3 @@
 import { IResolver } from './resolvers';
 
-export type Key = string | symbol | Function | IResolver;
+export type Key<T> = string | symbol | { new (...args: any[]): T } | IResolver<T>;

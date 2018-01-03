@@ -16,7 +16,7 @@ import { InvocationHandler } from './InvocationHandler';
 
 export const _emptyParameters = Object.freeze<any>([]);
 
-function validateKey(key: Key) {
+function validateKey(key: Key<any>) {
     if (key === null || key === undefined) {
         throw new Error(
             // tslint:disable-next-line:max-line-length
@@ -159,7 +159,7 @@ export class Container {
     public _handlers: Map<any, any>;
 
     /** @internal */
-    public _resolvers: Map<any, IResolver>;
+    public _resolvers: Map<any, IResolver<any>>;
 
     /**
      * Creates an instance of Container.
@@ -207,7 +207,7 @@ export class Container {
      *                  value when instance is not supplied.
      * @return The resolver that was registered.
      */
-    public registerInstance(key: Key, instance?: any): IResolver {
+    public registerInstance<T>(key: Key<T>, instance?: any): IResolver<T> {
         return this.registerResolver(
             key,
             new StrategyResolver(Strategy.Instance, instance === undefined ? key : instance)
@@ -222,7 +222,7 @@ export class Container {
      *              to the key value when fn is not supplied.
      * @return The resolver that was registered.
      */
-    public registerSingleton(key: Key, fn?: Function): IResolver {
+    public registerSingleton<T>(key: Key<T>, fn?: Function): IResolver<T> {
         return this.registerResolver(
             key,
             new StrategyResolver(Strategy.Singleton, fn === undefined ? key : fn)
@@ -236,7 +236,7 @@ export class Container {
      *              the key value when fn is not supplied.
      * @return The resolver that was registered.
      */
-    public registerTransient(key: Key, fn?: Function): IResolver {
+    public registerTransient<T>(key: Key<T>, fn?: Function): IResolver<T> {
         return this.registerResolver(
             key,
             new StrategyResolver(Strategy.Transient, fn === undefined ? key : fn)
@@ -250,10 +250,10 @@ export class Container {
      * @param handler The resolution function to use when the dependency is needed.
      * @return The resolver that was registered.
      */
-    public registerHandler(
-        key: Key,
-        handler: (container?: Container, key?: any, resolver?: IResolver) => any
-    ): IResolver {
+    public registerHandler<T>(
+        key: Key<T>,
+        handler: (container?: Container, key?: any, resolver?: IResolver<T>) => any
+    ): IResolver<T> {
         return this.registerResolver(key, new StrategyResolver(Strategy.Function, handler));
     }
 
@@ -263,7 +263,7 @@ export class Container {
      * @param aliasKey An alternate key which can also be used to resolve the same dependency  as the original.
      * @return The resolver that was registered.
      */
-    public registerAlias(originalKey: Key, aliasKey: Key): IResolver {
+    public registerAlias<T>(originalKey: Key<T>, aliasKey: Key<T>): IResolver<T> {
         return this.registerResolver(aliasKey, new StrategyResolver(Strategy.Alias, originalKey));
     }
 
@@ -274,7 +274,7 @@ export class Container {
      * @param resolver The resolver to use when the dependency is needed.
      * @return The resolver that was registered.
      */
-    public registerResolver(key: Key, resolver: IResolver): IResolver {
+    public registerResolver<T>(key: Key<T>, resolver: IResolver<T>): IResolver<T> {
         validateKey(key);
 
         const allResolvers = this._resolvers;
@@ -298,10 +298,10 @@ export class Container {
      * @param fn The constructor function to use when the dependency needs to be instantiated.
      *      This defaults to the key value when fn is not supplied.
      */
-    public autoRegister(key: Key): IResolver;
+    public autoRegister<T>(key: Key<T>): IResolver<T>;
     // tslint:disable-next-line:unified-signatures
-    public autoRegister(key: Key, fn: Function): IResolver;
-    public autoRegister(key: Key, fn?: any): IResolver {
+    public autoRegister<T>(key: Key<T>, fn: Function): IResolver<T>;
+    public autoRegister<T>(key: Key<T>, fn?: any): IResolver<T> {
         // tslint:disable-next-line:no-parameter-reassignment
         fn = fn === undefined ? key : fn;
 
@@ -334,7 +334,7 @@ export class Container {
      * Unregisters based on key.
      * @param key The key that identifies the dependency at resolution time; usually a constructor function.
      */
-    public unregister(key: Key): void {
+    public unregister(key: Key<any>): void {
         this._resolvers.delete(key);
     }
 
@@ -344,7 +344,7 @@ export class Container {
      * @param checkParent Indicates whether or not to check the parent container hierarchy.
      * @return Returns true if the key has been registred; false otherwise.
      */
-    public hasResolver(key: Key, checkParent = false): boolean {
+    public hasResolver<T>(key: Key<T>, checkParent = false): boolean {
         validateKey(key);
 
         return (
@@ -358,8 +358,8 @@ export class Container {
      * @param key The key that identifies the dependency at resolution time; usually a constructor function.
      * @return Returns the resolver, if registred, otherwise undefined.
      */
-    public getResolver(key: Key) {
-        return this._resolvers.get(key);
+    public getResolver<T>(key: Key<T>) {
+        return this._resolvers.get(key) as IResolver<T>;
     }
 
     /**
@@ -367,10 +367,10 @@ export class Container {
      * @param key The key that identifies the object to resolve.
      * @return Returns the resolved instance.
      */
-    public get<T>(key: Key): T {
+    public get<T>(key: Key<T>): T {
         validateKey(key);
 
-        if (key === Container) {
+        if ((key as any) === Container) {
             return this as any;
         }
 
@@ -402,7 +402,7 @@ export class Container {
      * @param key The key that identifies the objects to resolve.
      * @return Returns an array of the resolved instances.
      */
-    public getAll<T>(key: Key): ReadonlyArray<T> {
+    public getAll<T>(key: Key<T>): ReadonlyArray<T> {
         validateKey(key);
 
         const resolver = this._resolvers.get(key);
@@ -479,7 +479,7 @@ export class Container {
         (this as any).root = null;
     }
 
-    private _get<T>(key: Key): T {
+    private _get<T>(key: Key<T>): T {
         const resolver = this._resolvers.get(key);
 
         if (resolver === undefined) {

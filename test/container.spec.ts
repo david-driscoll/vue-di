@@ -1,5 +1,6 @@
 import {Container} from '../src/container/Container';
 import './setup';
+import { expect } from 'chai';
 
 describe('container', () => {
   describe('injection', () => {
@@ -9,7 +10,7 @@ describe('container', () => {
       let container = new Container();
       let app = container.get(App);
 
-      expect(app).toEqual(jasmine.any(App));
+      expect(app).to.be.instanceOf(App);
     });
 
     it('uses static inject method (ES6)', function() {
@@ -24,7 +25,7 @@ describe('container', () => {
 
       let container = new Container();
       let app = container.get(App);
-      expect(app.logger).toEqual(jasmine.any(Logger));
+      expect(app.logger).to.be.instanceOf(Logger));
     });
 
     it('uses static inject property (TypeScript,CoffeeScript,ES5)', function() {
@@ -41,7 +42,7 @@ describe('container', () => {
       let container = new Container();
       let app = container.get(App);
 
-      expect(app.logger).toEqual(jasmine.any(Logger));
+      expect(app.logger).to.be.instanceOf(Logger));
     });
   });
 
@@ -65,7 +66,7 @@ describe('container', () => {
 
       let container = new Container();
       let app = container.get(ChildApp);
-      expect(app.logger).toEqual(jasmine.any(Logger));
+      expect(app.logger).to.be.instanceOf(Logger));
     });
 
     it('loads dependencies for the child class', function() {
@@ -82,7 +83,7 @@ describe('container', () => {
 
       let container = new Container();
       let app = container.get(ChildApp);
-      expect(app.service).toEqual(jasmine.any(Service));
+      expect(app.service).to.be.instanceOf(Service));
     });
 
     it('loads dependencies for both classes', function() {
@@ -103,8 +104,8 @@ describe('container', () => {
 
       let container = new Container();
       let app = container.get(ChildApp);
-      expect(app.service).toEqual(jasmine.any(Service));
-      expect(app.logger).toEqual(jasmine.any(Logger));
+      expect(app.service).to.be.instanceOf(Service));
+      expect(app.logger).to.be.instanceOf(Logger));
     });
   });
 
@@ -162,23 +163,23 @@ describe('container', () => {
       let container = new Container();
 
       let app1 = container.get(SubChildApp1);
-      expect(app1.subService1).toEqual(jasmine.any(SubService1));
-      expect(app1.service).toEqual(jasmine.any(Service));
-      expect(app1.logger).toEqual(jasmine.any(Logger));
+      expect(app1.subService1).to.be.instanceOf(SubService1));
+      expect(app1.service).to.be.instanceOf(Service));
+      expect(app1.logger).to.be.instanceOf(Logger));
 
       let app2 = container.get(SubChildApp2);
-      expect(app2.subService2).toEqual(jasmine.any(SubService2));
-      expect(app2.service).toEqual(jasmine.any(Service));
-      expect(app2.logger).toEqual(jasmine.any(Logger));
+      expect(app2.subService2).to.be.instanceOf(SubService2));
+      expect(app2.service).to.be.instanceOf(Service));
+      expect(app2.logger).to.be.instanceOf(Logger));
 
       let app3 = container.get(SubChildApp3);
-      expect(app3.service).toEqual(jasmine.any(Service));
-      expect(app3.logger).toEqual(jasmine.any(Logger));
+      expect(app3.service).to.be.instanceOf(Service));
+      expect(app3.logger).to.be.instanceOf(Logger));
 
       let app4 = container.get(SubChildApp4);
-      expect(app4.subService1).toEqual(jasmine.any(SubService1));
-      expect(app4.service).toEqual(jasmine.any(Service));
-      expect(app4.logger).toEqual(jasmine.any(Logger));
+      expect(app4.subService1).to.be.instanceOf(SubService1));
+      expect(app4.service).to.be.instanceOf(Service));
+      expect(app4.logger).to.be.instanceOf(Logger));
     });
   });
 
@@ -474,8 +475,8 @@ describe('container', () => {
       let logger1 = container.get(Logger);
       let logger2 = container.get(Logger);
 
-      expect(logger1).toEqual(jasmine.any(Logger));
-      expect(logger2).toEqual(jasmine.any(Logger));
+      expect(logger1).to.be.instanceOf(Logger));
+      expect(logger2).to.be.instanceOf(Logger));
       expect(logger2).not.toBe(logger1);
     });
 
@@ -488,8 +489,8 @@ describe('container', () => {
       let logger1 = container.get(Logger);
       let logger2 = container.get(Logger);
 
-      expect(logger1).toEqual(jasmine.any(Logger));
-      expect(logger2).toEqual(jasmine.any(Logger));
+      expect(logger1).to.be.instanceOf(Logger));
+      expect(logger2).to.be.instanceOf(Logger));
       expect(logger2).toBe(logger1);
     });
 
@@ -509,7 +510,7 @@ describe('container', () => {
 
       let app = container.get(App);
 
-      expect(app.logger).toEqual(jasmine.any(Logger));
+      expect(app.logger).to.be.instanceOf(Logger));
     });
 
     it('configures concrete transient via api for abstract dependency', () => {
@@ -528,7 +529,7 @@ describe('container', () => {
 
       let app = container.get(App);
 
-      expect(app.logger).toEqual(jasmine.any(Logger));
+      expect(app.logger).to.be.instanceOf(Logger));
     });
 
     it('doesn\'t get hidden when a super class adds metadata which doesn\'t include the base registration type', () => {
@@ -577,7 +578,7 @@ describe('container', () => {
 
           let logger = app1.getLogger;
 
-          expect(logger()).toEqual(jasmine.any(Logger));
+          expect(logger()).to.be.instanceOf(Logger));
         });
 
         it('provides a function which, when called, will return the instance using decorator', () => {
@@ -597,7 +598,7 @@ describe('container', () => {
 
           let logger = app1.getLogger;
 
-          expect(logger()).toEqual(jasmine.any(Logger));
+          expect(logger()).to.be.instanceOf(Logger));
         });
       });
 
@@ -621,10 +622,10 @@ describe('container', () => {
           container.registerTransient(LoggerBase, Logger);
           let app = container.get(App);
 
-          expect(app.loggers).toEqual(jasmine.any(Array));
+          expect(app.loggers).to.be.instanceOf(Array));
           expect(app.loggers.length).toBe(2);
-          expect(app.loggers[0]).toEqual(jasmine.any(VerboseLogger));
-          expect(app.loggers[1]).toEqual(jasmine.any(Logger));
+          expect(app.loggers[0]).to.be.instanceOf(VerboseLogger));
+          expect(app.loggers[1]).to.be.instanceOf(Logger));
         });
 
         it('resolves all matching dependencies as an array of instances using decorator', () => {
@@ -648,10 +649,10 @@ describe('container', () => {
           container.registerTransient(LoggerBase, Logger);
           let app = container.get(App);
 
-          expect(app.loggers).toEqual(jasmine.any(Array));
+          expect(app.loggers).to.be.instanceOf(Array));
           expect(app.loggers.length).toBe(2);
-          expect(app.loggers[0]).toEqual(jasmine.any(VerboseLogger));
-          expect(app.loggers[1]).toEqual(jasmine.any(Logger));
+          expect(app.loggers[0]).to.be.instanceOf(VerboseLogger));
+          expect(app.loggers[1]).to.be.instanceOf(Logger));
         });
       });
 
@@ -673,7 +674,7 @@ describe('container', () => {
 
           let logger = app1.logger;
 
-          expect(logger).toEqual(jasmine.any(Logger));
+          expect(logger).to.be.instanceOf(Logger));
         });
       });
 
@@ -692,7 +693,7 @@ describe('container', () => {
           container.registerSingleton(Logger, Logger);
           let app = container.get(App);
 
-          expect(app.logger).toEqual(jasmine.any(Logger));
+          expect(app.logger).to.be.instanceOf(Logger));
         });
 
         it('injects the instance if its registered in the container using decorator', () => {
@@ -711,7 +712,7 @@ describe('container', () => {
           container.registerSingleton(Logger, Logger);
           let app = container.get(App);
 
-          expect(app.logger).toEqual(jasmine.any(Logger));
+          expect(app.logger).to.be.instanceOf(Logger));
         });
 
         it('injects null if key is not registered in the container', () => {
@@ -808,7 +809,7 @@ describe('container', () => {
 
           let app = childContainer.get(App);
 
-          expect(app.logger).toEqual(jasmine.any(Logger));
+          expect(app.logger).to.be.instanceOf(Logger));
         });
       });
 
@@ -936,7 +937,7 @@ describe('container', () => {
         it('provides a function which, when called, will return the instance', () => {
           app = container.get(App);
           service = app.GetService;
-          expect(service()).toEqual(jasmine.any(Service));
+          expect(service()).to.be.instanceOf(Service));
         });
 
         it('passes data in to the constructor as the second argument', () => {
@@ -981,7 +982,7 @@ describe('container', () => {
         it('provides a function which, when called, will return the instance', () => {
           app = container.get(App);
           service = app.GetService;
-          expect(service()).toEqual(jasmine.any(Service));
+          expect(service()).to.be.instanceOf(Service));
         });
 
         it('passes data in to the constructor as the second argument', () => {
@@ -1011,7 +1012,7 @@ describe('container', () => {
           let logger = container.get(Logger);
           let app1 = container.get(App1);
 
-          expect(app1.logger).toEqual(jasmine.any(Logger));
+          expect(app1.logger).to.be.instanceOf(Logger));
           expect(app1.logger).not.toBe(logger);
         });
 
@@ -1029,7 +1030,7 @@ describe('container', () => {
           let logger = container.get(Logger);
           let app1 = container.get(App1);
 
-          expect(app1.logger).toEqual(jasmine.any(Logger));
+          expect(app1.logger).to.be.instanceOf(Logger));
           expect(app1.logger).not.toBe(logger);
         });
 
@@ -1045,9 +1046,9 @@ describe('container', () => {
           let logger = container.get(Logger);
           let app1 = container.get(App1);
 
-          expect(app1.logger).toEqual(jasmine.any(Logger));
+          expect(app1.logger).to.be.instanceOf(Logger));
           expect(app1.logger).not.toBe(logger);
-          expect(app1.logger.dep).toEqual(jasmine.any(Dependency));
+          expect(app1.logger.dep).to.be.instanceOf(Dependency));
         });
 
         it('decorate to inject a new instance of a dependency, with instance dynamic dependency', () => {
@@ -1064,9 +1065,9 @@ describe('container', () => {
           let logger = container.get(Logger);
           let app1 = container.get(App1);
 
-          expect(app1.logger).toEqual(jasmine.any(Logger));
+          expect(app1.logger).to.be.instanceOf(Logger));
           expect(app1.logger).not.toBe(logger);
-          expect(app1.logger.dep).toEqual(jasmine.any(Dependency));
+          expect(app1.logger.dep).to.be.instanceOf(Dependency));
         });
 
         it('inject a new instance of a dependency, with resolver dynamic dependency', () => {
@@ -1081,9 +1082,9 @@ describe('container', () => {
           let logger = container.get(Logger);
           let app1 = container.get(App1);
 
-          expect(app1.logger).toEqual(jasmine.any(Logger));
+          expect(app1.logger).to.be.instanceOf(Logger));
           expect(app1.logger).not.toBe(logger);
-          expect(app1.logger.dep()).toEqual(jasmine.any(Dependency));
+          expect(app1.logger.dep()).to.be.instanceOf(Dependency));
         });
 
         it('decorate to inject a new instance of a dependency, with resolver dynamic dependency', () => {
@@ -1100,9 +1101,9 @@ describe('container', () => {
           let logger = container.get(Logger);
           let app1 = container.get(App1);
 
-          expect(app1.logger).toEqual(jasmine.any(Logger));
+          expect(app1.logger).to.be.instanceOf(Logger));
           expect(app1.logger).not.toBe(logger);
-          expect(app1.logger.dep()).toEqual(jasmine.any(Dependency));
+          expect(app1.logger.dep()).to.be.instanceOf(Dependency));
         });
       });
     });
