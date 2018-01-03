@@ -1,48 +1,51 @@
-import { Container, Resolver } from 'aurelia-dependency-injection';
 import Vue from 'vue';
 
+import { Container, IContainerConfiguration } from './container';
 import {
-    All,
-    AutoInject,
-    Inject,
-    Lazy,
-    NewInstance,
-    Optional,
-    Parent,
-    Registration,
-    Resolve,
-    Singleton,
-    Transient,
+    all,
+    autoinject,
+    factory,
+    lazy,
+    newInstance,
+    optional,
+    parent,
+    registration,
+    resolve,
+    singleton,
+    transient,
 } from './decorators';
 import { install } from './plugin';
+import { IResolver } from './resolvers';
 
 export default {
     install,
-    All,
-    AutoInject,
-    Inject,
-    Lazy,
-    NewInstance,
-    Optional,
-    Parent,
-    Registration,
-    Resolve,
-    Singleton,
-    Transient,
+    all,
+    autoinject,
+    factory,
+    lazy,
+    newInstance,
+    optional,
+    parent,
+    registration,
+    resolve,
+    singleton,
+    transient,
 };
 
 export {
-    All,
-    AutoInject,
-    Lazy,
-    Inject,
-    NewInstance,
-    Optional,
-    Parent,
-    Registration,
-    Resolve,
-    Singleton,
-    Transient,
+    Container,
+    IContainerConfiguration,
+    all,
+    autoinject,
+    factory,
+    lazy,
+    newInstance,
+    optional,
+    parent,
+    registration,
+    resolve,
+    singleton,
+    transient,
 };
 
 declare module 'vue/types/vue' {
@@ -58,7 +61,7 @@ declare module 'vue/types/vue' {
 declare module 'vue/types/options' {
     interface ComponentOptions<V extends Vue> {
         dependencies?: {
-            [key: string]: symbol | string | { new (...args: any[]): any } | Resolver;
+            [key: string]: symbol | string | { new (...args: any[]): any } | IResolver;
         };
         createChildContainer?: boolean;
         registerServices?(container: Container): void;

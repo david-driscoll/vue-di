@@ -1,3 +1,5 @@
+import { NewInstanceResolver } from '../resolvers/NewInstanceResolver';
+import { decorateParameterOrProperty } from './decorateParameterOrProperty';
 
 /**
  * Decorator: Specifies the dependency as a new instance.

@@ -1,4 +1,5 @@
-
+import { AllResolver } from '../resolvers/AllResolver';
+import { decorateParameterOrProperty } from './decorateParameterOrProperty';
 
 /**
  * Decorator: Specifies the dependency should load all instances of the given key.

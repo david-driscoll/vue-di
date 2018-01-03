@@ -1,9 +1,5 @@
+import {Container} from '../src/container/Container';
 import './setup';
-import {Container} from '../src/container';
-import {Lazy, All, Optional, Parent, Factory, NewInstance, lazy, all, optional, parent, factory, newInstance} from '../src/resolvers';
-import {transient, singleton} from '../src/registrations';
-import {inject, autoinject} from '../src/injection';
-import {decorators} from 'aurelia-metadata';
 
 describe('container', () => {
   describe('injection', () => {

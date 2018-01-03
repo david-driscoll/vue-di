@@ -14,7 +14,7 @@
         "class-name": true,
         "comment-format": false,
         "curly": [
-            true,
+            false,
             "as-needed"
         ],
         "cyclomatic-complexity": [
@@ -227,14 +227,6 @@
         "ban-types": {
             "options": [
                 [
-                    "Object",
-                    "Avoid using the `Object` type. Did you mean `object`?"
-                ],
-                [
-                    "Function",
-                    "Avoid using the `Function` type. Prefer a specific function type, like `() => void`."
-                ],
-                [
                     "Boolean",
                     "Avoid using the `Boolean` type. Did you mean `boolean`?"
                 ],
@@ -256,7 +248,7 @@
         "class-name": true,
         "comment-format": false,
         "curly": [
-            true,
+            false,
             "as-needed"
         ],
         "cyclomatic-complexity": [
@@ -368,7 +360,7 @@
         "no-duplicate-variable": true,
         "no-duplicate-imports": true,
         "no-empty": [
-            true,
+            false,
             "allow-empty-catch"
         ],
         "no-empty-interface": true,
@@ -557,7 +549,7 @@
             ]
         },
         "typeof-compare": true,
-        "unified-signatures": true,
+        "unified-signatures": false,
         "use-isnan": true,
         "use-default-type-parameter": true,
         "variable-name": {

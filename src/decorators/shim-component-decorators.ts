@@ -17,13 +17,13 @@ export function createVueDecorator(
 ): PropertyDecorator;
 export function createVueDecorator(factory: Function): ClassDecorator | PropertyDecorator {
     return (target: any, key?: string | symbol) => {
-        const Ctor =
+        const ctor =
             typeof target === 'function'
                 ? (target as DecoratedClass)
                 : (target.constructor as DecoratedClass);
-        if (!Ctor.__decorators__) {
-            Ctor.__decorators__ = [];
+        if (!ctor.__decorators__) {
+            ctor.__decorators__ = [];
         }
-        Ctor.__decorators__.push(options => factory(options, key));
+        ctor.__decorators__.push(options => factory(options, key));
     };
 }
