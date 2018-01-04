@@ -13,8 +13,8 @@ export class Builder {
         return new TypeRegistrationBuilder(this.container, key);
     }
 
-    public registerInstance<T>(key: T) {
-        return new InstanceRegistrationBuilder<T>(this.container, key);
+    public registerInstance<T>(instance: T) {
+        return new InstanceRegistrationBuilder<T>(this.container, instance);
     }
 
     public register<T>(factory: FactoryMethod<T>) {

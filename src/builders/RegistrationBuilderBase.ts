@@ -17,13 +17,14 @@ export class RegistrationBuilderBase<T, Resolver extends IResolver<any> = Regist
     }
 
     public as(...keys: Array<Key<T>>) {
-        for (const key of keys)
+        for (const key of keys) {
             if (!this.registeredKey) {
                 this.registeredKey = key;
                 this.container.registerResolver(this.registeredKey, this.resolver);
             } else {
                 this.container.registerAlias(this.registeredKey, key);
             }
+        }
 
         return this;
     }
