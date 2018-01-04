@@ -6,12 +6,12 @@
  */
 import 'reflect-metadata';
 import constants from '../constants';
-import { Registration } from '../registration/Registration';
+import { IRegistration } from '../registration/Registration';
 
 /**
  * Decorator: Specifies a custom registration strategy for the decorated class/function.
  */
-export function registration(value: Registration) {
+export function registration(value: IRegistration) {
     return (target: any) => {
         Reflect.defineMetadata(constants.registration, value, target);
     };

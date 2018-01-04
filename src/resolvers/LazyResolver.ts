@@ -7,12 +7,13 @@
 import { Container } from '../container/Container';
 import { resolver } from '../decorators/resolver';
 import { Key } from '../types';
+import { IResolver } from './Resolver';
 
 /**
  * Used to allow functions/classes to specify lazy resolution logic.
  */
 @resolver
-export class LazyResolver<T = any> {
+export class LazyResolver<T = any> implements IResolver<T> {
     /**
      * Creates a Lazy Resolver for the supplied key.
      * @param key The key to lazily resolve.

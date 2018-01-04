@@ -7,13 +7,14 @@
 import { Container } from '../container/Container';
 import { resolver } from '../decorators/resolver';
 import { Key } from '../types';
+import { IResolver } from './Resolver';
 
 /**
  * Used to allow functions/classes to specify an optional dependency, which will be resolved
  *      only if already registred with the container.
  */
 @resolver
-export class OptionalResolver<T = any> {
+export class OptionalResolver<T = any> implements IResolver<T> {
     /**
      * Creates an Optional Resolver for the supplied key.
      * @param key The key to optionally resolve for.

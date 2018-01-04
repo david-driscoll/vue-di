@@ -6,20 +6,21 @@
  */
 import { Container } from '../container/Container';
 import { resolver } from '../decorators/resolver';
-import { Key } from '../types';
+import { Key, Factory } from '../types';
+import { IResolver } from './Resolver';
 
 /**
  * Used to allow injecting dependencies but also passing data to the constructor.
  */
 @resolver
-export class FactoryResolver {
+export class FactoryResolver<F extends Factory<T>, T = any> implements IResolver<F> {
     /**
      * Creates a Factory Resolver for the supplied key.
      * @param key The key to resolve.
      * @return Returns an instance of Factory for the key.
      */
-    public static of(key: Function) {
-        return new FactoryResolver(key);
+    public static of<F extends Factory<T>, T = any>(key: Function) {
+        return new FactoryResolver<F>(key);
     }
 
     /** @internal */
@@ -38,7 +39,11 @@ export class FactoryResolver {
      * @param container The container to invoke the constructor with dependencies and other parameters.
      * @return Returns a function that can be invoked to resolve dependencies later, and the rest of the parameters.
      */
-    public get(container: Container): any {
-        return (...rest: any[]) => container.invoke(this._key, rest);
+    public get(container: Container, key: Key<F>): F {
+        const _key = this._key;
+        // tslint:disable-next-line:only-arrow-functions
+        return function(...rest: any[]) {
+            return container.invoke(_key, rest);
+        } as F;
     }
 }

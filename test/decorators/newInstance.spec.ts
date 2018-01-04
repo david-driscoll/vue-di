@@ -4,8 +4,8 @@ import { DisposableBase, IDisposable } from 'ts-disposables';
 import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 
-import VueContainer from '../../src/di';
 import { newInstance, resolve, singleton } from '../../src/decorators';
+import VueContainer from '../../src/di';
 
 describe('NewInstance property decorator', () => {
     it('should work with a singleton service', () => {

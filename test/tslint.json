@@ -1,0 +1,12 @@
+{
+    "rules": {
+        "no-magic-numbers": false,
+        "max-classes-per-file": false,
+        "no-unnecessary-class": false,
+        "max-line-length": false,
+        "no-shadowed-variable": false,
+        "no-unused-expression": false,
+        "variable-name": false
+    },
+    "extends": "../tslint.json"
+}

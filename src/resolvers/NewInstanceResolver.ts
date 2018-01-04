@@ -7,6 +7,7 @@
 import { Container } from '../container/Container';
 import { resolver } from '../decorators/resolver';
 import { Key } from '../types';
+import { IResolver } from './Resolver';
 
 /**
  * Used to inject a new instance of a dependency, without regard for existing
@@ -14,7 +15,7 @@ import { Key } from '../types';
  * under a different key by supplying a key using the `as` method.
  */
 @resolver
-export class NewInstanceResolver<T = any> {
+export class NewInstanceResolver<T = any> implements IResolver<T> {
     /**
      * Creates an NewInstance Resolver for the supplied key.
      * @param key The key to resolve/instantiate.
@@ -49,7 +50,7 @@ export class NewInstanceResolver<T = any> {
      * @param container The container to resolve the parent from.
      * @return Returns the matching instance from the parent container
      */
-    public get(container: Container) {
+    public get(container: Container, key: Key<T>): T {
         const dynamicDependencies =
             this._dynamicDependencies.length > 0
                 ? this._dynamicDependencies.map(
@@ -59,7 +60,7 @@ export class NewInstanceResolver<T = any> {
                               : container.get(dependency)
                   )
                 : undefined;
-        const instance = container.invoke(this._key, dynamicDependencies);
+        const instance = container.invoke<T>(this._key, dynamicDependencies);
         container.registerInstance(this._asKey, instance);
 
         return instance;

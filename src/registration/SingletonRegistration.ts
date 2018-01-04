@@ -7,11 +7,12 @@
 import { Container } from '../container/Container';
 import { IResolver } from '../resolvers/Resolver';
 import { Key } from '../types';
+import { IRegistration } from './Registration';
 
 /**
  * Used to allow functions/classes to indicate that they should be registered as singletons with the container.
  */
-export class SingletonRegistration<T = any> {
+export class SingletonRegistration<T = any> implements IRegistration<T> {
     /** @internal */
     public _registerInChild: any;
 

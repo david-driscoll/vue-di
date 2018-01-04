@@ -1,27 +1,27 @@
-import { autoinject, lazy } from '../src/decorators';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { DisposableBase, IDisposable } from 'ts-disposables';
 import { createLocalVue, mount } from 'vue-test-utils';
+import { autoinject, lazy } from '../src/decorators';
 // tslint:disable:max-classes-per-file
 
 import VueContainer from '../src/di';
 
 @autoinject
 class Stuff {
-    public constructor() {}
     public value = 123;
+    public constructor() { }
 }
 
 @autoinject
 class Item {
-    public constructor(public stuff: Stuff) {}
+    public constructor(public stuff: Stuff) { }
 }
 
 @autoinject
 class DisposableItem implements IDisposable {
     public _disposed = false;
-    public constructor(public stuff: Stuff) {}
+    public constructor(public stuff: Stuff) { }
 
     public dispose() {
         this._disposed = true;
@@ -114,7 +114,7 @@ describe('pluginTests', () => {
             { localVue: NewVue }
         );
 
-        let things: DisposableItem = (item.vm.$children[0] as any).things;
+        const things: DisposableItem = (item.vm.$children[0] as any).things;
         things.stuff.value.should.be.eq(123);
 
         item.destroy();
@@ -142,7 +142,7 @@ describe('pluginTests', () => {
             { localVue: NewVue }
         );
 
-        let things: DisposableItem = (item.vm.$children[0] as any).things;
+        const things: DisposableItem = (item.vm.$children[0] as any).things;
         things.stuff.value.should.be.eq(123);
 
         item.destroy();

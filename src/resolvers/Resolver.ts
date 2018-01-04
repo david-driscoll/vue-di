@@ -17,5 +17,5 @@ export interface IResolver<T> {
      * @param key The key that the resolver was registered as.
      * @return Returns the resolved object.
      */
-    get(container: Container, key?: Key<T>): T;
+    get(container: Container, key: Key<T>): T;
 }

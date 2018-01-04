@@ -14,6 +14,8 @@ import { Strategy, StrategyResolver } from '../resolvers/StrategyResolver';
 import { Key } from '../types';
 import { IContainerConfiguration } from './ContainerConfiguration';
 import { InvocationHandler } from './InvocationHandler';
+import { IContainer } from './IContainer';
+import { IRegistration } from '../registration/Registration';
 
 export const _emptyParameters = Object.freeze<any>([]);
 
@@ -134,7 +136,7 @@ function getDependencies(f: object) {
 /**
  * A lightweight, extensible dependency injection container.
  */
-export class Container {
+export class Container implements IContainer {
     /**
      * The global root Container instance. Available if makeGlobal() has been called.
      */
@@ -150,17 +152,10 @@ export class Container {
      */
     public readonly root: Container;
 
-    /** @internal */
-    public _configuration: IContainerConfiguration;
-
-    /** @internal */
-    public _onHandlerCreated?: (handler: InvocationHandler) => InvocationHandler;
-
-    /** @internal */
-    public _handlers: Map<any, any>;
-
-    /** @internal */
-    public _resolvers: Map<any, IResolver<any>>;
+    private _configuration: IContainerConfiguration;
+    private _onHandlerCreated?: (handler: InvocationHandler) => InvocationHandler;
+    private _handlers: Map<any, any>;
+    private _resolvers: Map<any, IResolver<any>>;
 
     /**
      * Creates an instance of Container.
@@ -386,13 +381,13 @@ export class Container {
                 return this.autoRegister(key).get(this, key);
             }
 
-            const registration = Reflect.getMetadata(constants.registration, key);
+            const registration = Reflect.getMetadata(constants.registration, key) as IRegistration<T>;
 
             if (registration === undefined) {
                 return this.parent._get(key);
             }
 
-            return registration.registerResolver(this, key, key).get(this, key);
+            return registration.registerResolver(this, key, key as any).get(this, key);
         }
 
         return resolver.get(this, key);
@@ -449,7 +444,7 @@ export class Container {
      * @param dynamicDependencies Additional function dependencies to use during invocation.
      * @return Returns the instance resulting from calling the function.
      */
-    public invoke(fn: Function, dynamicDependencies?: any[]) {
+    public invoke<T>(fn: Function, dynamicDependencies?: any[]): T {
         try {
             let handler = this._handlers.get(fn);
 

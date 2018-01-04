@@ -1,28 +1,28 @@
-import { expect } from "chai";
-import { ParentResolver } from "./../src/resolvers/ParentResolver";
+import { expect } from 'chai';
 import { Container } from '../src/container';
+import { ParentResolver } from './../src/resolvers/ParentResolver';
 
 describe('Parent', () => {
     it('should return the key from the parent container when present', () => {
-        let sut = new ParentResolver('test');
-        let parent = new Container();
-        let childContainer = parent.createChild();
-        let instance = {};
-        let wrongInstance = {};
+        const sut = new ParentResolver('test');
+        const parent = new Container();
+        const childContainer = parent.createChild();
+        const instance = {};
+        const wrongInstance = {};
 
         parent.registerInstance('test', instance);
         childContainer.registerInstance('test', wrongInstance);
 
-        let result = sut.get(childContainer);
+        const result = sut.get(childContainer);
 
         expect(result).to.equal(instance);
         expect(result).not.to.equal(wrongInstance);
     });
 
     it('should return null when the parent container is not present', () => {
-        let sut = new ParentResolver('test');
-        let childContainer = new Container();
-        let instance = {};
+        const sut = new ParentResolver('test');
+        const childContainer = new Container();
+        const instance = {};
 
         childContainer.registerInstance('test', instance);
         expect(sut.get(childContainer)).to.be.null;

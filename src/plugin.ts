@@ -28,7 +28,7 @@ export function install(innerVue: any, options: any) {
                 const resolverOrType = dependencies[key];
                 let value: any;
                 if (isResolver(resolverOrType)) {
-                    value = resolverOrType.get(container, undefined);
+                    value = resolverOrType.get(container, key);
                 } else {
                     value = container.get(dependencies[key]);
                 }

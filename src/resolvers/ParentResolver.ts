@@ -7,12 +7,13 @@
 import { Container } from '../container/Container';
 import { resolver } from '../decorators/resolver';
 import { Key } from '../types';
+import { IResolver } from './Resolver';
 
 /**
  * Used to inject the dependency from the parent container instead of the current one.
  */
 @resolver
-export class ParentResolver<T = any> {
+export class ParentResolver<T = any> implements IResolver<T> {
     /**
      * Creates a Parent Resolver for the supplied key.
      * @param key The key to resolve.

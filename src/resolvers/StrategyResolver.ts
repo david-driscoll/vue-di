@@ -10,6 +10,7 @@ import { Key } from '../types';
 import { IResolver } from './Resolver';
 
 export enum Strategy {
+    Unset = -1,
     Instance = 0,
     Singleton = 1,
     Transient = 2,
@@ -19,7 +20,7 @@ export enum Strategy {
 }
 
 @resolver
-export class StrategyResolver<T = any> {
+export class StrategyResolver<T = any> implements IResolver<T> {
     public strategy: StrategyResolver<T> | Strategy;
     public state: any;
 
@@ -39,7 +40,7 @@ export class StrategyResolver<T = any> {
      * @param key The key that the resolver was registered as.
      * @return Returns the resolved object.
      */
-    public get(container: Container, key: Key<T>): any {
+    public get(container: Container, key?: Key<T>): any {
         switch (this.strategy) {
             case Strategy.Instance:
                 return this.state;
