@@ -11,6 +11,7 @@
     "jsnext:main": "dist/rollup-plugin-typescript.es.js",
     "types": "dist/di.d.ts",
     "scripts": {
+        "prepublish": "npm run test && npm run build",
         "build": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
         "test": "mocha"
     },
