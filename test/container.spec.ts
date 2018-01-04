@@ -1039,7 +1039,7 @@ describe('container', () => {
                         }
                     }
 
-                    newInstance()(App1, 'logger', 0);
+                    newInstance(App1, 'logger', 0);
 
                     let container = new Container();
                     let logger = container.get(Logger);
