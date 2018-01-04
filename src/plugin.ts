@@ -2,10 +2,9 @@ import 'reflect-metadata';
 import { CompositeDisposable, Disposable, isDisposable } from 'ts-disposables';
 import Vue, { VueConstructor } from 'vue';
 import { Container } from './container';
-import './DisposableContainer';
 import { IResolver } from './resolvers';
 
-function isResolver(value: any): value is IResolver {
+function isResolver(value: any): value is IResolver<any> {
     return value.get && typeof value.get === 'function';
 }
 
@@ -18,7 +17,7 @@ export function install(innerVue: any, options: any) {
         container: Container,
         disposable: CompositeDisposable,
         dependencies:
-            | { [key: string]: symbol | string | { new (...args: any[]): any } | IResolver }
+            | { [key: string]: symbol | string | { new (...args: any[]): any } | IResolver<any> }
             | undefined
     ) {
         if (!dependencies) return;

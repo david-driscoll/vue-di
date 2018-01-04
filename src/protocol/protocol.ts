@@ -1,5 +1,6 @@
 import { Container } from '../container/Container';
 import { Key } from '../types';
+import { IResolver } from '../resolvers/index';
 
 function alwaysValid() {
     return true;
@@ -107,7 +108,7 @@ export const protocol: {
 } as any;
 
 export type ProtocolDecorator = ClassDecorator & (() => ClassDecorator) & {
-    decorates(target: any): target is { get(container: Container, key: Key): any };
+    decorates(target: any): target is IResolver<any>;
     validate(target: any): boolean;
     assert(target: any): void;
 };

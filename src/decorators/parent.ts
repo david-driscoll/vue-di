@@ -7,8 +7,16 @@ import { decorateParameterOrProperty } from './decorateParameterOrProperty';
  *
  * @export
  */
-export function parent() {
-    const resolver = (x: any) => ParentResolver.of(x);
+export function parent(): (target: Object, propertyOrParameterName: string | symbol, index?: number) => void;
+export function parent(target: Object, propertyOrParameterName: string | symbol, index?: number): void;
+export function parent(target?: Object, propertyOrParameterName?: string | symbol, index?: number) {
+    const deco = function () {
+        const resolver = (x: any) => ParentResolver.of(x);
+        return decorateParameterOrProperty(resolver, 'parent');
+    };
+    if (target == null) {
+        return deco();
+    }
 
-    return decorateParameterOrProperty(resolver, 'parent');
+    return deco()(target, propertyOrParameterName!, index);
 }

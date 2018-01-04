@@ -12,24 +12,24 @@ import { Key } from '../types';
  * Used to inject the dependency from the parent container instead of the current one.
  */
 @resolver
-export class ParentResolver {
+export class ParentResolver<T = any> {
     /**
      * Creates a Parent Resolver for the supplied key.
      * @param key The key to resolve.
      * @return Returns an instance of Parent for the key.
      */
-    public static of(key: Key) {
-        return new ParentResolver(key);
+    public static of<T>(key: Key<T>) {
+        return new ParentResolver<T>(key);
     }
 
     /** @internal */
-    public _key: Key;
+    public _key: Key<T>;
 
     /**
      * Creates an instance of the Parent class.
      * @param key The key to resolve from the parent container.
      */
-    public constructor(key: Key) {
+    public constructor(key: Key<T>) {
         this._key = key;
     }
 

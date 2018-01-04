@@ -4,47 +4,43 @@ import { DisposableBase, IDisposable } from 'ts-disposables';
 import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 
-import { AutoInject, Optional, Singleton, Transient } from '../../src/decorators';
 import VueContainer from '../../src/di';
+import { lazy, singleton, transient } from '../../src/decorators';
 
-describe('Optional property decorator', () => {
-    it('should work with no registered service', () => {
+describe('Lazy property decorator', () => {
+    it('should work with a singleton service', () => {
         const NewVue = createLocalVue();
         NewVue.use(VueContainer);
 
-        @Singleton
+        @singleton()
         class Service {
             public value = 1;
         }
 
         @Component
         class MyComponent extends NewVue {
-            @Optional() public service: Service;
+            @lazy(Service) public service: () => Service;
         }
 
         const wrapper = mount<MyComponent>(MyComponent);
-        expect(wrapper.vm.service).to.be.null;
+        wrapper.vm.service().should.be.eq(wrapper.vm.service());
     });
 
-    it('should work with a registered service', () => {
+    it('should work with a transient service', () => {
         const NewVue = createLocalVue();
         NewVue.use(VueContainer);
 
-        @Singleton
+        @transient
         class Service {
             public value = 1;
         }
 
-        @Component({
-            registerServices(container) {
-                container.autoRegister(Service);
-            },
-        })
+        @Component
         class MyComponent extends NewVue {
-            @Optional() public service: Service;
+            @lazy(Service) public service: () => Service;
         }
 
         const wrapper = mount<MyComponent>(MyComponent);
-        expect(wrapper.vm.service).to.be.not.null;
+        wrapper.vm.service().should.not.be.eq(wrapper.vm.service());
     });
 });

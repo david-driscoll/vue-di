@@ -13,19 +13,19 @@ import { Key } from '../types';
  *      only if already registred with the container.
  */
 @resolver
-export class OptionalResolver {
+export class OptionalResolver<T = any> {
     /**
      * Creates an Optional Resolver for the supplied key.
      * @param key The key to optionally resolve for.
      * @param [checkParent=true] Indicates whether or not the parent container hierarchy should be checked.
      * @return Returns an instance of Optional for the key.
      */
-    public static of(key: Key, checkParent = true) {
+    public static of<T>(key: Key<T>, checkParent = true) {
         return new OptionalResolver(key, checkParent);
     }
 
     /** @internal */
-    public _key: Key;
+    public _key: Key<T>;
 
     /** @internal */
     public _checkParent: boolean;
@@ -35,7 +35,7 @@ export class OptionalResolver {
      * @param key The key to optionally resolve for.
      * @param checkParent Indicates whether or not the parent container hierarchy should be checked.
      */
-    public constructor(key: Key, checkParent = true) {
+    public constructor(key: Key<T>, checkParent = true) {
         this._key = key;
         this._checkParent = checkParent;
     }
@@ -46,7 +46,7 @@ export class OptionalResolver {
      * @return Returns the instance if found; otherwise null.
      */
     public get(container: Container): any {
-        if (container.hasResolver(this._key, this._checkParent)) {
+        if (container.hasHandler(this._key, this._checkParent)) {
             return container.get(this._key);
         }
 

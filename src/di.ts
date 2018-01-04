@@ -1,6 +1,5 @@
 import Vue from 'vue';
 
-import { Container, IContainerConfiguration } from './container';
 import {
     all,
     autoinject,
@@ -15,7 +14,8 @@ import {
     transient,
 } from './decorators';
 import { install } from './plugin';
-import { IResolver } from './resolvers';
+import { Key } from './types';
+import { Container } from './container';
 
 export default {
     install,
@@ -33,8 +33,6 @@ export default {
 };
 
 export {
-    Container,
-    IContainerConfiguration,
     all,
     autoinject,
     factory,
@@ -47,6 +45,10 @@ export {
     singleton,
     transient,
 };
+
+export { Container, IContainerConfiguration } from './container';
+export { Factory, Key } from './types';
+
 
 declare module 'vue/types/vue' {
     interface VueConstructor {
@@ -61,7 +63,7 @@ declare module 'vue/types/vue' {
 declare module 'vue/types/options' {
     interface ComponentOptions<V extends Vue> {
         dependencies?: {
-            [key: string]: symbol | string | { new (...args: any[]): any } | IResolver;
+            [key: string]: Key<any>;
         };
         createChildContainer?: boolean;
         registerServices?(container: Container): void;

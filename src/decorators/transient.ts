@@ -6,15 +6,16 @@
  */
 import { TransientRegistration } from '../registration/TransientRegistration';
 import { registration } from './registration';
+import { Key } from '../types';
 
 /**
  * Decorator: Specifies to register the decorated item with a "transient" lifetime.
  *
  * @export
  */
-export function transient(key: string | symbol): ClassDecorator;
 export function transient<T extends Function>(ctor: T): T;
-export function transient(key: string | symbol | Function): any {
+export function transient(key?: Key<any>): ClassDecorator;
+export function transient(key?: Key<any> | Function): any {
     if (typeof key === 'function') {
         return registration(new TransientRegistration(key))(key);
     }

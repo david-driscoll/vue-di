@@ -4,6 +4,7 @@
  *
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
+import 'reflect-metadata';
 import { AggregateError } from '../AggregateError';
 import constants from '../constants';
 import { resolver as resolverDeco } from '../decorators/resolver';
@@ -27,7 +28,7 @@ function validateKey(key: Key<any>) {
 
 function invokeWithDynamicDependencies(
     container: Container,
-    fn: { new (...args: any[]): any },
+    fn: { new(...args: any[]): any },
     staticDependencies: any[],
     dynamicDependencies?: any[]
 ) {
@@ -153,7 +154,7 @@ export class Container {
     public _configuration: IContainerConfiguration;
 
     /** @internal */
-    public _onHandlerCreated: (handler: InvocationHandler) => InvocationHandler;
+    public _onHandlerCreated?: (handler: InvocationHandler) => InvocationHandler;
 
     /** @internal */
     public _handlers: Map<any, any>;
@@ -172,7 +173,7 @@ export class Container {
         }
 
         this._configuration = configuration;
-        this._onHandlerCreated = configuration.onHandlerCreated || constants.noop;
+        this._onHandlerCreated = configuration.onHandlerCreated;
         this._handlers = configuration.handlers || (configuration.handlers = new Map());
         this._resolvers = new Map();
         this.root = this;
@@ -344,12 +345,12 @@ export class Container {
      * @param checkParent Indicates whether or not to check the parent container hierarchy.
      * @return Returns true if the key has been registred; false otherwise.
      */
-    public hasResolver<T>(key: Key<T>, checkParent = false): boolean {
+    public hasHandler<T>(key: Key<T>, checkParent = false): boolean {
         validateKey(key);
 
         return (
             this._resolvers.has(key) ||
-            (checkParent && this.parent != null && this.parent.hasResolver(key, checkParent))
+            (checkParent && this.parent != null && this.parent.hasHandler(key, checkParent))
         );
     }
 
@@ -496,6 +497,8 @@ export class Container {
     private _createInvocationHandler(fn: Function & { inject?: any }): InvocationHandler {
         let dependencies;
 
+        fn
+        Reflect.getOwnMetadata(constants.paramTypes, fn) /*?*/
         if (fn.inject === undefined) {
             dependencies = Reflect.getOwnMetadata(constants.paramTypes, fn) || _emptyParameters;
         } else {
@@ -512,8 +515,12 @@ export class Container {
             classInvokers[dependencies.length] ||
             classInvokers.fallback;
 
-        const handler = new InvocationHandler(fn, invoker, dependencies);
+            invoker;
 
-        return this._onHandlerCreated !== undefined ? this._onHandlerCreated(handler) : handler;
+        const handler = new InvocationHandler(fn, invoker, dependencies);
+        handler;
+        this._onHandlerCreated /*?*/
+
+        return this._onHandlerCreated != null ? this._onHandlerCreated(handler) : handler;
     }
 }

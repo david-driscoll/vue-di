@@ -5,6 +5,7 @@
  *
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
+import 'reflect-metadata';
 import constants from '../constants';
 import { FactoryInvoker } from '../invokers/FactoryInvoker';
 

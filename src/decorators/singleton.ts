@@ -6,24 +6,25 @@
  */
 import { SingletonRegistration } from '../registration/SingletonRegistration';
 import { registration } from './registration';
+import { Key } from '../types';
 
 /**
  * Decorator: Specifies to register the decorated item with a "singleton" lifetime.
  *
  * @export
  */
-export function singleton(registerInChild: boolean): ClassDecorator;
-export function singleton(key: string | symbol, registerInChild?: boolean): ClassDecorator;
-export function singleton<T extends Function>(ctor: T): T;
+export function singleton<T extends Function>(ctor: T): void;
+export function singleton(registerInChild?: boolean): ClassDecorator;
+export function singleton(key: Key<any>, registerInChild?: boolean): ClassDecorator;
 export function singleton(
-    keyOrRegisterInChild: string | symbol | Function | boolean,
+    keyOrRegisterInChild: Key<any> | boolean = false,
     registerInChild = false
 ): any {
-    if (typeof keyOrRegisterInChild === 'function') {
-        return registration(new SingletonRegistration(keyOrRegisterInChild, registerInChild))(
-            keyOrRegisterInChild
-        );
+    if (typeof keyOrRegisterInChild === 'boolean') {
+        return registration(new SingletonRegistration(keyOrRegisterInChild));
     }
 
-    return registration(new SingletonRegistration(keyOrRegisterInChild, registerInChild));
+    return registration(new SingletonRegistration(keyOrRegisterInChild, registerInChild))(
+        keyOrRegisterInChild
+    );
 }

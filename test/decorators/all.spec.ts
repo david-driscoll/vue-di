@@ -4,8 +4,8 @@ import { DisposableBase, IDisposable } from 'ts-disposables';
 import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 
-import { AutoInject, All, Singleton, Transient } from '../../src/decorators';
 import VueContainer from '../../src/di';
+import { all } from '../../src/decorators';
 
 describe('All property decorator', () => {
     it('should work with a singleton service', () => {
@@ -20,7 +20,7 @@ describe('All property decorator', () => {
 
         @Component
         class MyComponent extends NewVue {
-            @All(Item) public items: Item[];
+            @all(Item) public items: Item[];
         }
 
         const wrapper = mount<MyComponent>(MyComponent);

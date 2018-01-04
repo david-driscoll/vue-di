@@ -19,8 +19,8 @@ export enum Strategy {
 }
 
 @resolver
-export class StrategyResolver {
-    public strategy: StrategyResolver | Strategy;
+export class StrategyResolver<T = any> {
+    public strategy: StrategyResolver<T> | Strategy;
     public state: any;
 
     /**
@@ -39,7 +39,7 @@ export class StrategyResolver {
      * @param key The key that the resolver was registered as.
      * @return Returns the resolved object.
      */
-    public get(container: Container, key: Key): any {
+    public get(container: Container, key: Key<T>): any {
         switch (this.strategy) {
             case Strategy.Instance:
                 return this.state;

@@ -12,23 +12,23 @@ import { Key } from '../types';
  * Used to allow functions/classes to specify lazy resolution logic.
  */
 @resolver
-export class LazyResolver {
+export class LazyResolver<T = any> {
     /**
      * Creates a Lazy Resolver for the supplied key.
      * @param key The key to lazily resolve.
      * @return Returns an instance of Lazy for the key.
      */
-    public static of(key: Key) {
+    public static of<T>(key: Key<T>) {
         return new LazyResolver(key);
     }
     /** @internal */
-    public _key: Key;
+    public _key: Key<T>;
 
     /**
      * Creates an instance of the Lazy class.
      * @param key The key to lazily resolve.
      */
-    public constructor(key: Key) {
+    public constructor(key: Key<T>) {
         this._key = key;
     }
 

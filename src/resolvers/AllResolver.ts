@@ -12,24 +12,24 @@ import { Key } from '../types';
  * Used to allow functions/classes to specify resolution of all matches to a key.
  */
 @resolver
-export class AllResolver {
+export class AllResolver<T = any> {
     /**
      * Creates an All Resolver for the supplied key.
      * @param key The key to resolve all instances for.
      * @return Returns an instance of All for the key.
      */
-    public static of(key: Key) {
-        return new AllResolver(key);
+    public static of<T>(key: Key<T>) {
+        return new AllResolver<T>(key);
     }
 
     /** @internal */
-    public _key: Key;
+    public _key: Key<T>;
 
     /**
      * Creates an instance of the All class.
      * @param key The key to lazily resolve all matches for.
      */
-    public constructor(key: Key) {
+    public constructor(key: Key<T>) {
         this._key = key;
     }
 

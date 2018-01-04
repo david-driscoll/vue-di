@@ -1,4 +1,4 @@
-import { Container } from 'aurelia-dependency-injection';
+import { autoinject, lazy } from '../src/decorators';
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { DisposableBase, IDisposable } from 'ts-disposables';
@@ -6,20 +6,19 @@ import { createLocalVue, mount } from 'vue-test-utils';
 // tslint:disable:max-classes-per-file
 
 import VueContainer from '../src/di';
-import { AutoInject, Lazy } from './../src/decorators';
 
-@AutoInject
+@autoinject
 class Stuff {
     public constructor() {}
     public value = 123;
 }
 
-@AutoInject
+@autoinject
 class Item {
     public constructor(public stuff: Stuff) {}
 }
 
-@AutoInject
+@autoinject
 class DisposableItem implements IDisposable {
     public _disposed = false;
     public constructor(public stuff: Stuff) {}
@@ -30,9 +29,9 @@ class DisposableItem implements IDisposable {
 }
 
 class Property {
-    @Lazy('abcd') public value: string;
-    @Lazy('abcd') public item: Item;
-    @Lazy('abcd') public funcItem: () => Item;
+    @lazy('abcd') public value: string;
+    @lazy('abcd') public item: Item;
+    @lazy('abcd') public funcItem: () => Item;
 }
 
 describe('pluginTests', () => {

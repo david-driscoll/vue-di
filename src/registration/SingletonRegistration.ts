@@ -11,12 +11,12 @@ import { Key } from '../types';
 /**
  * Used to allow functions/classes to indicate that they should be registered as singletons with the container.
  */
-export class SingletonRegistration {
+export class SingletonRegistration<T = any> {
     /** @internal */
     public _registerInChild: any;
 
     /** @internal */
-    public _key: Key;
+    public _key: Key<T>;
 
     /**
      * Creates an instance of SingletonRegistration.
@@ -38,7 +38,7 @@ export class SingletonRegistration {
      * @param fn The function to create the resolver for.
      * @return The resolver that was registered.
      */
-    public registerResolver(container: Container, key: Key, fn: Function): IResolver {
+    public registerResolver(container: Container, key: Key<T>, fn: Function): IResolver<T> {
         const targetContainer = this._registerInChild ? container : container.root;
         const existingResolver = targetContainer.getResolver(this._key || key);
 

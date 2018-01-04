@@ -14,21 +14,21 @@ import { Key } from '../types';
  * under a different key by supplying a key using the `as` method.
  */
 @resolver
-export class NewInstanceResolver {
+export class NewInstanceResolver<T = any> {
     /**
      * Creates an NewInstance Resolver for the supplied key.
      * @param key The key to resolve/instantiate.
      * @param dynamicDependencies An optional list of dynamic dependencies.
      * @return Returns an instance of NewInstance for the key.
      */
-    public static of(key: Function, ...dynamicDependencies: any[]) {
-        return new NewInstanceResolver(key, ...dynamicDependencies);
+    public static of<T>(key: Function, ...dynamicDependencies: any[]) {
+        return new NewInstanceResolver<T>(key, ...dynamicDependencies);
     }
 
     /** @internal */
     public _key: Function;
     /** @internal */
-    public _asKey: Key;
+    public _asKey: Key<any>;
     /** @internal */
     public _dynamicDependencies: any[];
 
@@ -39,7 +39,7 @@ export class NewInstanceResolver {
      */
     public constructor(key: Function, ...dynamicDependencies: any[]) {
         this._key = key;
-        this._asKey = key;
+        this._asKey = key as any;
         this._dynamicDependencies = dynamicDependencies;
     }
 
@@ -70,7 +70,7 @@ export class NewInstanceResolver {
      * @param key The key to register the instance with.
      * @return Returns the NewInstance resolver.
      */
-    public as(key: Key) {
+    public as(key: Key<T>) {
         this._asKey = key;
 
         return this;

@@ -5,7 +5,12 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 
- /**
+function isAggregateError(error: any): error is AggregateErrorType {
+    return !!error.innerError;
+}
+type AggregateErrorType = Error & { innerError?: Error };
+
+/**
 * Creates an instance of Error that aggregates and preserves an innerError.
 * @param message The error message.
 * @param innerError The inner error message to aggregate.
@@ -14,36 +19,36 @@
 */
 export function AggregateError(message: string, innerError?: Error, skipIfAlreadyAggregate?: boolean): Error {
     if (innerError) {
-      if (innerError.innerError && skipIfAlreadyAggregate) {
-        return innerError;
-      }
+        if (isAggregateError(innerError) && skipIfAlreadyAggregate) {
+            return innerError;
+        }
 
-      const separator = '\n------------------------------------------------\n';
+        const separator = '\n------------------------------------------------\n';
 
-      message += `${separator}Inner Error:\n`;
+        message += `${separator}Inner Error:\n`;
 
-      if (typeof(innerError) === 'string' ) {
-        message += `Message: ${innerError}`;
-      } else {
-        if (innerError.message) {
-          message += `Message: ${innerError.message}`;
+        if (typeof (innerError) === 'string') {
+            message += `Message: ${innerError}`;
         } else {
-          message += `Unknown Inner Error Type. Displaying Inner Error as JSON:\n ${JSON.stringify(innerError, null, '  ')}`;
+            if (innerError.message) {
+                message += `Message: ${innerError.message}`;
+            } else {
+                message += `Unknown Inner Error Type. Displaying Inner Error as JSON:\n ${JSON.stringify(innerError, null, '  ')}`;
+            }
+
+            if (innerError.stack) {
+                message += `\nInner Error Stack:\n${innerError.stack}`;
+                message += '\nEnd Inner Error Stack';
+            }
         }
 
-        if (innerError.stack) {
-          message += `\nInner Error Stack:\n${innerError.stack}`;
-          message += '\nEnd Inner Error Stack';
-        }
-      }
-
-      message += separator;
+        message += separator;
     }
 
     let e = new Error(message);
     if (innerError) {
-      e.innerError = innerError;
+        (e as any).innerError = innerError;
     }
 
     return e;
-  }
+}

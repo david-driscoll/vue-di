@@ -4,6 +4,7 @@
  *
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
+import 'reflect-metadata';
 import constants from '../constants';
 import { Invoker } from '../invokers/Invoker';
 

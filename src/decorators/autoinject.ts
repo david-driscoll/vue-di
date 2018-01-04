@@ -4,14 +4,15 @@
  *
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
+import 'reflect-metadata';
 import constants from '../constants';
 import { _emptyParameters } from '../container/Container';
 
 /**
  * Decorator: Directs the TypeScript transpiler to write-out type metadata for the decorated class.
  */
-export function autoinject(): void;
-export function autoinject(potentialTarget: any): ClassDecorator;
+export function autoinject(): ClassDecorator;
+export function autoinject(potentialTarget: any): void;
 export function autoinject(potentialTarget?: any): any {
     const deco = (target: any) => {
         //make a copy of target.inject to avoid changing parent inject
