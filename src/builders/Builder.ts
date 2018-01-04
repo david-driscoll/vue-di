@@ -1,7 +1,7 @@
 import { Container } from '../container/Container';
 import { Strategy, StrategyResolver } from '../resolvers/StrategyResolver';
-import { Resolver, Key } from '../types';
-import { FactoryMethod, FactoryRegistrationBuilder } from './FactoryRegistrationBuilder';
+import { FactoryMethod, Key, Resolver } from '../types';
+import { FactoryRegistrationBuilder } from './FactoryRegistrationBuilder';
 import { InstanceRegistrationBuilder } from './InstanceRegistrationBuilder';
 import { TypeRegistrationBuilder } from './TypeRegistrationBuilder';
 

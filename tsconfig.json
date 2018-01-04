@@ -26,5 +26,9 @@
     },
     "typeAcquisition": {
         "enable": true
-    }
+    },
+    "include": [
+        "src/**/*",
+        "test/**/*"
+    ]
 }

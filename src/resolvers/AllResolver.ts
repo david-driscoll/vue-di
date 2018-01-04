@@ -5,9 +5,9 @@ import { Resolver } from "./../types";
  *
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
-import { Container, IContainer } from '../container/Container';
+import { Container } from '../container/Container';
 import { resolver } from '../protocol/resolver';
-import { Key } from '../types';
+import { IContainer, Key } from '../types';
 
 /**
  * Used to allow functions/classes to specify resolution of all matches to a key.

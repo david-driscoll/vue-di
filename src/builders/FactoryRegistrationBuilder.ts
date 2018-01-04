@@ -1,9 +1,7 @@
-import { Container, IContainer } from '../container/Container';
+import { Container } from '../container/Container';
 import { Strategy } from '../resolvers/StrategyResolver';
-import { Resolver, Key } from '../types';
+import { FactoryMethod, Key, Resolver } from '../types';
 import { RegistrationBuilderBase } from './RegistrationBuilderBase';
-
-export type FactoryMethod<T> = (container: IContainer, key?: Key<T>) => T;
 
 class RegistrationFactoryResolver implements Resolver<any> {
     public strategy = Strategy.Instance;

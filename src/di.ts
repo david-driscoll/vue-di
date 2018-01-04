@@ -1,25 +1,22 @@
 import Vue from 'vue';
 
-import * as resolvers from './resolvers';
 import { Builder } from './builders';
-import { Container, IContainer, IContainerConfiguration } from './container';
+import { Container, IContainerConfiguration } from './container';
 import * as decorators from './decorators';
 import { install } from './plugin';
 import { IRegistration } from './registration/Registration';
-import { Key } from './types';
+import { IContainer, Key } from './types';
 
 export * from './decorators';
-export * from './resolvers';
 export * from './protocol/protocol';
 export * from './types';
 
-// export default {
-//     Builder,
-//     Container,
-//     install,
-//     ...decorators,
-//     ...resolvers,
-// };
+export default {
+    Builder,
+    Container,
+    install,
+    ...decorators,
+};
 
 export {
     Builder,
