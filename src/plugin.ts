@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { CompositeDisposable, Disposable, isDisposable } from 'ts-disposables';
 import Vue, { VueConstructor } from 'vue';
+import { InjectOptions } from 'vue/types/options';
 import { Container } from './container';
 import { isResolver, Resolver } from './types';
 
@@ -8,37 +9,69 @@ export function install(innerVue: any, options: any) {
     const Vue: VueConstructor = innerVue;
     (Vue.container = new Container()).makeGlobal();
 
+    function resolveValue(
+        instance: Vue,
+        container: Container,
+        disposable: CompositeDisposable,
+        name: string | symbol,
+        resolverOrType: any
+    ) {
+        let value: any;
+        if (isResolver(resolverOrType)) {
+            value = resolverOrType.get(container, undefined as any);
+        } else {
+            value = container.get(resolverOrType);
+        }
+
+        if (value && isDisposable(value)) {
+            disposable.add(value);
+        }
+
+        Object.defineProperty(instance, name, {
+            enumerable: true,
+            configurable: false,
+            writable: false,
+            value,
+        });
+    }
+
     function getDependencies(
         instance: Vue,
         container: Container,
         disposable: CompositeDisposable,
         dependencies:
-            | { [key: string]: symbol | string | { new (...args: any[]): any } | Resolver<any> }
-            | undefined
+            | { [key: string]: symbol | string | { new(...args: any[]): any } | Resolver<any> }
     ) {
-        if (!dependencies) return;
-
         for (const key in dependencies) {
             if (dependencies.hasOwnProperty(key)) {
                 // tslint:disable-next-line:no-non-null-assertion
                 const resolverOrType = dependencies[key];
-                let value: any;
-                if (isResolver(resolverOrType)) {
-                    value = resolverOrType.get(container, key);
-                } else {
-                    value = container.get(dependencies[key]);
-                }
+                resolveValue(instance, container, disposable, key, resolverOrType);
+            }
+        }
+    }
 
-                if (value && isDisposable(value)) {
-                    disposable.add(value);
-                }
+    function getInjections(
+        instance: Vue,
+        container: Container,
+        disposable: CompositeDisposable,
+        dependencies: InjectOptions
+    ) {
+        if (Array.isArray(dependencies)) {
+            return;
+        }
 
-                Object.defineProperty(instance, key, {
-                    enumerable: true,
-                    configurable: false,
-                    writable: false,
-                    value,
-                });
+        // tslint:disable-next-line:forin
+        for (const key in dependencies) {
+            const dep = dependencies[key];
+            if (typeof dep !== 'symbol' && typeof dep !== 'string') {
+                if (dep.from) {
+                    if (container.hasHandler(dep.from) || typeof dep.from === 'function') {
+                        resolveValue(instance, container, disposable, key, dep.from);
+                        delete dependencies[key];
+                        continue;
+                    }
+                }
             }
         }
     }
@@ -79,7 +112,12 @@ export function install(innerVue: any, options: any) {
                 disposable.add(container);
             }
 
-            getDependencies(this, container, disposable, this.$options.dependencies);
+            if (this.$options.dependencies) {
+                getDependencies(this, container, disposable, this.$options.dependencies);
+            }
+            if (this.$options.inject) {
+                getInjections(this, container, disposable, this.$options.inject);
+            }
         },
         destroyed(this: { container: Container }) {
             (this as any)['__$disposable'].dispose();

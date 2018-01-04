@@ -43,20 +43,6 @@ describe('pluginTests', () => {
         NewVue.container.autoRegister.should.not.be.null;
     });
 
-    it('should setup dependendcies', () => {
-        const NewVue = createLocalVue();
-        NewVue.use(VueContainer);
-
-        const vm: any = new NewVue({
-            dependencies: {
-                things: Item /*?*/,
-            },
-        });
-
-        vm.things.should.not.be.null;
-        vm.things.stuff.value.should.be.eq(123);
-    });
-
     it('should register services', () => {
         const NewVue = createLocalVue();
         NewVue.use(VueContainer);
@@ -66,87 +52,203 @@ describe('pluginTests', () => {
         });
     });
 
-    it('should work with child components (and use $parent)', () => {
-        const NewVue = createLocalVue();
-        NewVue.use(VueContainer);
+    describe('using dependencies', () => {
+        it('should setup dependendcies', () => {
+            const NewVue = createLocalVue();
+            NewVue.use(VueContainer);
 
-        const item = mount(
-            {
-                template: '<div>test123 <child-vue></child-vue></div>',
+            const vm: any = new NewVue({
                 dependencies: {
-                    things: DisposableItem,
+                    things: Item /*?*/,
                 },
-                components: {
-                    'child-vue': {
-                        dependencies: {
-                            things: Item,
+            });
+
+            vm.things.should.not.be.null;
+            vm.things.stuff.value.should.be.eq(123);
+        });
+
+        it('should work with child components (and use $parent)', () => {
+            const NewVue = createLocalVue();
+            NewVue.use(VueContainer);
+
+            const item = mount(
+                {
+                    template: '<div>test123 <child-vue></child-vue></div>',
+                    dependencies: {
+                        things: DisposableItem,
+                    },
+                    components: {
+                        'child-vue': {
+                            dependencies: {
+                                things: Item,
+                            },
+                            template: '<div>hello world</div>',
                         },
-                        template: '<div>hello world</div>',
                     },
                 },
-            },
-            { localVue: NewVue }
-        );
+                { localVue: NewVue }
+            );
 
-        (item.vm.$children[0] as any).things.stuff.value.should.be.eq(123);
+            (item.vm.$children[0] as any).things.stuff.value.should.be.eq(123);
+        });
+
+        it('should dispose of items', () => {
+            const NewVue = createLocalVue();
+            NewVue.use(VueContainer);
+
+            const item = mount(
+                {
+                    template: '<div>test123 <child-vue></child-vue></div>',
+                    createChildContainer: true,
+                    dependencies: {
+                        things: DisposableItem,
+                    },
+                    components: {
+                        'child-vue': {
+                            dependencies: {
+                                things: DisposableItem,
+                            },
+                            template: '<div>hello world</div>',
+                        },
+                    },
+                },
+                { localVue: NewVue }
+            );
+
+            const things: DisposableItem = (item.vm.$children[0] as any).things;
+            things.stuff.value.should.be.eq(123);
+
+            item.destroy();
+
+            things._disposed.should.be.true;
+        });
+
+        it('should only have a container on an instance that has dependencies', () => {
+            const NewVue = createLocalVue();
+            NewVue.use(VueContainer);
+
+            const item = mount(
+                {
+                    template: '<div>test123 <child-vue></child-vue></div>',
+                    components: {
+                        'child-vue': {
+                            // createChildContainer: true,
+                            dependencies: {
+                                things: DisposableItem,
+                            },
+                            template: '<div>hello world</div>',
+                        },
+                    },
+                },
+                { localVue: NewVue }
+            );
+
+            const things: DisposableItem = (item.vm.$children[0] as any).things;
+            things.stuff.value.should.be.eq(123);
+
+            item.destroy();
+
+            things._disposed.should.be.true;
+        });
     });
 
-    it('should dispose of items', () => {
-        const NewVue = createLocalVue();
-        NewVue.use(VueContainer);
+    describe('using inject', () => {
+        it('should setup dependendcies', () => {
+            const NewVue = createLocalVue();
+            NewVue.use(VueContainer);
 
-        const item = mount(
-            {
-                template: '<div>test123 <child-vue></child-vue></div>',
-                createChildContainer: true,
-                dependencies: {
-                    things: DisposableItem,
+            const vm: any = new NewVue({
+                inject: {
+                    things: <any>Item /*?*/,
                 },
-                components: {
-                    'child-vue': {
-                        dependencies: {
-                            things: DisposableItem,
+            });
+
+            vm.things.should.not.be.null;
+            vm.things.stuff.value.should.be.eq(123);
+        });
+
+        it('should work with child components (and use $parent)', () => {
+            const NewVue = createLocalVue();
+            NewVue.use(VueContainer);
+
+            const item = mount(
+                {
+                    template: '<div>test123 <child-vue></child-vue></div>',
+                    inject: {
+                        things: <any>DisposableItem,
+                    },
+                    components: {
+                        'child-vue': {
+                            inject: {
+                                things: <any>Item,
+                            },
+                            template: '<div>hello world</div>',
                         },
-                        template: '<div>hello world</div>',
                     },
                 },
-            },
-            { localVue: NewVue }
-        );
+                { localVue: NewVue }
+            );
 
-        const things: DisposableItem = (item.vm.$children[0] as any).things;
-        things.stuff.value.should.be.eq(123);
+            (item.vm.$children[0] as any).things.stuff.value.should.be.eq(123);
+        });
 
-        item.destroy();
+        it('should dispose of items', () => {
+            const NewVue = createLocalVue();
+            NewVue.use(VueContainer);
 
-        things._disposed.should.be.true;
-    });
-
-    it('should only have a container on an instance that has dependencies', () => {
-        const NewVue = createLocalVue();
-        NewVue.use(VueContainer);
-
-        const item = mount(
-            {
-                template: '<div>test123 <child-vue></child-vue></div>',
-                components: {
-                    'child-vue': {
-                        // createChildContainer: true,
-                        dependencies: {
-                            things: DisposableItem,
+            const item = mount(
+                {
+                    template: '<div>test123 <child-vue></child-vue></div>',
+                    createChildContainer: true,
+                    inject: {
+                        things: <any>DisposableItem,
+                    },
+                    components: {
+                        'child-vue': {
+                            inject: {
+                                things: <any>DisposableItem,
+                            },
+                            template: '<div>hello world</div>',
                         },
-                        template: '<div>hello world</div>',
                     },
                 },
-            },
-            { localVue: NewVue }
-        );
+                { localVue: NewVue }
+            );
 
-        const things: DisposableItem = (item.vm.$children[0] as any).things;
-        things.stuff.value.should.be.eq(123);
+            const things: DisposableItem = (item.vm.$children[0] as any).things;
+            things.stuff.value.should.be.eq(123);
 
-        item.destroy();
+            item.destroy();
 
-        things._disposed.should.be.true;
+            things._disposed.should.be.true;
+        });
+
+        it('should only have a container on an instance that has dependencies', () => {
+            const NewVue = createLocalVue();
+            NewVue.use(VueContainer);
+
+            const item = mount(
+                {
+                    template: '<div>test123 <child-vue></child-vue></div>',
+                    components: {
+                        'child-vue': {
+                            // createChildContainer: true,
+                            inject: {
+                                things: <any>DisposableItem,
+                            },
+                            template: '<div>hello world</div>',
+                        },
+                    },
+                },
+                { localVue: NewVue }
+            );
+
+            const things: DisposableItem = (item.vm.$children[0] as any).things;
+            things.stuff.value.should.be.eq(123);
+
+            item.destroy();
+
+            things._disposed.should.be.true;
+        });
     });
 });
