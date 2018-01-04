@@ -43,4 +43,22 @@ describe('Lazy property decorator', () => {
         const wrapper = mount<MyComponent>(MyComponent);
         wrapper.vm.service().should.not.be.eq(wrapper.vm.service());
     });
+
+    it('should work with a transient service /2', () => {
+        const NewVue = createLocalVue();
+        NewVue.use(VueContainer);
+
+        @transient()
+        class Service {
+            public value = 1;
+        }
+
+        @Component
+        class MyComponent extends NewVue {
+            @lazy(Service) public service: () => Service;
+        }
+
+        const wrapper = mount<MyComponent>(MyComponent);
+        wrapper.vm.service().should.not.be.eq(wrapper.vm.service());
+    });
 });
