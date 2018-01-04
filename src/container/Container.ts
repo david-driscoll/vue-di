@@ -311,7 +311,7 @@ export class Container implements IContainer {
             return registration.registerResolver(this, key, fn);
         }
 
-        return this.registerResolver(key, new StrategyResolver(Strategy.Instance, fn));
+        throw new Error('Cannot auto register a non method');
     }
 
     /**
@@ -510,11 +510,7 @@ export class Container implements IContainer {
             classInvokers[dependencies.length] ||
             classInvokers.fallback;
 
-            invoker;
-
         const handler = new InvocationHandler(fn, invoker, dependencies);
-        handler;
-        this._onHandlerCreated /*?*/
 
         return this._onHandlerCreated != null ? this._onHandlerCreated(handler) : handler;
     }
