@@ -4,7 +4,7 @@
  *
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
-import { protocol } from '../protocol/protocol';
+import { protocol } from './protocol';
 
 /**
  * Decorator: Indicates that the decorated class/object is a custom resolver.

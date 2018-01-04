@@ -1,11 +1,12 @@
 /**
+import { Resolver } from "./../types";
  * The MIT License (MIT)
  * https://github.com/aurelia/dependency-injection
  *
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
-import { Container } from '../container/Container';
-import { resolver } from '../decorators/resolver';
+import { Container, IContainer } from '../container/Container';
+import { resolver } from '../protocol/resolver';
 import { Key } from '../types';
 
 /**
@@ -38,7 +39,7 @@ export class AllResolver<T = any> {
      * @param container The container to resolve from.
      * @return Returns an array of all matching instances.
      */
-    public get(container: Container) {
+    public get(container: IContainer, key: Key<T>): any {
         return container.getAll(this._key);
     }
 }

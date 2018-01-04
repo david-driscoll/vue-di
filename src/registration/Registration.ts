@@ -5,8 +5,7 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { Container } from '../container/Container';
-import { IResolver } from '../resolvers/Resolver';
-import { Key } from '../types';
+import { Resolver, Key } from '../types';
 
 /**
  * Customizes how a particular function is resolved by the Container.
@@ -19,5 +18,5 @@ export interface IRegistration<T> {
      * @param fn The function to create the resolver for.
      * @return The resolver that was registered.
      */
-    registerResolver(container: Container, key: Key<T>, fn: Function): IResolver<T>;
+    registerResolver(container: Container, key: Key<T>, fn: Function): Resolver<T>;
 }

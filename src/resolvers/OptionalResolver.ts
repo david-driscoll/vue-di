@@ -5,16 +5,15 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { Container } from '../container/Container';
-import { resolver } from '../decorators/resolver';
-import { Key } from '../types';
-import { IResolver } from './Resolver';
+import { resolver } from '../protocol/resolver';
+import { Resolver, Key } from '../types';
 
 /**
  * Used to allow functions/classes to specify an optional dependency, which will be resolved
  *      only if already registred with the container.
  */
 @resolver
-export class OptionalResolver<T = any> implements IResolver<T> {
+export class OptionalResolver<T = any> implements Resolver<T> {
     /**
      * Creates an Optional Resolver for the supplied key.
      * @param key The key to optionally resolve for.

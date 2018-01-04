@@ -1,11 +1,11 @@
 import 'reflect-metadata';
 import Vue, { ComponentOptions } from 'vue';
-import { IResolver } from '../resolvers/Resolver';
+import constants from '../constants';
+import { Resolver, Key } from '../types';
 import { getDecoratorDependencies } from './getDecoratorDependencies';
 import { createVueDecorator } from './shim-component-decorators';
-import constants from '../constants';
 
-export function decorateParameterOrProperty(resolver: (type: any) => IResolver<any>, name: string) {
+export function decorateParameterOrProperty(resolver: (type: any) => Resolver<any>, name: string) {
     return (target: Object, propertyOrParameterName: string | symbol, index?: number) => {
         if (typeof index === 'number') {
             const params = getDecoratorDependencies(target, name);

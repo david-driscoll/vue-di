@@ -11,7 +11,7 @@ import { IRegistration } from '../registration/Registration';
 /**
  * Decorator: Specifies a custom registration strategy for the decorated class/function.
  */
-export function registration(value: IRegistration) {
+export function registration(value: IRegistration<any>) {
     return (target: any) => {
         Reflect.defineMetadata(constants.registration, value, target);
     };

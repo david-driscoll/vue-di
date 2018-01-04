@@ -5,9 +5,8 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { Container } from '../container/Container';
-import { resolver } from '../decorators/resolver';
-import { Key } from '../types';
-import { IResolver } from './Resolver';
+import { resolver } from '../protocol/resolver';
+import { Resolver, Key } from '../types';
 
 export enum Strategy {
     Unset = -1,
@@ -20,7 +19,7 @@ export enum Strategy {
 }
 
 @resolver
-export class StrategyResolver<T = any> implements IResolver<T> {
+export class StrategyResolver<T = any> implements Resolver<T> {
     public strategy: StrategyResolver<T> | Strategy;
     public state: any;
 

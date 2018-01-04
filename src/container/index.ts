@@ -1,3 +1,2 @@
-export { Container } from './Container';
+export { Container, IContainer } from './Container';
 export { IContainerConfiguration } from './ContainerConfiguration';
-export { IContainer } from './IContainer';

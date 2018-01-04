@@ -1,14 +1,13 @@
 import { Container } from '../container/Container';
-import { Key } from '../types';
-import { IResolver } from '../resolvers/index';
+import { Key, Resolver } from '../types';
 
 function alwaysValid() {
     return true;
 }
 function noCompose() {}
 
-type ValidateMethod = ((target: any) => string | boolean);
-type ComposeMethod = (target: any) => void;
+export type ValidateMethod = ((target: any) => string | boolean);
+export type ComposeMethod = (target: any) => void;
 
 // tslint:disable:no-parameter-reassignment
 function ensureProtocolOptions(
@@ -54,7 +53,7 @@ function createProtocolAsserter(name: string, validate: ValidateMethod) {
 /**
  * Options used during protocol creation.
  */
-interface IProtocolOptions {
+export interface IProtocolOptions {
     /**
      * A function that will be run to validate the decorated class when the protocol is applied. It is also used to
      *      validate adhoc instances.
@@ -108,7 +107,7 @@ export const protocol: {
 } as any;
 
 export type ProtocolDecorator = ClassDecorator & (() => ClassDecorator) & {
-    decorates(target: any): target is IResolver<any>;
+    decorates(target: any): target is Resolver<any>;
     validate(target: any): boolean;
     assert(target: any): void;
 };

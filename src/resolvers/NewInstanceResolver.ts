@@ -5,9 +5,8 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { Container } from '../container/Container';
-import { resolver } from '../decorators/resolver';
-import { Key } from '../types';
-import { IResolver } from './Resolver';
+import { resolver } from '../protocol/resolver';
+import { Resolver, Key } from '../types';
 
 /**
  * Used to inject a new instance of a dependency, without regard for existing
@@ -15,7 +14,7 @@ import { IResolver } from './Resolver';
  * under a different key by supplying a key using the `as` method.
  */
 @resolver
-export class NewInstanceResolver<T = any> implements IResolver<T> {
+export class NewInstanceResolver<T = any> implements Resolver<T> {
     /**
      * Creates an NewInstance Resolver for the supplied key.
      * @param key The key to resolve/instantiate.

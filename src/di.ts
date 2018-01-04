@@ -1,53 +1,34 @@
 import Vue from 'vue';
 
-import {
-    all,
-    autoinject,
-    factory,
-    lazy,
-    newInstance,
-    optional,
-    parent,
-    registration,
-    resolve,
-    singleton,
-    transient,
-} from './decorators';
+import * as resolvers from './resolvers';
+import { Builder } from './builders';
+import { Container, IContainer, IContainerConfiguration } from './container';
+import * as decorators from './decorators';
 import { install } from './plugin';
+import { IRegistration } from './registration/Registration';
 import { Key } from './types';
-import { Container } from './container';
 
-export default {
-    install,
-    all,
-    autoinject,
-    factory,
-    lazy,
-    newInstance,
-    optional,
-    parent,
-    registration,
-    resolve,
-    singleton,
-    transient,
-};
+export * from './decorators';
+export * from './resolvers';
+export * from './protocol/protocol';
+export * from './types';
+
+// export default {
+//     Builder,
+//     Container,
+//     install,
+//     ...decorators,
+//     ...resolvers,
+// };
 
 export {
-    all,
-    autoinject,
-    factory,
-    lazy,
-    newInstance,
-    optional,
-    parent,
-    registration,
-    resolve,
-    singleton,
-    transient,
+    Builder,
+    Container,
+    IContainerConfiguration,
+    IContainer,
+    IRegistration,
+    install,
 };
-
-export { Container, IContainerConfiguration } from './container';
-export { Factory, Key } from './types';
 
 
 declare module 'vue/types/vue' {

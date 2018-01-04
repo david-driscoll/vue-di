@@ -7,15 +7,14 @@
 import 'reflect-metadata';
 import { AggregateError } from '../AggregateError';
 import constants from '../constants';
-import { resolver as resolverDeco } from '../decorators/resolver';
 import { Invoker } from '../invokers/Invoker';
-import { IResolver } from '../resolvers/Resolver';
+import { resolver as resolverDeco } from '../protocol/resolver';
+import { IRegistration } from '../registration/Registration';
 import { Strategy, StrategyResolver } from '../resolvers/StrategyResolver';
-import { Key } from '../types';
+import { Key, Resolver } from '../types';
+import { IContainer } from './Container';
 import { IContainerConfiguration } from './ContainerConfiguration';
 import { InvocationHandler } from './InvocationHandler';
-import { IContainer } from './IContainer';
-import { IRegistration } from '../registration/Registration';
 
 export const _emptyParameters = Object.freeze<any>([]);
 
@@ -133,6 +132,29 @@ function getDependencies(f: object) {
     return f.inject;
 }
 
+export interface IContainer {
+    /**
+     * Resolves a single instance based on the provided key.
+     * @param key The key that identifies the object to resolve.
+     * @return Returns the resolved instance.
+     */
+    get<T>(key: Key<T>): T;
+
+    /**
+     * Resolves all instance registered under the provided key.
+     * @param key The key that identifies the objects to resolve.
+     * @return Returns an array of the resolved instances.
+     */
+    getAll<T>(key: Key<T>): ReadonlyArray<T>;
+    /**
+     * Invokes a function, recursively resolving its dependencies.
+     * @param fn The function to invoke with the auto-resolved dependencies.
+     * @param dynamicDependencies Additional function dependencies to use during invocation.
+     * @return Returns the instance resulting from calling the function.
+     */
+    invoke<T>(fn: Function, dynamicDependencies?: any[]): T;
+}
+
 /**
  * A lightweight, extensible dependency injection container.
  */
@@ -155,7 +177,7 @@ export class Container implements IContainer {
     private _configuration: IContainerConfiguration;
     private _onHandlerCreated?: (handler: InvocationHandler) => InvocationHandler;
     private _handlers: Map<any, any>;
-    private _resolvers: Map<any, IResolver<any>>;
+    private _resolvers: Map<any, Resolver<any>>;
 
     /**
      * Creates an instance of Container.
@@ -203,7 +225,7 @@ export class Container implements IContainer {
      *                  value when instance is not supplied.
      * @return The resolver that was registered.
      */
-    public registerInstance<T>(key: Key<T>, instance?: any): IResolver<T> {
+    public registerInstance<T>(key: Key<T>, instance?: any): Resolver<T> {
         return this.registerResolver(
             key,
             new StrategyResolver(Strategy.Instance, instance === undefined ? key : instance)
@@ -218,7 +240,7 @@ export class Container implements IContainer {
      *              to the key value when fn is not supplied.
      * @return The resolver that was registered.
      */
-    public registerSingleton<T>(key: Key<T>, fn?: Function): IResolver<T> {
+    public registerSingleton<T>(key: Key<T>, fn?: Function): Resolver<T> {
         return this.registerResolver(
             key,
             new StrategyResolver(Strategy.Singleton, fn === undefined ? key : fn)
@@ -232,7 +254,7 @@ export class Container implements IContainer {
      *              the key value when fn is not supplied.
      * @return The resolver that was registered.
      */
-    public registerTransient<T>(key: Key<T>, fn?: Function): IResolver<T> {
+    public registerTransient<T>(key: Key<T>, fn?: Function): Resolver<T> {
         return this.registerResolver(
             key,
             new StrategyResolver(Strategy.Transient, fn === undefined ? key : fn)
@@ -248,8 +270,8 @@ export class Container implements IContainer {
      */
     public registerHandler<T>(
         key: Key<T>,
-        handler: (container?: Container, key?: any, resolver?: IResolver<T>) => any
-    ): IResolver<T> {
+        handler: (container?: Container, key?: any, resolver?: Resolver<T>) => any
+    ): Resolver<T> {
         return this.registerResolver(key, new StrategyResolver(Strategy.Function, handler));
     }
 
@@ -259,7 +281,7 @@ export class Container implements IContainer {
      * @param aliasKey An alternate key which can also be used to resolve the same dependency  as the original.
      * @return The resolver that was registered.
      */
-    public registerAlias<T>(originalKey: Key<T>, aliasKey: Key<T>): IResolver<T> {
+    public registerAlias<T>(originalKey: Key<T>, aliasKey: Key<T>): Resolver<T> {
         return this.registerResolver(aliasKey, new StrategyResolver(Strategy.Alias, originalKey));
     }
 
@@ -270,7 +292,7 @@ export class Container implements IContainer {
      * @param resolver The resolver to use when the dependency is needed.
      * @return The resolver that was registered.
      */
-    public registerResolver<T>(key: Key<T>, resolver: IResolver<T>): IResolver<T> {
+    public registerResolver<T>(key: Key<T>, resolver: Resolver<T>): Resolver<T> {
         validateKey(key);
 
         const allResolvers = this._resolvers;
@@ -294,10 +316,10 @@ export class Container implements IContainer {
      * @param fn The constructor function to use when the dependency needs to be instantiated.
      *      This defaults to the key value when fn is not supplied.
      */
-    public autoRegister<T>(key: Key<T>): IResolver<T>;
+    public autoRegister<T>(key: Key<T>): Resolver<T>;
     // tslint:disable-next-line:unified-signatures
-    public autoRegister<T>(key: Key<T>, fn: Function): IResolver<T>;
-    public autoRegister<T>(key: Key<T>, fn?: any): IResolver<T> {
+    public autoRegister<T>(key: Key<T>, fn: Function): Resolver<T>;
+    public autoRegister<T>(key: Key<T>, fn?: any): Resolver<T> {
         // tslint:disable-next-line:no-parameter-reassignment
         fn = fn === undefined ? key : fn;
 
@@ -355,7 +377,7 @@ export class Container implements IContainer {
      * @return Returns the resolver, if registred, otherwise undefined.
      */
     public getResolver<T>(key: Key<T>) {
-        return this._resolvers.get(key) as IResolver<T>;
+        return this._resolvers.get(key) as Resolver<T>;
     }
 
     /**
@@ -378,7 +400,7 @@ export class Container implements IContainer {
 
         if (resolver === undefined) {
             if (this.parent == null) {
-                return this.autoRegister(key).get(this, key);
+                return this.autoRegister<T>(key).get(this, key);
             }
 
             const registration = Reflect.getMetadata(constants.registration, key) as IRegistration<T>;

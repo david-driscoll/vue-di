@@ -5,8 +5,7 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { Container } from '../container/Container';
-import { IResolver } from '../resolvers/Resolver';
-import { Key } from '../types';
+import { Resolver, Key } from '../types';
 import { IRegistration } from './Registration';
 
 /**
@@ -39,7 +38,7 @@ export class SingletonRegistration<T = any> implements IRegistration<T> {
      * @param fn The function to create the resolver for.
      * @return The resolver that was registered.
      */
-    public registerResolver(container: Container, key: Key<T>, fn: Function): IResolver<T> {
+    public registerResolver(container: Container, key: Key<T>, fn: Function): Resolver<T> {
         const targetContainer = this._registerInChild ? container : container.root;
         const existingResolver = targetContainer.getResolver(this._key || key);
 

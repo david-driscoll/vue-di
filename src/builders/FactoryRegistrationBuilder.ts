@@ -1,13 +1,11 @@
-import { Container } from '../container/Container';
-import { IContainer } from '../container/IContainer';
-import { IResolver } from '../resolvers/Resolver';
+import { Container, IContainer } from '../container/Container';
 import { Strategy } from '../resolvers/StrategyResolver';
-import { Key } from '../types';
+import { Resolver, Key } from '../types';
 import { RegistrationBuilderBase } from './RegistrationBuilderBase';
 
 export type FactoryMethod<T> = (container: IContainer, key?: Key<T>) => T;
 
-class RegistrationFactoryResolver implements IResolver<any> {
+class RegistrationFactoryResolver implements Resolver<any> {
     public strategy = Strategy.Instance;
     private instance: any;
     public constructor(private readonly factory: FactoryMethod<any>) { }
@@ -25,7 +23,7 @@ class RegistrationFactoryResolver implements IResolver<any> {
     }
 }
 
-export class FactoryRegistrationBuilder<T> extends RegistrationBuilderBase<T, RegistrationFactoryResolver> {
+export class FactoryRegistrationBuilder<T> extends RegistrationBuilderBase<T> {
     public constructor(
         container: Container,
         factory: FactoryMethod<T>
