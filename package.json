@@ -1,6 +1,6 @@
 {
     "name": "vue-di",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "Dependency injection for Vue using a derived Aurelia container",
     "main": "dist/vue-di.cjs.js",
     "module": "dist/rollup-plugin-typescript.es.js",
