@@ -16,3 +16,5 @@ export function resolve(targetOrKey?: Object | Key<any>, propertyKey?: string | 
 
     return deco()(targetOrKey!, propertyKey);
 }
+
+export const inject = resolve;

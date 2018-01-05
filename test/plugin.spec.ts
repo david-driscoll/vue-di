@@ -1,8 +1,10 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { DisposableBase, IDisposable } from 'ts-disposables';
+import Component from 'vue-class-component';
+import { Inject } from 'vue-property-decorator';
 import { createLocalVue, mount } from 'vue-test-utils';
-import { autoinject, lazy } from '../src/decorators';
+import { autoinject, lazy, resolve, singleton } from '../src/decorators';
 // tslint:disable:max-classes-per-file
 
 import VueContainer from '../src/di';
@@ -150,6 +152,26 @@ describe('pluginTests', () => {
 
             things._disposed.should.be.true;
         });
+
+        it('should work with resolve attributes', () => {
+            const NewVue = createLocalVue();
+            NewVue.use(VueContainer);
+
+            @singleton
+            class Service {
+                public value = 1;
+            }
+
+            @Component
+            class MyComponent2 extends NewVue {
+                @resolve() public service: Service;
+            }
+
+            const wrapper2a = mount<MyComponent2>(MyComponent2);
+            const wrapper2b = mount<MyComponent2>(MyComponent2);
+
+            wrapper2b.vm.service.should.be.eq(wrapper2a.vm.service);
+        });
     });
 
     describe('using inject', () => {
@@ -249,6 +271,48 @@ describe('pluginTests', () => {
             item.destroy();
 
             things._disposed.should.be.true;
+        });
+
+        it('should work with resolve attributes', () => {
+            const NewVue = createLocalVue();
+            NewVue.use(VueContainer);
+
+            @singleton
+            class Service {
+                public value = 1;
+            }
+
+            @Component
+            class MyComponent2 extends NewVue {
+                @Inject(Service as any) public service: Service;
+            }
+
+            const wrapper2a = mount<MyComponent2>(MyComponent2);
+            const wrapper2b = mount<MyComponent2>(MyComponent2);
+
+            wrapper2b.vm.service.should.be.eq(wrapper2a.vm.service);
+        });
+
+        it('should work with resolve attributes and symbol', () => {
+            const NewVue = createLocalVue();
+            NewVue.use(VueContainer);
+
+            class Service {
+                public value = 1;
+            }
+
+            const symbol = Symbol(Service.toString());
+            NewVue.container.registerSingleton(symbol, Service);
+
+            @Component
+            class MyComponent2 extends NewVue {
+                @Inject(symbol) public service: Service;
+            }
+
+            const wrapper2a = mount<MyComponent2>(MyComponent2);
+            const wrapper2b = mount<MyComponent2>(MyComponent2);
+
+            wrapper2b.vm.service.should.be.eq(wrapper2a.vm.service);
         });
     });
 });
