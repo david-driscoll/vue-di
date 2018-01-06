@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { CompositeDisposable, Disposable, isDisposable } from 'ts-disposables';
+import { CompositeDisposable, isDisposable } from 'ts-disposables';
 import Vue, { VueConstructor } from 'vue';
 import { InjectOptions } from 'vue/types/options';
 import { Container } from './container';

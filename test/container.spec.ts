@@ -1,7 +1,17 @@
 import { expect } from 'chai';
 import { __decorate } from 'tslib';
 import { Container } from '../src/container/Container';
-import { all, autoinject, factory, lazy, newInstance, optional, parent, singleton, transient } from '../src/decorators';
+import {
+    all,
+    autoinject,
+    factory,
+    lazy,
+    newInstance,
+    optional,
+    parent,
+    singleton,
+    transient,
+} from '../src/decorators';
 import { inject } from '../src/decorators/inject';
 import { AllResolver } from '../src/resolvers/AllResolver';
 import { FactoryResolver } from '../src/resolvers/FactoryResolver';
@@ -14,7 +24,7 @@ import { Factory } from '../src/types';
 describe('container', () => {
     describe('injection', () => {
         it('instantiates class without injected services', () => {
-            class App { }
+            class App {}
 
             const container = new Container();
             const app = container.get(App);
@@ -23,10 +33,12 @@ describe('container', () => {
         });
 
         it('uses static inject method (ES6)', () => {
-            class Logger { }
+            class Logger {}
 
             class App {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
@@ -38,7 +50,7 @@ describe('container', () => {
         });
 
         it('uses static inject property (TypeScript,CoffeeScript,ES5)', () => {
-            class Logger { }
+            class Logger {}
 
             class App {
                 public constructor(public logger: Logger) {
@@ -56,12 +68,14 @@ describe('container', () => {
     });
 
     describe('inheritence', () => {
-        class Service { }
-        class Logger { }
+        class Service {}
+        class Logger {}
 
         it('loads dependencies for the parent class', () => {
             class ParentApp {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
@@ -80,11 +94,13 @@ describe('container', () => {
 
         it('loads dependencies for the child class', () => {
             class ParentApp {
-                public constructor(rest: any[]) { }
+                public constructor(rest: any[]) {}
             }
 
             class ChildApp extends ParentApp {
-                public static inject() { return [Service]; }
+                public static inject() {
+                    return [Service];
+                }
                 public constructor(public service: Service, ...rest: any[]) {
                     super(rest);
                     this.service = service;
@@ -98,14 +114,18 @@ describe('container', () => {
 
         it('loads dependencies for both classes', () => {
             class ParentApp {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
             }
 
             class ChildApp extends ParentApp {
-                public static inject() { return [Service]; }
+                public static inject() {
+                    return [Service];
+                }
                 public constructor(public service: Service, ...rest: any[]) {
                     super(rest[0]);
                     this.service = service;
@@ -119,22 +139,19 @@ describe('container', () => {
         });
     });
 
-
     describe('autoinject', () => {
-        class Logger { }
-        class Service { }
-        class SubService1 { }
-        class SubService2 { }
+        class Logger {}
+        class Service {}
+        class SubService1 {}
+        class SubService2 {}
 
         it('loads dependencies in tree classes', () => {
-
             @autoinject
             class ParentApp {
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
             }
-
 
             @autoinject
             class ChildApp extends ParentApp {
@@ -146,7 +163,11 @@ describe('container', () => {
 
             @autoinject
             class SubChildApp1 extends ChildApp {
-                public constructor(public subService1: SubService1, service: Service, logger: Logger) {
+                public constructor(
+                    public subService1: SubService1,
+                    service: Service,
+                    logger: Logger
+                ) {
                     super(service, logger);
                     this.subService1 = subService1;
                 }
@@ -154,18 +175,25 @@ describe('container', () => {
 
             @autoinject
             class SubChildApp2 extends ChildApp {
-                public constructor(public subService2: SubService2, service: Service, logger: Logger) {
+                public constructor(
+                    public subService2: SubService2,
+                    service: Service,
+                    logger: Logger
+                ) {
                     super(service, logger);
                     this.subService2 = subService2;
                 }
             }
 
-            class SubChildApp3 extends ChildApp {
-            }
+            class SubChildApp3 extends ChildApp {}
 
             @autoinject
             class SubChildApp4 extends ChildApp {
-                public constructor(public logger: Logger, public subService1: SubService1, public service: Service) {
+                public constructor(
+                    public logger: Logger,
+                    public subService1: SubService1,
+                    public service: Service
+                ) {
                     super(service, logger);
                     this.subService1 = subService1;
                 }
@@ -224,7 +252,7 @@ describe('container', () => {
         });
 
         it('automatically configures as singleton', () => {
-            class Logger { }
+            class Logger {}
 
             class App1 {
                 public constructor(public logger: Logger) {
@@ -250,7 +278,7 @@ describe('container', () => {
         });
 
         it('configures singleton via api', () => {
-            class Logger { }
+            class Logger {}
 
             class App1 {
                 public constructor(public logger: Logger) {
@@ -278,17 +306,22 @@ describe('container', () => {
         });
 
         it('configures singleton via decorators helper (ES5/6)', () => {
-            @singleton class Logger { }
+            @singleton
+            class Logger {}
 
             class App1 {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
             }
 
             class App2 {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
@@ -302,17 +335,21 @@ describe('container', () => {
         });
 
         it('configures transient (non singleton) via api', () => {
-            class Logger { }
+            class Logger {}
 
             class App1 {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
             }
 
             class App2 {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
@@ -328,17 +365,22 @@ describe('container', () => {
         });
 
         it('configures transient (non singleton) via metadata method (ES5/6)', () => {
-            @transient class Logger { }
+            @transient
+            class Logger {}
 
             class App1 {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
             }
 
             class App2 {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
@@ -352,17 +394,21 @@ describe('container', () => {
         });
 
         it('configures instance via api', () => {
-            class Logger { }
+            class Logger {}
 
             class App1 {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
             }
 
             class App2 {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
@@ -380,17 +426,21 @@ describe('container', () => {
         });
 
         it('configures custom via api', () => {
-            class Logger { }
+            class Logger {}
 
             class App1 {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
             }
 
             class App2 {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
@@ -407,21 +457,24 @@ describe('container', () => {
         });
 
         it('uses base metadata method (ES5/6) when derived does not specify', () => {
-            @transient class LoggerBase { }
+            @transient
+            class LoggerBase {}
 
-            class Logger extends LoggerBase {
-
-            }
+            class Logger extends LoggerBase {}
 
             class App1 {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
             }
 
             class App2 {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
@@ -435,18 +488,24 @@ describe('container', () => {
         });
 
         it('overrides base metadata method (ES5/6) with derived configuration', () => {
-            @singleton class LoggerBase { }
-            @transient class Logger extends LoggerBase { }
+            @singleton
+            class LoggerBase {}
+            @transient
+            class Logger extends LoggerBase {}
 
             class App1 {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
             }
 
             class App2 {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
@@ -460,7 +519,7 @@ describe('container', () => {
         });
 
         it('configures key as service when transient api only provided with key', () => {
-            class Logger { }
+            class Logger {}
 
             const container = new Container();
             container.registerTransient(Logger);
@@ -474,7 +533,7 @@ describe('container', () => {
         });
 
         it('configures key as service when singleton api only provided with key', () => {
-            class Logger { }
+            class Logger {}
 
             const container = new Container();
             container.registerSingleton(Logger);
@@ -488,11 +547,13 @@ describe('container', () => {
         });
 
         it('configures concrete singleton via api for abstract dependency', () => {
-            class LoggerBase { }
-            class Logger extends LoggerBase { }
+            class LoggerBase {}
+            class Logger extends LoggerBase {}
 
             class App {
-                public static inject() { return [LoggerBase]; }
+                public static inject() {
+                    return [LoggerBase];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
@@ -507,11 +568,13 @@ describe('container', () => {
         });
 
         it('configures concrete transient via api for abstract dependency', () => {
-            class LoggerBase { }
-            class Logger extends LoggerBase { }
+            class LoggerBase {}
+            class Logger extends LoggerBase {}
 
             class App {
-                public static inject() { return [LoggerBase]; }
+                public static inject() {
+                    return [LoggerBase];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
@@ -526,22 +589,26 @@ describe('container', () => {
         });
 
         it(`doesn't get hidden when a super class adds metadata which doesn't include the base registration type`, () => {
-            @transient class LoggerBase { }
+            @transient
+            class LoggerBase {}
 
-            class Logger extends LoggerBase {
-            }
+            class Logger extends LoggerBase {}
 
             Reflect.defineMetadata('something', 'test', Logger);
 
             class App1 {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
             }
 
             class App2 {
-                public static inject() { return [Logger]; }
+                public static inject() {
+                    return [Logger];
+                }
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
@@ -557,10 +624,12 @@ describe('container', () => {
         describe('Custom resolvers', () => {
             describe('Lazy', () => {
                 it('provides a function which, when called, will return the instance', () => {
-                    class Logger { }
+                    class Logger {}
 
                     class App1 {
-                        public static inject() { return [LazyResolver.of(Logger)]; }
+                        public static inject() {
+                            return [LazyResolver.of(Logger)];
+                        }
                         public constructor(public getLogger: () => Logger) {
                             this.getLogger = getLogger;
                         }
@@ -575,7 +644,7 @@ describe('container', () => {
                 });
 
                 it('provides a function which, when called, will return the instance using decorator', () => {
-                    class Logger { }
+                    class Logger {}
 
                     class App1 {
                         public static inject = [Logger];
@@ -597,14 +666,16 @@ describe('container', () => {
 
             describe('All', () => {
                 it('resolves all matching dependencies as an array of instances', () => {
-                    class LoggerBase { }
+                    class LoggerBase {}
 
-                    class VerboseLogger extends LoggerBase { }
+                    class VerboseLogger extends LoggerBase {}
 
-                    class Logger extends LoggerBase { }
+                    class Logger extends LoggerBase {}
 
                     class App {
-                        public static inject() { return [AllResolver.of(LoggerBase)]; }
+                        public static inject() {
+                            return [AllResolver.of(LoggerBase)];
+                        }
                         public constructor(public loggers: LoggerBase[]) {
                             this.loggers = loggers;
                         }
@@ -622,11 +693,11 @@ describe('container', () => {
                 });
 
                 it('resolves all matching dependencies as an array of instances using decorator', () => {
-                    class LoggerBase { }
+                    class LoggerBase {}
 
-                    class VerboseLogger extends LoggerBase { }
+                    class VerboseLogger extends LoggerBase {}
 
-                    class Logger extends LoggerBase { }
+                    class Logger extends LoggerBase {}
 
                     class App {
                         public static inject = [LoggerBase];
@@ -651,7 +722,7 @@ describe('container', () => {
 
             describe('inject as param decorator', () => {
                 it('resolves a matching dependency using the inject decorator', () => {
-                    class Logger { }
+                    class Logger {}
 
                     class App1 {
                         public static inject = [Logger];
@@ -673,10 +744,12 @@ describe('container', () => {
 
             describe('Optional', () => {
                 it('injects the instance if its registered in the container', () => {
-                    class Logger { }
+                    class Logger {}
 
                     class App {
-                        public static inject() { return [OptionalResolver.of(Logger)]; }
+                        public static inject() {
+                            return [OptionalResolver.of(Logger)];
+                        }
                         public constructor(public logger: Logger) {
                             this.logger = logger;
                         }
@@ -690,7 +763,7 @@ describe('container', () => {
                 });
 
                 it('injects the instance if its registered in the container using decorator', () => {
-                    class Logger { }
+                    class Logger {}
 
                     @autoinject
                     class App {
@@ -710,11 +783,13 @@ describe('container', () => {
                 });
 
                 it('injects null if key is not registered in the container', () => {
-                    class VerboseLogger { }
-                    class Logger { }
+                    class VerboseLogger {}
+                    class Logger {}
 
                     class App {
-                        public static inject() { return [OptionalResolver.of(Logger)]; }
+                        public static inject() {
+                            return [OptionalResolver.of(Logger)];
+                        }
                         public constructor(public logger: Logger) {
                             this.logger = logger;
                         }
@@ -728,8 +803,8 @@ describe('container', () => {
                 });
 
                 it('injects null if key is not registered in the container using decorator', () => {
-                    class VerboseLogger { }
-                    class Logger { }
+                    class VerboseLogger {}
+                    class Logger {}
 
                     @autoinject
                     class App {
@@ -749,11 +824,13 @@ describe('container', () => {
                 });
 
                 it('injects null if key nor function is registered in the container', () => {
-                    class VerboseLogger { }
-                    class Logger { }
+                    class VerboseLogger {}
+                    class Logger {}
 
                     class App {
-                        public static inject() { return [OptionalResolver.of(Logger)]; }
+                        public static inject() {
+                            return [OptionalResolver.of(Logger)];
+                        }
                         public constructor(public logger: Logger) {
                             this.logger = logger;
                         }
@@ -765,11 +842,13 @@ describe('container', () => {
                     expect(app.logger).to.equal(null);
                 });
 
-                it('doesn\'t check the parent container hierarchy when checkParent is false', () => {
-                    class Logger { }
+                it("doesn't check the parent container hierarchy when checkParent is false", () => {
+                    class Logger {}
 
                     class App {
-                        public static inject() { return [OptionalResolver.of(Logger, false)]; }
+                        public static inject() {
+                            return [OptionalResolver.of(Logger, false)];
+                        }
                         public constructor(public logger: Logger) {
                             this.logger = logger;
                         }
@@ -787,10 +866,12 @@ describe('container', () => {
                 });
 
                 it('checks the parent container hierarchy when checkParent is true or default', () => {
-                    class Logger { }
+                    class Logger {}
 
                     class App {
-                        public static inject() { return [OptionalResolver.of(Logger)]; }
+                        public static inject() {
+                            return [OptionalResolver.of(Logger)];
+                        }
                         public constructor(public logger: Logger) {
                             this.logger = logger;
                         }
@@ -810,10 +891,12 @@ describe('container', () => {
 
             describe('Parent', () => {
                 it('bypasses the current container and injects instance from parent container', () => {
-                    class Logger { }
+                    class Logger {}
 
                     class App {
-                        public static inject() { return [ParentResolver.of(Logger)]; }
+                        public static inject() {
+                            return [ParentResolver.of(Logger)];
+                        }
                         public constructor(public logger: Logger) {
                             this.logger = logger;
                         }
@@ -834,7 +917,7 @@ describe('container', () => {
                 });
 
                 it('bypasses the current container and injects instance from parent container using decorator', () => {
-                    class Logger { }
+                    class Logger {}
 
                     class App {
                         public static inject = [Logger];
@@ -860,10 +943,12 @@ describe('container', () => {
                 });
 
                 it('returns null when no parent container exists', () => {
-                    class Logger { }
+                    class Logger {}
 
                     class App {
-                        public static inject() { return [ParentResolver.of(Logger)]; }
+                        public static inject() {
+                            return [ParentResolver.of(Logger)];
+                        }
                         public constructor(public logger: Logger) {
                             this.logger = logger;
                         }
@@ -879,7 +964,7 @@ describe('container', () => {
                 });
 
                 it('returns null when no parent container exists using decorator', () => {
-                    class Logger { }
+                    class Logger {}
 
                     class App {
                         public static inject = [Logger];
@@ -906,10 +991,12 @@ describe('container', () => {
                 let service: any;
                 const data = 'test';
 
-                class Logger { }
+                class Logger {}
 
                 class Service {
-                    public static inject() { return [FactoryResolver.of(Logger)]; }
+                    public static inject() {
+                        return [FactoryResolver.of(Logger)];
+                    }
                     public constructor(public getLogger: Factory<Logger>, public data: any) {
                         this.getLogger = getLogger;
                         this.data = data;
@@ -917,7 +1004,9 @@ describe('container', () => {
                 }
 
                 class App {
-                    public static inject() { return [FactoryResolver.of(Service)]; }
+                    public static inject() {
+                        return [FactoryResolver.of(Service)];
+                    }
                     public service: any;
                     public constructor(public getService: Factory<Service>) {
                         this.getService = getService;
@@ -947,7 +1036,7 @@ describe('container', () => {
                 let service: any;
                 const data = 'test';
 
-                class Logger { }
+                class Logger {}
 
                 class Service {
                     public static inject = [Logger];
@@ -993,11 +1082,13 @@ describe('container', () => {
                     }
                 }
 
-                class Dependency { }
+                class Dependency {}
 
                 it('inject a new instance of a dependency, without regard for existing instances in the container', () => {
                     class App1 {
-                        public static inject() { return [NewInstanceResolver.of(Logger)]; }
+                        public static inject() {
+                            return [NewInstanceResolver.of(Logger)];
+                        }
                         public constructor(public logger: Logger) {
                             this.logger = logger;
                         }
@@ -1031,7 +1122,9 @@ describe('container', () => {
 
                 it('inject a new instance of a dependency, with instance dynamic dependency', () => {
                     class App1 {
-                        public static inject() { return [NewInstanceResolver.of(Logger, Dependency)]; }
+                        public static inject() {
+                            return [NewInstanceResolver.of(Logger, Dependency)];
+                        }
                         public constructor(public logger: Logger) {
                             this.logger = logger;
                         }
@@ -1067,7 +1160,9 @@ describe('container', () => {
 
                 it('inject a new instance of a dependency, with resolver dynamic dependency', () => {
                     class App1 {
-                        public static inject() { return [NewInstanceResolver.of(Logger, LazyResolver.of(Dependency))]; }
+                        public static inject() {
+                            return [NewInstanceResolver.of(Logger, LazyResolver.of(Dependency))];
+                        }
                         public constructor(public logger: Logger) {
                             this.logger = logger;
                         }

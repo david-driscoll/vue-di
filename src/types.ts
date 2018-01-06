@@ -1,13 +1,19 @@
 /**
  * Used to allow functions/classes to specify custom dependency resolution logic.
  */
-export type Key<T> = string | symbol | { new(...args: any[]): T } | { get(container: IContainer, key: Key<T>): T };
+export type Key<T> =
+    | string
+    | symbol
+    | { new (...args: any[]): T }
+    | { get(container: IContainer, key: Key<T>): T };
+// tslint:disable-next-line:interface-name
 export interface Factory<T> {
     (...args: any[]): T;
-    new(...args: any[]): T;
+    new (...args: any[]): T;
 }
 export type Lazy<T> = () => T;
 
+// tslint:disable-next-line:interface-name
 export interface Resolver<T> {
     get(container: IContainer, key: Key<T>): T;
 }

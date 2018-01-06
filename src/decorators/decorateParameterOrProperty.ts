@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import Vue, { ComponentOptions } from 'vue';
 import constants from '../constants';
-import { Resolver, Key } from '../types';
+import { Resolver } from '../types';
 import { getDecoratorDependencies } from './getDecoratorDependencies';
 import { createVueDecorator } from './shim-component-decorators';
 
@@ -11,7 +11,11 @@ export function decorateParameterOrProperty(resolver: (type: any) => Resolver<an
             const params = getDecoratorDependencies(target, name);
             params[index] = resolver(params[index]);
         } else {
-            const propertyType = Reflect.getOwnMetadata(constants.propertyType, target, propertyOrParameterName);
+            const propertyType = Reflect.getOwnMetadata(
+                constants.propertyType,
+                target,
+                propertyOrParameterName
+            );
             const instance = resolver(propertyType);
             Reflect.defineMetadata(constants.resolver, instance, target, propertyOrParameterName);
 

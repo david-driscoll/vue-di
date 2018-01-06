@@ -1,5 +1,4 @@
-import { Container } from '../container/Container';
-import { Key, Resolver } from '../types';
+import { Resolver } from '../types';
 
 function alwaysValid() {
     return true;
@@ -106,11 +105,12 @@ export const protocol: {
     return result;
 } as any;
 
-export type ProtocolDecorator = ClassDecorator & (() => ClassDecorator) & {
-    decorates(target: any): target is Resolver<any>;
-    validate(target: any): boolean;
-    assert(target: any): void;
-};
+export type ProtocolDecorator = ClassDecorator &
+    (() => ClassDecorator) & {
+        decorates(target: any): target is Resolver<any>;
+        validate(target: any): boolean;
+        assert(target: any): void;
+    };
 
 /**
  * Creates a protocol decorator.

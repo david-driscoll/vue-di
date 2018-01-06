@@ -5,7 +5,6 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { FactoryResolver } from '../resolvers/FactoryResolver';
-import { Key } from '../types';
 import { decorateParameterOrProperty } from './decorateParameterOrProperty';
 
 /**

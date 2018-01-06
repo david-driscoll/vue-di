@@ -1,4 +1,3 @@
-
 /**
  * The MIT License (MIT)
  * https://github.com/aurelia/dependency-injection

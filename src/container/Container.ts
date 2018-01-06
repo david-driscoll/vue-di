@@ -11,7 +11,7 @@ import { Invoker } from '../invokers/Invoker';
 import { resolver as resolverDeco } from '../protocol/resolver';
 import { IRegistration } from '../registration/Registration';
 import { Strategy, StrategyResolver } from '../resolvers/StrategyResolver';
-import { Key, Resolver, IContainer } from '../types';
+import { IContainer, Key, Resolver } from '../types';
 import { IContainerConfiguration } from './ContainerConfiguration';
 import { InvocationHandler } from './InvocationHandler';
 
@@ -28,7 +28,7 @@ function validateKey(key: Key<any>) {
 
 function invokeWithDynamicDependencies(
     container: Container,
-    fn: { new(...args: any[]): any },
+    fn: { new (...args: any[]): any },
     staticDependencies: any[],
     dynamicDependencies?: any[]
 ) {
@@ -379,7 +379,9 @@ export class Container implements IContainer {
                 return this.autoRegister<T>(key).get(this, key);
             }
 
-            const registration = Reflect.getMetadata(constants.registration, key) as IRegistration<T>;
+            const registration = Reflect.getMetadata(constants.registration, key) as IRegistration<
+                T
+            >;
 
             if (registration === undefined) {
                 return this.parent._get(key);
@@ -489,9 +491,7 @@ export class Container implements IContainer {
 
     private _createInvocationHandler(fn: Function & { inject?: any }): InvocationHandler {
         let dependencies;
-
-        fn
-        Reflect.getOwnMetadata(constants.paramTypes, fn) /*?*/
+        Reflect.getOwnMetadata(constants.paramTypes, fn);
         if (fn.inject === undefined) {
             dependencies = Reflect.getOwnMetadata(constants.paramTypes, fn) || _emptyParameters;
         } else {

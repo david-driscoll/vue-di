@@ -1,5 +1,5 @@
 import { Container } from '../container/Container';
-import { Resolver, Key } from '../types';
+import { Key, Resolver } from '../types';
 
 class RegistrationResolver implements Resolver<any> {
     public strategy: Resolver<any>;
@@ -12,8 +12,8 @@ export class RegistrationBuilderBase<T> {
     private registeredKey?: Key<T>;
     public constructor(
         protected readonly container: Container,
-        protected readonly resolver = new RegistrationResolver() as any) {
-    }
+        protected readonly resolver = new RegistrationResolver() as any
+    ) {}
 
     public as(...keys: Array<Key<T>>) {
         for (const key of keys) {

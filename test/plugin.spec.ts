@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import * as sinon from 'sinon';
-import { DisposableBase, IDisposable } from 'ts-disposables';
+import { IDisposable } from 'ts-disposables';
 import Component from 'vue-class-component';
 import { Inject } from 'vue-property-decorator';
 import { createLocalVue, mount } from 'vue-test-utils';
@@ -12,18 +12,18 @@ import VueContainer, { Container } from '../src/di';
 @autoinject
 class Stuff {
     public value = 123;
-    public constructor() { }
+    public constructor() {}
 }
 
 @autoinject
 class Item {
-    public constructor(public stuff: Stuff) { }
+    public constructor(public stuff: Stuff) {}
 }
 
 @autoinject
 class DisposableItem implements IDisposable {
     public _disposed = false;
-    public constructor(public stuff: Stuff) { }
+    public constructor(public stuff: Stuff) {}
 
     public dispose() {
         this._disposed = true;
@@ -181,7 +181,7 @@ describe('pluginTests', () => {
 
             const vm: any = new NewVue({
                 inject: {
-                    things: <any>Item /*?*/,
+                    things: Item as any /*?*/,
                 },
             });
 
@@ -197,12 +197,12 @@ describe('pluginTests', () => {
                 {
                     template: '<div>test123 <child-vue></child-vue></div>',
                     inject: {
-                        things: <any>DisposableItem,
+                        things: DisposableItem as any,
                     },
                     components: {
                         'child-vue': {
                             inject: {
-                                things: <any>Item,
+                                things: Item as any,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -223,12 +223,12 @@ describe('pluginTests', () => {
                     template: '<div>test123 <child-vue></child-vue></div>',
                     createChildContainer: true,
                     inject: {
-                        things: <any>DisposableItem,
+                        things: DisposableItem as any,
                     },
                     components: {
                         'child-vue': {
                             inject: {
-                                things: <any>DisposableItem,
+                                things: DisposableItem as any,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -256,7 +256,7 @@ describe('pluginTests', () => {
                         'child-vue': {
                             // createChildContainer: true,
                             inject: {
-                                things: <any>DisposableItem,
+                                things: DisposableItem as any,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -284,7 +284,8 @@ describe('pluginTests', () => {
 
             @Component
             class MyComponent2 extends NewVue {
-                @Inject(Service as any) public service: Service;
+                @Inject(Service as any)
+                public service: Service;
             }
 
             const wrapper2a = mount<MyComponent2>(MyComponent2);

@@ -6,7 +6,7 @@
  */
 import { Container } from '../container/Container';
 import { resolver } from '../protocol/resolver';
-import { Resolver, Key } from '../types';
+import { Key, Resolver } from '../types';
 
 /**
  * Used to inject a new instance of a dependency, without regard for existing

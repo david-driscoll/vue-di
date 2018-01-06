@@ -1,6 +1,4 @@
 // tslint:disable:max-classes-per-file
-import { expect } from 'chai';
-import { DisposableBase, IDisposable } from 'ts-disposables';
 import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 
@@ -12,7 +10,9 @@ describe('All property decorator', () => {
         const NewVue = createLocalVue();
         NewVue.use(VueContainer);
 
-        interface Item { prop: string; }
+        interface Item {
+            prop: string;
+        }
         const Item = Symbol.for('Item');
         NewVue.container.registerInstance(Item, { prop: 'abc' } as Item);
         NewVue.container.registerInstance(Item, { prop: 'def' } as Item);

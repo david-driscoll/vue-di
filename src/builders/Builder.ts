@@ -1,14 +1,13 @@
 import { Container } from '../container/Container';
-import { Strategy, StrategyResolver } from '../resolvers/StrategyResolver';
-import { FactoryMethod, Key, Resolver } from '../types';
+import { FactoryMethod } from '../types';
 import { FactoryRegistrationBuilder } from './FactoryRegistrationBuilder';
 import { InstanceRegistrationBuilder } from './InstanceRegistrationBuilder';
 import { TypeRegistrationBuilder } from './TypeRegistrationBuilder';
 
 export class Builder {
-    public constructor(private readonly container: Container) { }
+    public constructor(private readonly container: Container) {}
 
-    public registerType<T>(key: { new(...args: any[]): T }) {
+    public registerType<T>(key: { new (...args: any[]): T }) {
         return new TypeRegistrationBuilder(this.container, key);
     }
 

@@ -40,6 +40,7 @@ export class FactoryResolver<F extends Factory<T>, T = any> implements Resolver<
      */
     public get(container: Container, key: Key<F>): F {
         const _key = this._key;
+
         // tslint:disable-next-line:only-arrow-functions
         return function(...rest: any[]) {
             return container.invoke(_key, rest);

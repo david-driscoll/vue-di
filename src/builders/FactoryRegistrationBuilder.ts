@@ -6,7 +6,7 @@ import { RegistrationBuilderBase } from './RegistrationBuilderBase';
 class RegistrationFactoryResolver implements Resolver<any> {
     public strategy = Strategy.Instance;
     private instance: any;
-    public constructor(private readonly factory: FactoryMethod<any>) { }
+    public constructor(private readonly factory: FactoryMethod<any>) {}
 
     public get(container: Container, key: Key<any>): any {
         if (this.strategy === Strategy.Singleton) {
@@ -22,10 +22,7 @@ class RegistrationFactoryResolver implements Resolver<any> {
 }
 
 export class FactoryRegistrationBuilder<T> extends RegistrationBuilderBase<T> {
-    public constructor(
-        container: Container,
-        factory: FactoryMethod<T>
-    ) {
+    public constructor(container: Container, factory: FactoryMethod<T>) {
         super(container, new RegistrationFactoryResolver(factory));
         this.instancePerDependency();
     }

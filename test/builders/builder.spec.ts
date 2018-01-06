@@ -3,9 +3,8 @@ import { Builder } from '../../src/builders/Builder';
 import { Container } from '../../src/container/Container';
 
 describe('Builder', () => {
-
-    class Service { }
-    class Logger { }
+    class Service {}
+    class Logger {}
 
     describe('register', () => {
         it('should register as a delegate', () => {
@@ -14,9 +13,7 @@ describe('Builder', () => {
             const builder = new Builder(container);
             const symbol = Symbol(Service.toString());
 
-            builder
-                .register(_ => new Service())
-                .as(Service);
+            builder.register(_ => new Service()).as(Service);
 
             container.get(Service).should.not.be.null;
         });
@@ -27,9 +24,7 @@ describe('Builder', () => {
             const builder = new Builder(container);
             const symbol = Symbol(Service.toString());
 
-            builder
-                .register(_ => _.get(Service))
-                .as(symbol);
+            builder.register(_ => _.get(Service)).as(symbol);
 
             container.get<Service>(symbol).should.not.be.null;
         });
@@ -40,11 +35,11 @@ describe('Builder', () => {
             const builder = new Builder(container);
             const symbol = Symbol(Service.toString());
 
-            builder
-                .register(_ => _.get(Service))
-                .as(Service);
+            builder.register(_ => _.get(Service)).as(Service);
 
-            expect(() => container.get<Service>(symbol)).to.throw('Cannot auto register a non method');
+            expect(() => container.get<Service>(symbol)).to.throw(
+                'Cannot auto register a non method'
+            );
         });
 
         it('should register aliases', () => {
@@ -96,11 +91,11 @@ describe('Builder', () => {
             const builder = new Builder(container);
             const symbol = Symbol(Service.toString());
 
-            builder
-                .registerType(Service)
-                .as(Service);
+            builder.registerType(Service).as(Service);
 
-            expect(() => container.get<Service>(symbol)).to.throw('Cannot auto register a non method');
+            expect(() => container.get<Service>(symbol)).to.throw(
+                'Cannot auto register a non method'
+            );
         });
 
         it('should not register itself by default', () => {
@@ -151,11 +146,11 @@ describe('Builder', () => {
             const builder = new Builder(container);
             const symbol = Symbol(Service.toString());
 
-            builder
-                .registerInstance(new Service())
-                .as(Service);
+            builder.registerInstance(new Service()).as(Service);
 
-            expect(() => container.get<Service>(symbol)).to.throw('Cannot auto register a non method');
+            expect(() => container.get<Service>(symbol)).to.throw(
+                'Cannot auto register a non method'
+            );
         });
 
         it('should not register itself by default', () => {

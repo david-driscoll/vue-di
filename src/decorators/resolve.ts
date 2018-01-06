@@ -1,5 +1,5 @@
-import { decorateParameterOrProperty } from './decorateParameterOrProperty';
 import { Key } from '../types';
+import { decorateParameterOrProperty } from './decorateParameterOrProperty';
 
 /**
  * Decorator: Specifies the dependency to be resolved.
@@ -14,6 +14,7 @@ export function resolve(targetOrKey?: Object | Key<any>, propertyKey?: string | 
         return deco(targetOrKey as any);
     }
 
+    // tslint:disable-next-line:no-non-null-assertion
     return deco()(targetOrKey!, propertyKey);
 }
 

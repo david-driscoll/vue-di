@@ -6,7 +6,7 @@
  */
 import { Container } from '../container/Container';
 import { resolver } from '../protocol/resolver';
-import { Resolver, Key } from '../types';
+import { Key, Resolver } from '../types';
 
 export enum Strategy {
     Unset = -1,

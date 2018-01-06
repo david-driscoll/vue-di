@@ -1,11 +1,9 @@
 /**
-import { Resolver } from "./../types";
  * The MIT License (MIT)
  * https://github.com/aurelia/dependency-injection
  *
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
-import { Container } from '../container/Container';
 import { resolver } from '../protocol/resolver';
 import { IContainer, Key } from '../types';
 

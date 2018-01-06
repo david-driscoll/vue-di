@@ -11,13 +11,18 @@ function isAggregateError(error: any): error is AggregateErrorType {
 type AggregateErrorType = Error & { innerError?: Error };
 
 /**
-* Creates an instance of Error that aggregates and preserves an innerError.
-* @param message The error message.
-* @param innerError The inner error message to aggregate.
-* @param skipIfAlreadyAggregate Indicates to not wrap the inner error if it itself already has an innerError.
-* @return The Error instance.
-*/
-export function AggregateError(message: string, innerError?: Error, skipIfAlreadyAggregate?: boolean): Error {
+ * Creates an instance of Error that aggregates and preserves an innerError.
+ * @param message The error message.
+ * @param innerError The inner error message to aggregate.
+ * @param skipIfAlreadyAggregate Indicates to not wrap the inner error if it itself already has an innerError.
+ * @return The Error instance.
+ */
+export function AggregateError(
+    message: string,
+    innerError?: Error,
+    skipIfAlreadyAggregate?: boolean
+): Error {
+    // tslint:disable:no-parameter-reassignment
     if (innerError) {
         if (isAggregateError(innerError) && skipIfAlreadyAggregate) {
             return innerError;
@@ -27,13 +32,17 @@ export function AggregateError(message: string, innerError?: Error, skipIfAlread
 
         message += `${separator}Inner Error:\n`;
 
-        if (typeof (innerError) === 'string') {
+        if (typeof innerError === 'string') {
             message += `Message: ${innerError}`;
         } else {
             if (innerError.message) {
                 message += `Message: ${innerError.message}`;
             } else {
-                message += `Unknown Inner Error Type. Displaying Inner Error as JSON:\n ${JSON.stringify(innerError, null, '  ')}`;
+                message += `Unknown Inner Error Type. Displaying Inner Error as JSON:\n ${JSON.stringify(
+                    innerError,
+                    null,
+                    '  '
+                )}`;
             }
 
             if (innerError.stack) {
@@ -45,7 +54,7 @@ export function AggregateError(message: string, innerError?: Error, skipIfAlread
         message += separator;
     }
 
-    let e = new Error(message);
+    const e = new Error(message);
     if (innerError) {
         (e as any).innerError = innerError;
     }

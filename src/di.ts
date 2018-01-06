@@ -18,21 +18,15 @@ export default {
     ...decorators,
 };
 
-export {
-    Builder,
-    Container,
-    IContainerConfiguration,
-    IContainer,
-    IRegistration,
-    install,
-};
+export { Builder, Container, IContainerConfiguration, IContainer, IRegistration, install };
 
-
+// tslint:disable:interface-name
 declare module 'vue/types/vue' {
     interface VueConstructor {
         container: Container;
     }
 
+    // tslint:disable-next-line:no-shadowed-variable
     interface Vue {
         container?: Container;
     }

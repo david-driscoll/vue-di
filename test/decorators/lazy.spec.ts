@@ -1,6 +1,4 @@
 // tslint:disable:max-classes-per-file
-import { expect } from 'chai';
-import { DisposableBase, IDisposable } from 'ts-disposables';
 import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 

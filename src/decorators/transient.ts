@@ -5,8 +5,8 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { TransientRegistration } from '../registration/TransientRegistration';
-import { registration } from './registration';
 import { Key } from '../types';
+import { registration } from './registration';
 
 /**
  * Decorator: Specifies to register the decorated item with a "transient" lifetime.

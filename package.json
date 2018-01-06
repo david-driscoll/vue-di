@@ -13,7 +13,9 @@
     "scripts": {
         "prepublish": "npm run test && npm run build",
         "build": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
-        "test": "mocha"
+        "test": "mocha",
+        "prettier": "prettier **/*.ts --write",
+        "lint": "tslint -p tsconfig.json --fix"
     },
     "author": "",
     "license": "MIT",

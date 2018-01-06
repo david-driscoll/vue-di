@@ -5,7 +5,7 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { Container } from '../container/Container';
-import { Resolver, Key } from '../types';
+import { Key, Resolver } from '../types';
 import { IRegistration } from './Registration';
 
 /**
