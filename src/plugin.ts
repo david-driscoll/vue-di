@@ -1,13 +1,23 @@
 import 'reflect-metadata';
+import { _emptyParameters } from "./container/Container";
 import { CompositeDisposable, Disposable, isDisposable } from 'ts-disposables';
 import Vue, { VueConstructor } from 'vue';
 import { InjectOptions } from 'vue/types/options';
 import { Container } from './container';
 import { isResolver, Resolver } from './types';
 
-export function install(innerVue: any, options: any) {
+export interface IOptions {
+    container: Container
+}
+
+export function install(innerVue: any, options: Partial<IOptions> = {}) {
     const Vue: VueConstructor = innerVue;
-    (Vue.container = new Container()).makeGlobal();
+    if (!options.container) {
+        (Vue.container = new Container()).makeGlobal();
+    } else {
+        Vue.container = options.container;
+        Vue.container.makeGlobal();
+    }
 
     function resolveValue(
         instance: Vue,

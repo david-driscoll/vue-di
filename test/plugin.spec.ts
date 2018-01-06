@@ -7,7 +7,7 @@ import { createLocalVue, mount } from 'vue-test-utils';
 import { autoinject, lazy, resolve, singleton } from '../src/decorators';
 // tslint:disable:max-classes-per-file
 
-import VueContainer from '../src/di';
+import VueContainer, { Container } from '../src/di';
 
 @autoinject
 class Stuff {
@@ -313,6 +313,14 @@ describe('pluginTests', () => {
             const wrapper2b = mount<MyComponent2>(MyComponent2);
 
             wrapper2b.vm.service.should.be.eq(wrapper2a.vm.service);
+        });
+
+        it('use the given container instead of creating a new one', () => {
+            const NewVue = createLocalVue();
+            const container = new Container();
+            NewVue.use(VueContainer, { container });
+
+            NewVue.container.should.be.equal(container);
         });
     });
 });
