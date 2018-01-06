@@ -1,16 +1,17 @@
 import 'reflect-metadata';
-import { _emptyParameters } from "./container/Container";
 import { CompositeDisposable, Disposable, isDisposable } from 'ts-disposables';
 import Vue, { VueConstructor } from 'vue';
 import { InjectOptions } from 'vue/types/options';
 import { Container } from './container';
+import { _emptyParameters } from './container/Container';
 import { isResolver, Resolver } from './types';
 
 export interface IOptions {
-    container: Container
+    container: Container;
 }
 
 export function install(innerVue: any, options: Partial<IOptions> = {}) {
+    // tslint:disable-next-line:variable-name no-shadowed-variable
     const Vue: VueConstructor = innerVue;
     if (!options.container) {
         (Vue.container = new Container()).makeGlobal();
@@ -26,12 +27,9 @@ export function install(innerVue: any, options: Partial<IOptions> = {}) {
         name: string | symbol,
         resolverOrType: any
     ) {
-        let value: any;
-        if (isResolver(resolverOrType)) {
-            value = resolverOrType.get(container, undefined as any);
-        } else {
-            value = container.get(resolverOrType);
-        }
+        const value = isResolver(resolverOrType)
+            ? resolverOrType.get(container, undefined as any)
+            : container.get(resolverOrType);
 
         if (value && isDisposable(value)) {
             disposable.add(value);
@@ -49,8 +47,9 @@ export function install(innerVue: any, options: Partial<IOptions> = {}) {
         instance: Vue,
         container: Container,
         disposable: CompositeDisposable,
-        dependencies:
-            | { [key: string]: symbol | string | { new(...args: any[]): any } | Resolver<any> }
+        dependencies: {
+            [key: string]: symbol | string | { new (...args: any[]): any } | Resolver<any>;
+        }
     ) {
         for (const key in dependencies) {
             if (dependencies.hasOwnProperty(key)) {
@@ -102,8 +101,8 @@ export function install(innerVue: any, options: Partial<IOptions> = {}) {
         beforeCreate() {
             const createContainer = this.$options.createChildContainer;
 
-            const disposable = (this as any)['__$disposable'] || new CompositeDisposable();
-            (this as any)['__$disposable'] = disposable;
+            const disposable = (this as any).__$disposable || new CompositeDisposable();
+            (this as any).__$disposable = disposable;
 
             const container = createContainer
                 ? findContainer(this).createChild()
@@ -130,7 +129,7 @@ export function install(innerVue: any, options: Partial<IOptions> = {}) {
             }
         },
         destroyed(this: { container: Container }) {
-            (this as any)['__$disposable'].dispose();
+            (this as any).__$disposable.dispose();
         },
     });
 }
