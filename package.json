@@ -13,7 +13,7 @@
     "scripts": {
         "prepublish": "npm run test && npm run build",
         "build": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
-        "test": "del-cli test/**/*.spec.js src/**/*.js && mocha",
+        "test": "mocha",
         "prettier": "prettier **/*.ts --write",
         "lint": "tslint -p tsconfig.json --fix"
     },

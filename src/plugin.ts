@@ -10,9 +10,15 @@ export interface IOptions {
     container: Container;
 }
 
-export function install(innerVue: any, options: Partial<IOptions> = {}) {
+export function install(outerVue: any, outerOptions: any = {}) {
     // tslint:disable-next-line:variable-name no-shadowed-variable
-    const Vue: VueConstructor = innerVue;
+    const Vue: VueConstructor = outerVue;
+    const options: Partial<IOptions> = outerOptions;
+
+    return innerInstall(Vue, options);
+}
+// tslint:disable-next-line:no-shadowed-variable variable-name
+function innerInstall(Vue: VueConstructor, options: Partial<IOptions>) {
     if (!options.container) {
         (Vue.container = new Container()).makeGlobal();
     } else {
