@@ -134,7 +134,7 @@ function getDependencies(f: object) {
 /**
  * A lightweight, extensible dependency injection container.
  */
-export class Container implements IContainer {
+export class Container {
     /**
      * The global root Container instance. Available if makeGlobal() has been called.
      */
@@ -379,9 +379,7 @@ export class Container implements IContainer {
                 return this.autoRegister<T>(key).get(this, key);
             }
 
-            const registration = Reflect.getMetadata(constants.registration, key) as IRegistration<
-                T
-            >;
+            const registration: IRegistration<T> = Reflect.getMetadata(constants.registration, key);
 
             if (registration === undefined) {
                 return this.parent._get(key);

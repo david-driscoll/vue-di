@@ -16,7 +16,7 @@ import {
     transient,
 } from './decorators';
 import { install } from './plugin';
-import { Key } from './types';
+import { IContainer, Key } from './types';
 
 export * from './container';
 export * from './decorators';
@@ -34,7 +34,6 @@ export default {
     newInstance,
     optional,
     parent,
-    registration,
     resolve,
     singleton,
     transient,

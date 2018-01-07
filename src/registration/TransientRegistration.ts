@@ -6,12 +6,11 @@
  */
 import { Container } from '../container/Container';
 import { Key, Resolver } from '../types';
-import { IRegistration } from './Registration';
 
 /**
  * Used to allow functions/classes to indicate that they should be registered as transients with the container.
  */
-export class TransientRegistration<T = any> implements IRegistration<T> {
+export class TransientRegistration<T = any> {
     /** @internal */
     public _key: Key<T>;
 
