@@ -2,11 +2,24 @@ import Vue from 'vue';
 
 import { Builder } from './builders';
 import { Container, IContainerConfiguration } from './container';
-import * as decorators from './decorators';
+import {
+    all,
+    autoinject,
+    factory,
+    lazy,
+    newInstance,
+    optional,
+    parent,
+    registration,
+    resolve,
+    singleton,
+    transient,
+} from './decorators';
 import { install } from './plugin';
 import { IRegistration } from './registration/Registration';
 import { IContainer, Key } from './types';
 
+export * from './container';
 export * from './decorators';
 export * from './protocol/protocol';
 export * from './types';
@@ -15,10 +28,20 @@ export default {
     Builder,
     Container,
     install,
-    ...decorators,
+    all,
+    autoinject,
+    factory,
+    lazy,
+    newInstance,
+    optional,
+    parent,
+    registration,
+    resolve,
+    singleton,
+    transient,
 };
 
-export { Builder, Container, IContainerConfiguration, IContainer, IRegistration, install };
+export { Builder, Container, install };
 
 // tslint:disable:interface-name
 declare module 'vue/types/vue' {
