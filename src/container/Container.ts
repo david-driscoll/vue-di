@@ -439,6 +439,15 @@ export class Container implements IContainer {
     }
 
     /**
+     * Configure the container with a given delegate method
+     */
+    public configure(func: (container: Container) => void) {
+        func(this);
+
+        return this;
+    }
+
+    /**
      * Invokes a function, recursively resolving its dependencies.
      * @param fn The function to invoke with the auto-resolved dependencies.
      * @param dynamicDependencies Additional function dependencies to use during invocation.

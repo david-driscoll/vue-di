@@ -1,7 +1,7 @@
 import Vue from 'vue';
 
 import { Builder } from './builders';
-import { Container, IContainerConfiguration } from './container';
+import { Container } from './container';
 import {
     all,
     autoinject,
@@ -16,8 +16,7 @@ import {
     transient,
 } from './decorators';
 import { install } from './plugin';
-import { IRegistration } from './registration/Registration';
-import { IContainer, Key } from './types';
+import { Key } from './types';
 
 export * from './container';
 export * from './decorators';
