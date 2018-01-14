@@ -5,7 +5,7 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { Container } from '../container/Container';
-import { resolver } from '../protocol/resolver';
+import { containerResolver } from '../protocol/resolver';
 import { Key, Resolver } from '../types';
 
 export enum Strategy {
@@ -18,7 +18,7 @@ export enum Strategy {
     Alias = 5,
 }
 
-@resolver
+@containerResolver
 export class StrategyResolver<T = any> implements Resolver<T> {
     public strategy: StrategyResolver<T> | Strategy;
     public state: any;

@@ -5,13 +5,13 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { Container } from '../container/Container';
-import { resolver } from '../protocol/resolver';
+import { containerResolver } from '../protocol/resolver';
 import { Factory, Key, Resolver } from '../types';
 
 /**
  * Used to allow injecting dependencies but also passing data to the constructor.
  */
-@resolver
+@containerResolver
 export class FactoryResolver<F extends Factory<T>, T = any> implements Resolver<F> {
     /**
      * Creates a Factory Resolver for the supplied key.

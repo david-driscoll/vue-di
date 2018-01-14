@@ -5,13 +5,13 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { Container } from '../container/Container';
-import { resolver } from '../protocol/resolver';
+import { containerResolver } from '../protocol/resolver';
 import { Key, Resolver } from '../types';
 
 /**
  * Used to allow functions/classes to specify lazy resolution logic.
  */
-@resolver
+@containerResolver
 export class LazyResolver<T = any> implements Resolver<T> {
     /**
      * Creates a Lazy Resolver for the supplied key.

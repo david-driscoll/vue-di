@@ -5,7 +5,7 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { Container } from '../container/Container';
-import { resolver } from '../protocol/resolver';
+import { containerResolver } from '../protocol/resolver';
 import { Key, Resolver } from '../types';
 
 /**
@@ -13,7 +13,7 @@ import { Key, Resolver } from '../types';
  * instances in the container. Instances can optionally be registered in the container
  * under a different key by supplying a key using the `as` method.
  */
-@resolver
+@containerResolver
 export class NewInstanceResolver<T = any> implements Resolver<T> {
     /**
      * Creates an NewInstance Resolver for the supplied key.

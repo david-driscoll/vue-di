@@ -8,7 +8,7 @@ import 'reflect-metadata';
 import { AggregateError } from '../AggregateError';
 import constants from '../constants';
 import { Invoker } from '../invokers/Invoker';
-import { resolver as resolverDeco } from '../protocol/resolver';
+import { containerResolver as resolverDeco } from '../protocol/resolver';
 import { IRegistration } from '../registration/Registration';
 import { Strategy, StrategyResolver } from '../resolvers/StrategyResolver';
 import { IContainer, Key, Resolver } from '../types';
@@ -369,7 +369,7 @@ export class Container {
         }
 
         if (resolverDeco.decorates(key)) {
-            return key.get(this, key);
+            return (key as any).get(this, key);
         }
 
         const resolver = this._resolvers.get(key);

@@ -22,7 +22,7 @@ export default {
                 compilerOptions: {
                     declaration: true,
                 },
-                include: ["src/**/*.ts"]
+                exclude: ["test/**/*.ts"]
             },
             typescript: require('typescript'),
         }),

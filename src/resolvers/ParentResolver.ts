@@ -5,13 +5,13 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { Container } from '../container/Container';
-import { resolver } from '../protocol/resolver';
+import { containerResolver } from '../protocol/resolver';
 import { Key, Resolver } from '../types';
 
 /**
  * Used to inject the dependency from the parent container instead of the current one.
  */
-@resolver
+@containerResolver
 export class ParentResolver<T = any> implements Resolver<T> {
     /**
      * Creates a Parent Resolver for the supplied key.
