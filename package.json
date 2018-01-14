@@ -7,8 +7,8 @@
     },
     "description": "Dependency injection for Vue using a derived Aurelia container",
     "main": "dist/vue-di.cjs.js",
-    "module": "dist/rollup-plugin-typescript.es.js",
-    "jsnext:main": "dist/rollup-plugin-typescript.es.js",
+    "module": "dist/vue-di.es.js",
+    "jsnext:main": "dist/vue-di.es.js",
     "types": "dist/di.d.ts",
     "scripts": {
         "prepublish": "npm run test && npm run build",
