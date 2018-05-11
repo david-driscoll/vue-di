@@ -20,7 +20,7 @@ describe('All property decorator', () => {
 
         @Component
         class MyComponent extends NewVue {
-            @all(Item) public items: Item[];
+            @all(Item) public items!: Item[];
         }
 
         const wrapper = mount<MyComponent>(MyComponent);

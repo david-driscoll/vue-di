@@ -17,7 +17,7 @@ describe('Lazy property decorator', () => {
 
         @Component
         class MyComponent extends NewVue {
-            @lazy(Service) public service: () => Service;
+            @lazy(Service) public service!: () => Service;
         }
 
         const wrapper = mount<MyComponent>(MyComponent);
@@ -35,7 +35,7 @@ describe('Lazy property decorator', () => {
 
         @Component
         class MyComponent extends NewVue {
-            @lazy(Service) public service: () => Service;
+            @lazy(Service) public service!: () => Service;
         }
 
         const wrapper = mount<MyComponent>(MyComponent);
@@ -53,7 +53,7 @@ describe('Lazy property decorator', () => {
 
         @Component
         class MyComponent extends NewVue {
-            @lazy(Service) public service: () => Service;
+            @lazy(Service) public service!: () => Service;
         }
 
         const wrapper = mount<MyComponent>(MyComponent);

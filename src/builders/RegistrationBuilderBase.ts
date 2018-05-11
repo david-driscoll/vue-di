@@ -2,7 +2,7 @@ import { Container } from '../container/Container';
 import { Key, Resolver } from '../types';
 
 class RegistrationResolver implements Resolver<any> {
-    public strategy: Resolver<any>;
+    public strategy!: Resolver<any>;
     public get(container: Container, key: Key<any>): any {
         return this.strategy.get(container, key);
     }

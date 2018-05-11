@@ -18,7 +18,7 @@ describe('Optional property decorator', () => {
 
         @Component
         class MyComponent extends NewVue {
-            @optional() public service: Service;
+            @optional() public service!: Service;
         }
 
         const wrapper = mount<MyComponent>(MyComponent);
@@ -40,7 +40,7 @@ describe('Optional property decorator', () => {
             },
         })
         class MyComponent extends NewVue {
-            @optional public service: Service;
+            @optional public service!: Service;
         }
 
         const wrapper = mount<MyComponent>(MyComponent);

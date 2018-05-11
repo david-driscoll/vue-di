@@ -17,12 +17,12 @@ describe('NewInstance property decorator', () => {
 
         @Component
         class MyComponent2 extends NewVue {
-            @resolve() public service: Service;
+            @resolve() public service!: Service;
         }
 
         @Component
         class MyComponent extends NewVue {
-            @newInstance() public service: Service;
+            @newInstance() public service!: Service;
         }
 
         const wrapper = mount<MyComponent>(MyComponent);

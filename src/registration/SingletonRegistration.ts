@@ -15,7 +15,7 @@ export class SingletonRegistration<T = any> {
     public _registerInChild: any;
 
     /** @internal */
-    public _key: Key<T>;
+    public _key!: Key<T>;
 
     /**
      * Creates an instance of SingletonRegistration.

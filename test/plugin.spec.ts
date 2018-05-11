@@ -31,9 +31,9 @@ class DisposableItem implements IDisposable {
 }
 
 class Property {
-    @lazy('abcd') public value: string;
-    @lazy('abcd') public item: Item;
-    @lazy('abcd') public funcItem: () => Item;
+    @lazy('abcd') public value!: string;
+    @lazy('abcd') public item!: Item;
+    @lazy('abcd') public funcItem!: () => Item;
 }
 
 describe('pluginTests', () => {
@@ -164,7 +164,7 @@ describe('pluginTests', () => {
 
             @Component
             class MyComponent2 extends NewVue {
-                @resolve() public service: Service;
+                @resolve() public service!: Service;
             }
 
             const wrapper2a = mount<MyComponent2>(MyComponent2);
@@ -285,7 +285,7 @@ describe('pluginTests', () => {
             @Component
             class MyComponent2 extends NewVue {
                 @Inject(Service as any)
-                public service: Service;
+                public service!: Service;
             }
 
             const wrapper2a = mount<MyComponent2>(MyComponent2);
@@ -307,7 +307,7 @@ describe('pluginTests', () => {
 
             @Component
             class MyComponent2 extends NewVue {
-                @Inject(symbol) public service: Service;
+                @Inject(symbol) public service!: Service;
             }
 
             const wrapper2a = mount<MyComponent2>(MyComponent2);
