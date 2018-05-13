@@ -11,7 +11,7 @@ import { Invoker } from '../invokers/Invoker';
 import { containerResolver as resolverDeco } from '../protocol/resolver';
 import { IRegistration } from '../registration/Registration';
 import { Strategy, StrategyResolver } from '../resolvers/StrategyResolver';
-import { IContainer, Key, Resolver } from '../types';
+import { IContainer, Key, RegistrationFactory, Resolver, TypedKey } from '../types';
 import { IContainerConfiguration } from './ContainerConfiguration';
 import { InvocationHandler } from './InvocationHandler';
 
@@ -201,7 +201,7 @@ export class Container {
      *                  value when instance is not supplied.
      * @return The resolver that was registered.
      */
-    public registerInstance<T>(key: Key<T>, instance?: any): Resolver<T> {
+    public registerInstance<T>(key: Key<T>, instance?: T): Resolver<T> {
         return this.registerResolver(
             key,
             new StrategyResolver(Strategy.Instance, instance === undefined ? key : instance)
@@ -216,7 +216,9 @@ export class Container {
      *              to the key value when fn is not supplied.
      * @return The resolver that was registered.
      */
-    public registerSingleton<T>(key: Key<T>, fn?: Function): Resolver<T> {
+    public registerSingleton<T>(key: TypedKey<T>): Resolver<T>;
+    public registerSingleton<T>(key: Key<T>, fn: RegistrationFactory<T>): Resolver<T>;
+    public registerSingleton<T>(key: Key<T>, fn?: RegistrationFactory<T>): Resolver<T> {
         return this.registerResolver(
             key,
             new StrategyResolver(Strategy.Singleton, fn === undefined ? key : fn)
@@ -230,7 +232,9 @@ export class Container {
      *              the key value when fn is not supplied.
      * @return The resolver that was registered.
      */
-    public registerTransient<T>(key: Key<T>, fn?: Function): Resolver<T> {
+    public registerTransient<T>(key: TypedKey<T>): Resolver<T>;
+    public registerTransient<T>(key: Key<T>, fn: RegistrationFactory<T>): Resolver<T>;
+    public registerTransient<T>(key: Key<T>, fn?: RegistrationFactory<T>): Resolver<T>     {
         return this.registerResolver(
             key,
             new StrategyResolver(Strategy.Transient, fn === undefined ? key : fn)
@@ -292,9 +296,9 @@ export class Container {
      * @param fn The constructor function to use when the dependency needs to be instantiated.
      *      This defaults to the key value when fn is not supplied.
      */
-    public autoRegister<T>(key: Key<T>): Resolver<T>;
+    public autoRegister<T>(key: TypedKey<T>): Resolver<T>;
     // tslint:disable-next-line:unified-signatures
-    public autoRegister<T>(key: Key<T>, fn: Function): Resolver<T>;
+    public autoRegister<T>(key: Key<T>, fn: () => T): Resolver<T>;
     public autoRegister<T>(key: Key<T>, fn?: any): Resolver<T> {
         // tslint:disable-next-line:no-parameter-reassignment
         fn = fn === undefined ? key : fn;
@@ -376,7 +380,7 @@ export class Container {
 
         if (resolver === undefined) {
             if (this.parent == null) {
-                return this.autoRegister<T>(key).get(this, key);
+                return this.autoRegister<T>(key as any).get(this, key);
             }
 
             const registration: IRegistration<T> = Reflect.getMetadata(constants.registration, key);
@@ -487,7 +491,7 @@ export class Container {
 
         if (resolver === undefined) {
             if (this.parent == null) {
-                return this.autoRegister(key).get(this, key);
+                return this.autoRegister(key as any).get(this, key) as T;
             }
 
             return this.parent._get(key);

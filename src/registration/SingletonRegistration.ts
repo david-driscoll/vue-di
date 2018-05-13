@@ -37,7 +37,7 @@ export class SingletonRegistration<T = any> {
      * @param fn The function to create the resolver for.
      * @return The resolver that was registered.
      */
-    public registerResolver(container: Container, key: Key<T>, fn: Function): Resolver<T> {
+    public registerResolver(container: Container, key: Key<T>, fn: () => T): Resolver<T> {
         const targetContainer = this._registerInChild ? container : container.root;
         const existingResolver = targetContainer.getResolver(this._key || key);
 

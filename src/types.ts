@@ -1,13 +1,15 @@
 /**
  * Used to allow functions/classes to specify custom dependency resolution logic.
  */
+export type TypedKey<T> = { new (...args: any[]): T }
+| { get(container: IContainer, key: Key<T>): T };
+export type RegistrationFactory<T> = { new (...args: any[]): T } | (() => T);
 export type Key<T> =
     | string
     | symbol
-    | { new (...args: any[]): T }
-    | { get(container: IContainer, key: Key<T>): T };
+    | TypedKey<T>;
 // tslint:disable-next-line:interface-name
-export interface Factory<T> {
+export type Factory<T> = {
     (...args: any[]): T;
     new (...args: any[]): T;
 }

@@ -29,7 +29,7 @@ export class TransientRegistration<T = any> {
      * @param fn The function to create the resolver for.
      * @return The resolver that was registered.
      */
-    public registerResolver(container: Container, key: Key<T>, fn: Function): Resolver<T> {
+    public registerResolver(container: Container, key: Key<T>, fn: () => T): Resolver<T> {
         const existingResolver = container.getResolver(this._key || key);
 
         return existingResolver === undefined
