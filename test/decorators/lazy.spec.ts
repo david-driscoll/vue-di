@@ -2,7 +2,7 @@
 import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 
-import { lazy, singleton, transient } from '../../src/decorators';
+import { Lazy, Singleton, Transient } from '../../src/decorators';
 import VueContainer from '../../src/di';
 
 describe('Lazy property decorator', () => {
@@ -10,14 +10,14 @@ describe('Lazy property decorator', () => {
         const NewVue = createLocalVue();
         NewVue.use(VueContainer);
 
-        @singleton()
+        @Singleton()
         class Service {
             public value = 1;
         }
 
         @Component
         class MyComponent extends NewVue {
-            @lazy(Service) public service!: () => Service;
+            @Lazy(Service) public service!: () => Service;
         }
 
         const wrapper = mount<MyComponent>(MyComponent);
@@ -28,14 +28,14 @@ describe('Lazy property decorator', () => {
         const NewVue = createLocalVue();
         NewVue.use(VueContainer);
 
-        @transient
+        @Transient
         class Service {
             public value = 1;
         }
 
         @Component
         class MyComponent extends NewVue {
-            @lazy(Service) public service!: () => Service;
+            @Lazy(Service) public service!: () => Service;
         }
 
         const wrapper = mount<MyComponent>(MyComponent);
@@ -46,14 +46,14 @@ describe('Lazy property decorator', () => {
         const NewVue = createLocalVue();
         NewVue.use(VueContainer);
 
-        @transient()
+        @Transient()
         class Service {
             public value = 1;
         }
 
         @Component
         class MyComponent extends NewVue {
-            @lazy(Service) public service!: () => Service;
+            @Lazy(Service) public service!: () => Service;
         }
 
         const wrapper = mount<MyComponent>(MyComponent);

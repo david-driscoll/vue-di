@@ -11,7 +11,7 @@ import { Invoker } from '../invokers/Invoker';
 /**
  * Decorator: Specifies a custom Invoker for the decorated item.
  */
-export function invoker(value: Invoker): any {
+export function Invoker(value: Invoker): any {
     return (target: any) => {
         Reflect.defineMetadata(constants.invoker, value, target);
     };

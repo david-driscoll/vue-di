@@ -11,9 +11,9 @@ import { _emptyParameters } from '../container/Container';
 /**
  * Decorator: Directs the TypeScript transpiler to write-out type metadata for the decorated class.
  */
-export function autoinject(): ClassDecorator;
-export function autoinject(potentialTarget: any): void;
-export function autoinject(potentialTarget?: any): any {
+export function AutoInject(): ClassDecorator;
+export function AutoInject(potentialTarget: any): void;
+export function AutoInject(potentialTarget?: any): any {
     const deco = (target: any) => {
         //make a copy of target.inject to avoid changing parent inject
         const previousInject = target.inject ? target.inject.slice() : null;

@@ -6,17 +6,17 @@ import { decorateParameterOrProperty } from './decorateParameterOrProperty';
  *
  * @export
  */
-export function parent(): (
+export function Parent(): (
     target: Object,
     propertyOrParameterName: string | symbol,
     index?: number
 ) => void;
-export function parent(
+export function Parent(
     target: Object,
     propertyOrParameterName: string | symbol,
     index?: number
 ): void;
-export function parent(target?: Object, propertyOrParameterName?: string | symbol, index?: number) {
+export function Parent(target?: Object, propertyOrParameterName?: string | symbol, index?: number) {
     const deco = () => {
         const resolver = (x: any) => ParentResolver.of(x);
 

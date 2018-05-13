@@ -3,17 +3,17 @@ import Vue from 'vue';
 import { Builder } from './builders';
 import { Container } from './container';
 import {
-    all,
-    autoinject,
-    factory,
-    lazy,
-    newInstance,
-    optional,
-    parent,
-    registration,
-    resolve,
-    singleton,
-    transient,
+    All,
+    AutoInject,
+    Factory,
+    Lazy,
+    NewInstance,
+    Optional,
+    Parent,
+    Registration,
+    Resolve,
+    Singleton,
+    Transient,
 } from './decorators';
 import { install } from './plugin';
 import { IContainer, Key } from './types';
@@ -27,16 +27,16 @@ export default {
     Builder,
     Container,
     install,
-    all,
-    autoinject,
-    factory,
-    lazy,
-    newInstance,
-    optional,
-    parent,
-    resolve,
-    singleton,
-    transient,
+    All,
+    AutoInject,
+    Factory,
+    Lazy,
+    NewInstance,
+    Optional,
+    Parent,
+    Resolve,
+    Singleton,
+    Transient,
 };
 
 export { Builder, Container, install };

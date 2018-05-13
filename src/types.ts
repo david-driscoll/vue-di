@@ -9,11 +9,11 @@ export type Key<T> =
     | symbol
     | TypedKey<T>;
 // tslint:disable-next-line:interface-name
-export type Factory<T> = {
+export interface IFactory<T> {
     (...args: any[]): T;
     new (...args: any[]): T;
 }
-export type Lazy<T> = () => T;
+export type ILazy<T> = () => T;
 
 // tslint:disable-next-line:interface-name
 export interface Resolver<T> {

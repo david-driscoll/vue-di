@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 
-import { optional, singleton } from '../../src/decorators';
+import { Optional, Singleton } from '../../src/decorators';
 import VueContainer from '../../src/di';
 
 describe('Optional property decorator', () => {
@@ -11,14 +11,14 @@ describe('Optional property decorator', () => {
         const NewVue = createLocalVue();
         NewVue.use(VueContainer);
 
-        @singleton
+        @Singleton
         class Service {
             public value = 1;
         }
 
         @Component
         class MyComponent extends NewVue {
-            @optional() public service!: Service;
+            @Optional() public service!: Service;
         }
 
         const wrapper = mount<MyComponent>(MyComponent);
@@ -29,7 +29,7 @@ describe('Optional property decorator', () => {
         const NewVue = createLocalVue();
         NewVue.use(VueContainer);
 
-        @singleton()
+        @Singleton()
         class Service {
             public value = 1;
         }
@@ -40,7 +40,7 @@ describe('Optional property decorator', () => {
             },
         })
         class MyComponent extends NewVue {
-            @optional public service!: Service;
+            @Optional public service!: Service;
         }
 
         const wrapper = mount<MyComponent>(MyComponent);

@@ -2,24 +2,24 @@ import { expect } from 'chai';
 import { __decorate } from 'tslib';
 import { Container } from '../src/container/Container';
 import {
-    all,
-    autoinject,
-    factory,
-    lazy,
-    newInstance,
-    optional,
-    parent,
-    singleton,
-    transient,
+    All,
+    AutoInject,
+    Factory,
+    Lazy,
+    NewInstance,
+    Optional,
+    Parent,
+    Singleton,
+    Transient,
 } from '../src/decorators';
-import { inject } from '../src/decorators/inject';
+import { Inject } from '../src/decorators/inject';
 import { AllResolver } from '../src/resolvers/AllResolver';
 import { FactoryResolver } from '../src/resolvers/FactoryResolver';
 import { LazyResolver } from '../src/resolvers/LazyResolver';
 import { NewInstanceResolver } from '../src/resolvers/NewInstanceResolver';
 import { OptionalResolver } from '../src/resolvers/OptionalResolver';
 import { ParentResolver } from '../src/resolvers/ParentResolver';
-import { Factory } from '../src/types';
+import { IFactory } from '../src/types';
 
 describe('container', () => {
     describe('injection', () => {
@@ -146,14 +146,14 @@ describe('container', () => {
         class SubService2 {}
 
         it('loads dependencies in tree classes', () => {
-            @autoinject
+            @AutoInject
             class ParentApp {
                 public constructor(public logger: Logger) {
                     this.logger = logger;
                 }
             }
 
-            @autoinject
+            @AutoInject
             class ChildApp extends ParentApp {
                 public constructor(public service: Service, logger: Logger) {
                     super(logger);
@@ -161,7 +161,7 @@ describe('container', () => {
                 }
             }
 
-            @autoinject
+            @AutoInject
             class SubChildApp1 extends ChildApp {
                 public constructor(
                     public subService1: SubService1,
@@ -173,7 +173,7 @@ describe('container', () => {
                 }
             }
 
-            @autoinject
+            @AutoInject
             class SubChildApp2 extends ChildApp {
                 public constructor(
                     public subService2: SubService2,
@@ -187,7 +187,7 @@ describe('container', () => {
 
             class SubChildApp3 extends ChildApp {}
 
-            @autoinject
+            @AutoInject
             class SubChildApp4 extends ChildApp {
                 public constructor(
                     public logger: Logger,
@@ -260,7 +260,7 @@ describe('container', () => {
                 }
             }
 
-            inject(Logger)(App1);
+            Inject(Logger)(App1);
 
             class App2 {
                 public constructor(public logger: Logger) {
@@ -268,7 +268,7 @@ describe('container', () => {
                 }
             }
 
-            inject(Logger)(App2);
+            Inject(Logger)(App2);
 
             const container = new Container();
             const app1 = container.get(App1);
@@ -286,7 +286,7 @@ describe('container', () => {
                 }
             }
 
-            inject(Logger)(App1);
+            Inject(Logger)(App1);
 
             class App2 {
                 public constructor(public logger: Logger) {
@@ -294,7 +294,7 @@ describe('container', () => {
                 }
             }
 
-            inject(Logger)(App2);
+            Inject(Logger)(App2);
 
             const container = new Container();
             container.registerSingleton(Logger, Logger);
@@ -306,7 +306,7 @@ describe('container', () => {
         });
 
         it('configures singleton via decorators helper (ES5/6)', () => {
-            @singleton
+            @Singleton
             class Logger {}
 
             class App1 {
@@ -365,7 +365,7 @@ describe('container', () => {
         });
 
         it('configures transient (non singleton) via metadata method (ES5/6)', () => {
-            @transient
+            @Transient
             class Logger {}
 
             class App1 {
@@ -457,7 +457,7 @@ describe('container', () => {
         });
 
         it('uses base metadata method (ES5/6) when derived does not specify', () => {
-            @transient
+            @Transient
             class LoggerBase {}
 
             class Logger extends LoggerBase {}
@@ -488,9 +488,9 @@ describe('container', () => {
         });
 
         it('overrides base metadata method (ES5/6) with derived configuration', () => {
-            @singleton
+            @Singleton
             class LoggerBase {}
-            @transient
+            @Transient
             class Logger extends LoggerBase {}
 
             class App1 {
@@ -589,7 +589,7 @@ describe('container', () => {
         });
 
         it(`doesn't get hidden when a super class adds metadata which doesn't include the base registration type`, () => {
-            @transient
+            @Transient
             class LoggerBase {}
 
             class Logger extends LoggerBase {}
@@ -653,7 +653,7 @@ describe('container', () => {
                         }
                     }
 
-                    lazy(Logger)(App1, 'getLogger', 0);
+                    Lazy(Logger)(App1, 'getLogger', 0);
 
                     const container = new Container();
                     const app1 = container.get(App1);
@@ -706,7 +706,7 @@ describe('container', () => {
                         }
                     }
 
-                    all(LoggerBase)(App, 'loggers', 0);
+                    All(LoggerBase)(App, 'loggers', 0);
 
                     const container = new Container();
                     container.registerSingleton(LoggerBase, VerboseLogger);
@@ -731,7 +731,7 @@ describe('container', () => {
                         }
                     }
 
-                    inject(Logger)(App1, null, 0);
+                    Inject(Logger)(App1, null, 0);
 
                     const container = new Container();
                     const app1 = container.get(App1);
@@ -765,7 +765,7 @@ describe('container', () => {
                 it('injects the instance if its registered in the container using decorator', () => {
                     class Logger {}
 
-                    @autoinject
+                    @AutoInject
                     class App {
                         public static inject = [Logger];
                         public constructor(public logger: Logger) {
@@ -773,7 +773,7 @@ describe('container', () => {
                         }
                     }
 
-                    optional()(App, 'logger', 0);
+                    Optional()(App, 'logger', 0);
 
                     const container = new Container();
                     container.registerSingleton(Logger, Logger);
@@ -806,7 +806,7 @@ describe('container', () => {
                     class VerboseLogger {}
                     class Logger {}
 
-                    @autoinject
+                    @AutoInject
                     class App {
                         public static inject = [Logger];
                         public constructor(public logger: Logger) {
@@ -814,7 +814,7 @@ describe('container', () => {
                         }
                     }
 
-                    optional()(App, 'logger', 0);
+                    Optional()(App, 'logger', 0);
 
                     const container = new Container();
                     container.registerSingleton(VerboseLogger, Logger);
@@ -926,7 +926,7 @@ describe('container', () => {
                         }
                     }
 
-                    parent()(App, 'logger', 0);
+                    Parent()(App, 'logger', 0);
 
                     const parentContainer = new Container();
                     const parentInstance = new Logger();
@@ -973,7 +973,7 @@ describe('container', () => {
                         }
                     }
 
-                    parent(App, 'logger', 0);
+                    Parent(App, 'logger', 0);
 
                     const container = new Container();
                     const instance = new Logger();
@@ -997,7 +997,7 @@ describe('container', () => {
                     public static inject() {
                         return [FactoryResolver.of(Logger)];
                     }
-                    public constructor(public getLogger: Factory<Logger>, public data: any) {
+                    public constructor(public getLogger: IFactory<Logger>, public data: any) {
                         this.getLogger = getLogger;
                         this.data = data;
                     }
@@ -1008,7 +1008,7 @@ describe('container', () => {
                         return [FactoryResolver.of(Service)];
                     }
                     public service: any;
-                    public constructor(public getService: Factory<Service>) {
+                    public constructor(public getService: IFactory<Service>) {
                         this.getService = getService;
                         this.service = new getService(data);
                     }
@@ -1040,24 +1040,24 @@ describe('container', () => {
 
                 class Service {
                     public static inject = [Logger];
-                    public constructor(public getLogger: Factory<Logger>, public data: any) {
+                    public constructor(public getLogger: IFactory<Logger>, public data: any) {
                         this.getLogger = getLogger;
                         this.data = data;
                     }
                 }
 
-                factory(Logger)(Service, 'getLogger', 0);
+                Factory(Logger)(Service, 'getLogger', 0);
 
                 class App {
                     public static inject = [Service];
                     public service: Service;
-                    public constructor(public getService: Factory<Service>) {
+                    public constructor(public getService: IFactory<Service>) {
                         this.getService = getService;
                         this.service = new getService(data);
                     }
                 }
 
-                factory(Service)(App, 'getLogger', 0);
+                Factory(Service)(App, 'getLogger', 0);
 
                 beforeEach(() => {
                     container = new Container();
@@ -1110,7 +1110,7 @@ describe('container', () => {
                         }
                     }
 
-                    newInstance(App1, 'logger', 0);
+                    NewInstance(App1, 'logger', 0);
 
                     const container = new Container();
                     const logger = container.get(Logger);
@@ -1147,7 +1147,7 @@ describe('container', () => {
                         }
                     }
 
-                    newInstance(Logger, Dependency)(App1, 'logger', 0);
+                    NewInstance(Logger, Dependency)(App1, 'logger', 0);
 
                     const container = new Container();
                     const logger = container.get(Logger);
@@ -1185,7 +1185,7 @@ describe('container', () => {
                         }
                     }
 
-                    newInstance(Logger, LazyResolver.of(Dependency))(App1, 'logger', 0);
+                    NewInstance(Logger, LazyResolver.of(Dependency))(App1, 'logger', 0);
 
                     const container = new Container();
                     const logger = container.get(Logger);

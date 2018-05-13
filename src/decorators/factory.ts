@@ -10,7 +10,7 @@ import { decorateParameterOrProperty } from './decorateParameterOrProperty';
 /**
  * Decorator: Specifies the dependency to create a factory method, that can accept optional arguments
  */
-export function factory(keyValue: Function) {
+export function Factory(keyValue: Function) {
     const resolver = FactoryResolver.of(keyValue);
 
     return decorateParameterOrProperty(x => resolver, 'all');

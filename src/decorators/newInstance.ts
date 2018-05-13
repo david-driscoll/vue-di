@@ -7,12 +7,12 @@ import { decorateParameterOrProperty } from './decorateParameterOrProperty';
  *
  * @export
  */
-export function newInstance(target: Object, propertyKey: string | symbol): void;
-export function newInstance(
+export function NewInstance(target: Object, propertyKey: string | symbol): void;
+export function NewInstance(
     asKey?: Key<any>,
     ...dynamicDeps: any[]
 ): (target: Object, propertyKey: string | symbol, parameterIndex?: number) => void;
-export function newInstance(targetOrAsKey?: Object | Key<any>, ...args: any[]) {
+export function NewInstance(targetOrAsKey?: Object | Key<any>, ...args: any[]) {
     const deco = (k?: Key<any>, ...dynamicDeps: any[]) => {
         const resolver = (x: any) => {
             const value = NewInstanceResolver.of(x, ...dynamicDeps);

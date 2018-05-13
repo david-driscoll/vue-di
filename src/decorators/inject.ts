@@ -11,7 +11,7 @@ import constants from '../constants';
  * Decorator: Specifies the dependencies that should be injected by the DI Container
  *      into the decoratored class/function.
  */
-export function inject(...rest: any[]): any {
+export function Inject(...rest: any[]): any {
     return (target: any, key: string | symbol, descriptor: TypedPropertyDescriptor<any>) => {
         // handle when used as a parameter
         if (typeof descriptor === 'number' && rest.length === 1) {

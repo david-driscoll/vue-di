@@ -7,7 +7,7 @@ import { decorateParameterOrProperty } from './decorateParameterOrProperty';
  *
  * @export
  */
-export function all(keyValue: Key<any>) {
+export function All(keyValue: Key<any>) {
     const resolver = AllResolver.of(keyValue);
 
     return decorateParameterOrProperty(x => resolver, 'all');

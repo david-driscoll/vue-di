@@ -11,7 +11,7 @@ import { FactoryInvoker } from '../invokers/FactoryInvoker';
 /**
  * Decorator: Specifies that the decorated item should be called as a factory function, rather than a constructor.
  */
-export function invokeAsFactory(potentialTarget?: any): any {
+export function InvokeAsFactory(potentialTarget?: any): any {
     const deco = (target: any) => {
         Reflect.defineMetadata(constants.invoker, FactoryInvoker.instance, target);
     };

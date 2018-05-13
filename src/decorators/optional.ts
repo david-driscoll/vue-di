@@ -11,15 +11,15 @@ import { decorateParameterOrProperty } from './decorateParameterOrProperty';
 
 //     return decorateParameterOrProperty(resolver, 'optional');
 // }
-export function optional(
+export function Optional(
     checkParent?: boolean
 ): (target: Object, propertyKey: string | symbol, parameterIndex?: number) => void;
-export function optional(
+export function Optional(
     target: Object,
     propertyKey: string | symbol,
     parameterIndex?: number
 ): void;
-export function optional(
+export function Optional(
     checkParentOrTarget?: boolean | Function | Object,
     propertyKey?: string | symbol,
     parameterIndex?: number

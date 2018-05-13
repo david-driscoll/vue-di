@@ -6,9 +6,9 @@ import { decorateParameterOrProperty } from './decorateParameterOrProperty';
  *
  * @export
  */
-export function resolve(target: Object, propertyKey: string | symbol): void;
-export function resolve(key?: Key<any>): PropertyDecorator;
-export function resolve(targetOrKey?: Object | Key<any>, propertyKey?: string | symbol) {
+export function Resolve(target: Object, propertyKey: string | symbol): void;
+export function Resolve(key?: Key<any>): PropertyDecorator;
+export function Resolve(targetOrKey?: Object | Key<any>, propertyKey?: string | symbol) {
     const deco = (k?: Key<any>) => decorateParameterOrProperty(x => k || x, 'resolve');
     if (propertyKey == null) {
         return deco(targetOrKey as any);
@@ -18,4 +18,4 @@ export function resolve(targetOrKey?: Object | Key<any>, propertyKey?: string | 
     return deco()(targetOrKey!, propertyKey);
 }
 
-export const inject = resolve;
+export const inject = Resolve;

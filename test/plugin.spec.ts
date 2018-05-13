@@ -4,23 +4,23 @@ import { IDisposable } from 'ts-disposables';
 import Component from 'vue-class-component';
 import { Inject } from 'vue-property-decorator';
 import { createLocalVue, mount } from 'vue-test-utils';
-import { autoinject, lazy, resolve, singleton } from '../src/decorators';
+import { AutoInject, Lazy, Resolve, Singleton } from '../src/decorators';
 // tslint:disable:max-classes-per-file
 
 import VueContainer, { Container } from '../src/di';
 
-@autoinject
+@AutoInject
 class Stuff {
     public value = 123;
     public constructor() {}
 }
 
-@autoinject
+@AutoInject
 class Item {
     public constructor(public stuff: Stuff) {}
 }
 
-@autoinject
+@AutoInject
 class DisposableItem implements IDisposable {
     public _disposed = false;
     public constructor(public stuff: Stuff) {}
@@ -31,9 +31,9 @@ class DisposableItem implements IDisposable {
 }
 
 class Property {
-    @lazy('abcd') public value!: string;
-    @lazy('abcd') public item!: Item;
-    @lazy('abcd') public funcItem!: () => Item;
+    @Lazy('abcd') public value!: string;
+    @Lazy('abcd') public item!: Item;
+    @Lazy('abcd') public funcItem!: () => Item;
 }
 
 describe('pluginTests', () => {
@@ -157,14 +157,14 @@ describe('pluginTests', () => {
             const NewVue = createLocalVue();
             NewVue.use(VueContainer);
 
-            @singleton
+            @Singleton
             class Service {
                 public value = 1;
             }
 
             @Component
             class MyComponent2 extends NewVue {
-                @resolve() public service!: Service;
+                @Resolve() public service!: Service;
             }
 
             const wrapper2a = mount<MyComponent2>(MyComponent2);
@@ -277,7 +277,7 @@ describe('pluginTests', () => {
             const NewVue = createLocalVue();
             NewVue.use(VueContainer);
 
-            @singleton
+            @Singleton
             class Service {
                 public value = 1;
             }

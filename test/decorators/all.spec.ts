@@ -2,7 +2,7 @@
 import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 
-import { all } from '../../src/decorators';
+import { All } from '../../src/decorators';
 import VueContainer from '../../src/di';
 
 describe('All property decorator', () => {
@@ -20,7 +20,7 @@ describe('All property decorator', () => {
 
         @Component
         class MyComponent extends NewVue {
-            @all(Item) public items!: Item[];
+            @All(Item) public items!: Item[];
         }
 
         const wrapper = mount<MyComponent>(MyComponent);

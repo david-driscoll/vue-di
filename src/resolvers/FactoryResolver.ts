@@ -6,19 +6,19 @@
  */
 import { Container } from '../container/Container';
 import { containerResolver } from '../protocol/resolver';
-import { Factory, Key, Resolver } from '../types';
+import { FactoryMethod, Key, Resolver } from '../types';
 
 /**
  * Used to allow injecting dependencies but also passing data to the constructor.
  */
 @containerResolver
-export class FactoryResolver<F extends Factory<T>, T = any> implements Resolver<F> {
+export class FactoryResolver<F extends FactoryMethod<T>, T = any> implements Resolver<F> {
     /**
      * Creates a Factory Resolver for the supplied key.
      * @param key The key to resolve.
      * @return Returns an instance of Factory for the key.
      */
-    public static of<F extends Factory<T>, T = any>(key: Function) {
+    public static of<F extends FactoryMethod<T>, T = any>(key: Function) {
         return new FactoryResolver<F>(key);
     }
 

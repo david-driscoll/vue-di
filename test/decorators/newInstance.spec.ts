@@ -2,7 +2,7 @@
 import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 
-import { newInstance, resolve, singleton } from '../../src/decorators';
+import { NewInstance, Resolve, Singleton } from '../../src/decorators';
 import VueContainer from '../../src/di';
 
 describe('NewInstance property decorator', () => {
@@ -10,19 +10,19 @@ describe('NewInstance property decorator', () => {
         const NewVue = createLocalVue();
         NewVue.use(VueContainer);
 
-        @singleton
+        @Singleton
         class Service {
             public value = 1;
         }
 
         @Component
         class MyComponent2 extends NewVue {
-            @resolve() public service!: Service;
+            @Resolve() public service!: Service;
         }
 
         @Component
         class MyComponent extends NewVue {
-            @newInstance() public service!: Service;
+            @NewInstance() public service!: Service;
         }
 
         const wrapper = mount<MyComponent>(MyComponent);
