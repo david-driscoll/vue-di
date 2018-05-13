@@ -49,7 +49,7 @@ declare module 'vue/types/vue' {
 
     // tslint:disable-next-line:no-shadowed-variable
     interface Vue {
-        container?: Container;
+        container: Container;
     }
 }
 
