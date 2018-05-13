@@ -116,14 +116,14 @@ function innerInstall(Vue: VueConstructor, options: Partial<IOptions>) {
 
             if (this.$options.registerServices) this.$options.registerServices(container);
 
-            if (createContainer) {
-                Object.defineProperty(this, 'container', {
-                    enumerable: true,
-                    configurable: false,
-                    writable: false,
-                    value: container,
-                });
+            Object.defineProperty(this, 'container', {
+                enumerable: true,
+                configurable: false,
+                writable: false,
+                value: container,
+            });
 
+            if (createContainer) {
                 disposable.add(container);
             }
 
