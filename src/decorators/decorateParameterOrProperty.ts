@@ -1,5 +1,4 @@
 import 'reflect-metadata';
-import Vue, { ComponentOptions } from 'vue';
 import constants from '../constants';
 import { Resolver } from '../types';
 import { getDecoratorDependencies } from './getDecoratorDependencies';
@@ -19,7 +18,7 @@ export function decorateParameterOrProperty(resolver: (type: any) => Resolver<an
             const instance = resolver(propertyType);
             Reflect.defineMetadata(constants.resolver, instance, target, propertyOrParameterName);
 
-            return createVueDecorator((options: ComponentOptions<Vue>, key: string | symbol) => {
+            return createVueDecorator((options: any, key: string | symbol) => {
                 if (!options.dependencies) {
                     options.dependencies = {};
                 }

@@ -1,29 +1,17 @@
-import Vue, { ComponentOptions } from 'vue';
-
-export type VueClass<V extends Vue> = { new (...args: any[]): V } & typeof Vue;
-
-export type DecoratedClass = VueClass<Vue> & {
-    // Property, method and parameter decorators created by `createDecorator` helper
-    // will enqueue functions that update component options for lazy processing.
-    // They will be executed just before creating component constructor.
-    __decorators__?: Array<(options: ComponentOptions<Vue>) => void>;
-};
+// Simulates the vue decotrator without needing to make one.
 
 export function createVueDecorator(
-    factory: (options: ComponentOptions<Vue>) => void
+    factory: (options: any /*ComponentOptions<Vue>*/) => void
 ): ClassDecorator;
 export function createVueDecorator(
-    factory: (options: ComponentOptions<Vue>, key: string | symbol) => void
+    factory: (options: any /*ComponentOptions<Vue>*/, key: string | symbol) => void
 ): PropertyDecorator;
 export function createVueDecorator(factory: Function): ClassDecorator | PropertyDecorator {
     return (target: any, key?: string | symbol) => {
-        const ctor =
-            typeof target === 'function'
-                ? (target as DecoratedClass)
-                : (target.constructor as DecoratedClass);
+        const ctor = typeof target === 'function' ? target : target.constructor;
         if (!ctor.__decorators__) {
             ctor.__decorators__ = [];
         }
-        ctor.__decorators__.push(options => factory(options, key));
+        ctor.__decorators__.push((options: any) => factory(options, key));
     };
 }

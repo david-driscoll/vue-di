@@ -1,17 +1,17 @@
 import typescript from 'rollup-plugin-typescript2';
 
 export default {
-    input: './src/di.ts',
+    input: './src/vue.ts',
     output: [
         {
-            name: 'di',
-            file: './dist/di.esm.js',
+            name: 'vue-di',
+            file: './dist/vue-di.esm.js',
             format: 'es',
             sourcemap: true,
         },
         {
-            name: 'di',
-            file: './dist/di.cjs.js',
+            name: 'vue-di',
+            file: './dist/vue-di.cjs.js',
             format: 'cjs',
             sourcemap: true,
         },
@@ -20,10 +20,10 @@ export default {
         typescript({
             tsconfigOverride: {
                 compilerOptions: {
-                    module: 'es2015',
+                    "module": "es2015",
                     declaration: true,
                 },
-                exclude: ['test/**/*.ts'],
+                exclude: ["test/**/*.ts"]
             },
             typescript: require('typescript'),
         }),
