@@ -8,6 +8,7 @@ import {
     NewInstance,
     Optional,
     Parent,
+    Inject,
     Registration,
     Resolve,
     Singleton,

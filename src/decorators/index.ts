@@ -3,6 +3,7 @@ export * from './autoinject';
 export * from './factory';
 export * from './lazy';
 export * from './newInstance';
+export * from './inject';
 export * from './optional';
 export * from './parent';
 export * from './registration';

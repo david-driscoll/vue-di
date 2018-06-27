@@ -7,7 +7,7 @@ import { createLocalVue, mount } from 'vue-test-utils';
 import { AutoInject, Lazy, Resolve, Singleton } from '../src/decorators';
 // tslint:disable:max-classes-per-file
 
-import VueContainer, { Container } from '../src/di';
+import VueContainer, { Container } from '../src/vue';
 
 @AutoInject
 class Stuff {

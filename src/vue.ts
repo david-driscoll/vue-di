@@ -16,11 +16,6 @@ import {
 } from './di';
 
 import { install } from './plugin';
-
-export * from './container';
-export * from './decorators';
-export * from './protocol/protocol';
-export * from './types';
 export * from './di';
 
 export default {

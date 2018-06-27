@@ -3,7 +3,7 @@ import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 
 import { Lazy, Singleton, Transient } from '../../src/decorators';
-import VueContainer from '../../src/di';
+import VueContainer from '../../src/vue';
 
 describe('Lazy property decorator', () => {
     it('should work with a singleton service', () => {

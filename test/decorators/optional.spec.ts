@@ -4,7 +4,7 @@ import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 
 import { Optional, Singleton } from '../../src/decorators';
-import VueContainer from '../../src/di';
+import VueContainer from '../../src/vue';
 
 describe('Optional property decorator', () => {
     it('should work with no registered service', () => {

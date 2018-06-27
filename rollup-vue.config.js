@@ -5,13 +5,13 @@ export default {
     output: [
         {
             name: 'vue-di',
-            file: './dist/vue-di.esm.js',
+            file: './dist/vue.esm.js',
             format: 'es',
             sourcemap: true,
         },
         {
             name: 'vue-di',
-            file: './dist/vue-di.cjs.js',
+            file: './dist/vue.cjs.js',
             format: 'cjs',
             sourcemap: true,
         },
@@ -20,10 +20,16 @@ export default {
         typescript({
             tsconfigOverride: {
                 compilerOptions: {
-                    "module": "es2015",
+                    module: 'es2015',
                     declaration: true,
                 },
-                exclude: ["test/**/*.ts"]
+                exclude: [
+                    'test/**/*.ts',
+                    'src/decorators/invokeAsFactory.ts',
+                    'src/decorators/invoker.ts',
+                    'src/invokers/FactoryInvoker.ts',
+                    'src/resolvers/index.ts',
+                ],
             },
             typescript: require('typescript'),
         }),
