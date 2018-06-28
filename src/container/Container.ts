@@ -430,20 +430,24 @@ export class Container {
             return this.parent.getAll(key);
         }
 
+        let results: T[];
         if (resolver instanceof StrategyResolver && resolver.strategy === Strategy.Array) {
             const state = resolver.state;
             const len = state.length;
             let i = len;
-            const results = new Array(i);
+            results = new Array(i);
 
             while (i--) {
                 results[len - i - 1] = state[i].get(this, key);
             }
-
-            return results;
+        } else {
+            results = [resolver.get(this, key)];
         }
 
-        return [resolver.get(this, key)];
+        return this.parent
+            ? this.parent.getAll(key)
+                .concat(results)
+            : results;
     }
 
     /**

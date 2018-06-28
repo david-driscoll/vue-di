@@ -843,7 +843,7 @@ describe('container', () => {
             });
 
             describe('All', () => {
-                it('resolves last matching dependencty when getting single', () => {
+                it('resolves last matching dependency when getting single', () => {
                     class LoggerBase {}
 
                     class VerboseLogger extends LoggerBase {}
@@ -914,6 +914,87 @@ describe('container', () => {
                     container.registerSingleton(LoggerBase, VerboseLogger);
                     container.registerTransient(LoggerBase, Logger);
                     const app = container.get(App);
+
+                    expect(app.loggers).to.be.instanceOf(Array);
+                    expect(app.loggers.length).to.equal(2);
+                    expect(app.loggers[0]).to.be.instanceOf(VerboseLogger);
+                    expect(app.loggers[1]).to.be.instanceOf(Logger);
+                });
+
+                it('resolves last matching dependency when getting single [children]', () => {
+                    class LoggerBase {}
+
+                    class VerboseLogger extends LoggerBase {}
+
+                    class Logger extends LoggerBase {}
+
+                    class App {
+                        public static inject() {
+                            return [LoggerBase];
+                        }
+                        public constructor(public logger: LoggerBase) {
+                            this.logger = logger;
+                        }
+                    }
+
+                    const container = new Container();
+                    const childContainer = container.createChild();
+                    childContainer.registerTransient(LoggerBase, Logger);
+                    container.registerSingleton(LoggerBase, VerboseLogger);
+                    const app = childContainer.get(App);
+
+                    expect(app.logger).to.be.instanceOf(Logger);
+                });
+
+                it('resolves all matching dependencies as an array of instances [children]', () => {
+                    class LoggerBase {}
+
+                    class VerboseLogger extends LoggerBase {}
+
+                    class Logger extends LoggerBase {}
+
+                    class App {
+                        public static inject() {
+                            return [AllResolver.of(LoggerBase)];
+                        }
+                        public constructor(public loggers: LoggerBase[]) {
+                            this.loggers = loggers;
+                        }
+                    }
+
+                    const container = new Container();
+                    const childContainer = container.createChild();
+                    container.registerSingleton(LoggerBase, VerboseLogger);
+                    childContainer.registerTransient(LoggerBase, Logger);
+                    const app = childContainer.get(App);
+
+                    expect(app.loggers).to.be.instanceOf(Array);
+                    expect(app.loggers.length).to.equal(2);
+                    expect(app.loggers[0]).to.be.instanceOf(VerboseLogger);
+                    expect(app.loggers[1]).to.be.instanceOf(Logger);
+                });
+
+                it('resolves all matching dependencies as an array of instances using decorator [children]', () => {
+                    class LoggerBase {}
+
+                    class VerboseLogger extends LoggerBase {}
+
+                    class Logger extends LoggerBase {}
+
+                    class App {
+                        public static inject = [LoggerBase];
+                        public constructor(public loggers: LoggerBase[]) {
+                            this.loggers = loggers;
+                        }
+                    }
+
+                    All(LoggerBase)(App, 'loggers', 0);
+
+                    const container = new Container();
+                    const childContainer = container.createChild();
+                    container.registerSingleton(LoggerBase, VerboseLogger);
+                    childContainer.registerTransient(LoggerBase, Logger);
+                    const app = childContainer.get(App);
 
                     expect(app.loggers).to.be.instanceOf(Array);
                     expect(app.loggers.length).to.equal(2);
