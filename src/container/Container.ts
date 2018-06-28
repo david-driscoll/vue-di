@@ -251,7 +251,7 @@ export class Container {
      */
     public registerTransient<T>(key: TypedKey<T>): Resolver<T>;
     public registerTransient<T>(key: Key<T>, fn: RegistrationFactory<T>): Resolver<T>;
-    public registerTransient<T>(key: Key<T>, fn?: RegistrationFactory<T>): Resolver<T>     {
+    public registerTransient<T>(key: Key<T>, fn?: RegistrationFactory<T>): Resolver<T> {
         return this.registerResolver(
             key,
             new StrategyResolver(Strategy.Transient, fn === undefined ? key : fn)
@@ -356,7 +356,7 @@ export class Container {
     /**
      * Inspects the container to determine if a particular key has been registred.
      * @param key The key that identifies the dependency at resolution time; usually a constructor function.
-     * @param checkParent Indicates whether or not  to check the parent container hierarchy.
+     * @param checkParent Indicates whether or not to check the parent container hierarchy.
      * @return Returns true if the key has been registred; false otherwise.
      */
     public hasHandler<T>(key: Key<T>, checkParent = false): boolean {
@@ -432,11 +432,12 @@ export class Container {
 
         if (resolver instanceof StrategyResolver && resolver.strategy === Strategy.Array) {
             const state = resolver.state;
-            let i = state.length;
+            const len = state.length;
+            let i = len;
             const results = new Array(i);
 
             while (i--) {
-                results[i] = state[i].get(this, key);
+                results[len - i - 1] = state[i].get(this, key);
             }
 
             return results;
@@ -508,13 +509,17 @@ export class Container {
 
         if (resolver === undefined) {
             if (this.parent == null) {
-                return (child || this).autoRegister(key as any).get((child || this), key) as T;
+                return (child || this).autoRegister(key as any).get(child || this, key) as T;
             }
 
             return this.parent._get(key, child || this);
         }
 
-        if (child && resolver instanceof StrategyResolver && resolver.strategy === Strategy.Scoped) {
+        if (
+            child &&
+            resolver instanceof StrategyResolver &&
+            resolver.strategy === Strategy.Scoped
+        ) {
             const childResolver = new StrategyResolver(resolver.strategy, resolver.originalState);
             child.registerResolver(key, childResolver);
 

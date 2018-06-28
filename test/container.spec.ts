@@ -890,8 +890,8 @@ describe('container', () => {
 
                     expect(app.loggers).to.be.instanceOf(Array);
                     expect(app.loggers.length).to.equal(2);
-                    expect(app.loggers[1]).to.be.instanceOf(VerboseLogger);
-                    expect(app.loggers[0]).to.be.instanceOf(Logger);
+                    expect(app.loggers[0]).to.be.instanceOf(VerboseLogger);
+                    expect(app.loggers[1]).to.be.instanceOf(Logger);
                 });
 
                 it('resolves all matching dependencies as an array of instances using decorator', () => {
@@ -917,8 +917,8 @@ describe('container', () => {
 
                     expect(app.loggers).to.be.instanceOf(Array);
                     expect(app.loggers.length).to.equal(2);
-                    expect(app.loggers[1]).to.be.instanceOf(VerboseLogger);
-                    expect(app.loggers[0]).to.be.instanceOf(Logger);
+                    expect(app.loggers[0]).to.be.instanceOf(VerboseLogger);
+                    expect(app.loggers[1]).to.be.instanceOf(Logger);
                 });
             });
 
