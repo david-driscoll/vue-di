@@ -226,6 +226,23 @@ export class Container {
     }
 
     /**
+     * Registers a type (constructor function) such that the container always returns the same instance for
+     *  each request.
+     * @param key The key that identifies the dependency at resolution time; usually a constructor function.
+     * @param fn The constructor function to use when the dependency needs to be instantiated. This defaults
+     *              to the key value when fn is not supplied.
+     * @return The resolver that was registered.
+     */
+    public registerScoped<T>(key: TypedKey<T>): Resolver<T>;
+    public registerScoped<T>(key: Key<T>, fn: RegistrationFactory<T>): Resolver<T>;
+    public registerScoped<T>(key: Key<T>, fn?: RegistrationFactory<T>): Resolver<T> {
+        return this.registerResolver(
+            key,
+            new StrategyResolver(Strategy.Scoped, fn === undefined ? key : fn)
+        );
+    }
+
+    /**
      * Registers a type (constructor function) such that the container returns a new instance for each request.
      * @param key The key that identifies the dependency at resolution time; usually a constructor function.
      * @param fn The constructor function to use when the dependency needs to be instantiated. This defaults to
@@ -385,11 +402,11 @@ export class Container {
 
             const registration: IRegistration<T> = Reflect.getMetadata(constants.registration, key);
 
-            if (registration === undefined) {
-                return this.parent._get(key);
+            if (registration) {
+                return registration.registerResolver(this, key, key as any).get(this, key);
             }
 
-            return registration.registerResolver(this, key, key as any).get(this, key);
+            return this.parent._get(key, this);
         }
 
         return resolver.get(this, key);
@@ -486,18 +503,25 @@ export class Container {
         (this as any).root = null;
     }
 
-    private _get<T>(key: Key<T>): T {
+    private _get<T>(key: Key<T>, child?: Container): T {
         const resolver = this._resolvers.get(key);
 
         if (resolver === undefined) {
             if (this.parent == null) {
-                return this.autoRegister(key as any).get(this, key) as T;
+                return (child || this).autoRegister(key as any).get((child || this), key) as T;
             }
 
-            return this.parent._get(key);
+            return this.parent._get(key, child || this);
         }
 
-        return resolver.get(this, key);
+        if (child && resolver instanceof StrategyResolver && resolver.strategy === Strategy.Scoped) {
+            const childResolver = new StrategyResolver(resolver.strategy, resolver.originalState);
+            child.registerResolver(key, childResolver);
+
+            return child.get(key);
+        }
+
+        return resolver.get(child || this, key);
     }
 
     private _createInvocationHandler(fn: Function & { inject?: any }): InvocationHandler {

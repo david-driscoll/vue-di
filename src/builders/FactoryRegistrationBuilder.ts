@@ -9,7 +9,7 @@ class RegistrationFactoryResolver implements Resolver<any> {
     public constructor(private readonly factory: FactoryMethod<any>) {}
 
     public get(container: Container, key: Key<any>): any {
-        if (this.strategy === Strategy.Singleton) {
+        if (this.strategy === Strategy.Singleton || this.strategy === Strategy.Scoped) {
             if (!this.instance) {
                 this.instance = this.factory(container, key);
             }
@@ -29,6 +29,12 @@ export class FactoryRegistrationBuilder<T> extends RegistrationBuilderBase<T> {
 
     public singleInstance() {
         this.resolver.strategy = Strategy.Singleton;
+
+        return this;
+    }
+
+    public instancePerScoped() {
+        this.resolver.strategy = Strategy.Scoped;
 
         return this;
     }

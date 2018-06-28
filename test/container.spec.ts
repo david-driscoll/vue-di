@@ -11,6 +11,7 @@ import {
     Parent,
     Singleton,
     Transient,
+    Scoped,
 } from '../src/decorators';
 import { Inject } from '../src/decorators/inject';
 import { AllResolver } from '../src/resolvers/AllResolver';
@@ -235,6 +236,9 @@ describe('container', () => {
             expect(() => container.registerSingleton(null as any)).to.throw();
             expect(() => container.registerSingleton(undefined as any)).to.throw();
 
+            expect(() => container.registerScoped(null as any)).to.throw();
+            expect(() => container.registerScoped(undefined as any)).to.throw();
+
             expect(() => container.registerTransient(null as any)).to.throw();
             expect(() => container.registerTransient(undefined as any)).to.throw();
 
@@ -328,10 +332,147 @@ describe('container', () => {
             }
 
             const container = new Container();
+            const childContainer = container.createChild();
             const app1 = container.get(App1);
-            const app2 = container.get(App2);
+            const app2 = childContainer.get(App2);
 
             expect(app1.logger).to.equal(app2.logger);
+        });
+
+        it('configures scoped via api [singleton]', () => {
+            class Logger {
+                private static value = 0;
+                public value = Logger.value++;
+            }
+
+            class App1 {
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            Inject(Logger)(App1);
+
+            class App2 {
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            Inject(Logger)(App2);
+
+            const container = new Container();
+            const containerChild = container.createChild();
+            container.registerScoped(Logger);
+            container.registerTransient(App1);
+            container.registerTransient(App2);
+
+            const app1 = containerChild.get(App1);
+            const app2 = containerChild.get(App2);
+
+            expect(app1.logger).to.equal(app2.logger);
+        });
+
+        it('configures scoped via decorators helper (ES5/6) [singleton]', () => {
+            @Scoped
+            class Logger {
+                private static value = 0;
+                public value = Logger.value++;
+            }
+
+            @Transient
+            class App1 {
+                public static inject() {
+                    return [Logger];
+                }
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            @Transient
+            class App2 {
+                public static inject() {
+                    return [Logger];
+                }
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            const container = new Container();
+            const containerChild = container.createChild();
+            const app1 = containerChild.get(App1);
+            const app2 = containerChild.get(App2);
+
+            expect(app1.logger).to.equal(app2.logger);
+        });
+
+        it('configures scoped via api [transient]', () => {
+            class Logger {
+                private static value = 0;
+                public value = Logger.value++;
+            }
+
+            class App1 {
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            Inject(Logger)(App1);
+
+            class App2 {
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            Inject(Logger)(App2);
+
+            const container = new Container();
+            container.registerScoped(Logger);
+            const containerChild = container.createChild();
+            container.registerScoped(App1);
+            containerChild.registerScoped(App2);
+
+            const app1 = container.get(App1);
+            const app2 = containerChild.get(App2);
+
+            expect(app1.logger).not.to.equal(app2.logger);
+        });
+
+        it('configures scoped via decorators helper (ES5/6) [transient]', () => {
+            @Scoped
+            class Logger {
+                private static value = 0;
+                public value = Logger.value++;
+            }
+
+            class App1 {
+                public static inject() {
+                    return [Logger];
+                }
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            class App2 {
+                public static inject() {
+                    return [Logger];
+                }
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            const container = new Container();
+            const containerChild = container.createChild();
+            const app1 = container.get(App1);
+            const app2 = containerChild.get(App2);
+
+            expect(app1.logger).not.to.equal(app2.logger);
         });
 
         it('configures transient (non singleton) via api', () => {
@@ -532,6 +673,21 @@ describe('container', () => {
             expect(logger2).not.to.equal(logger1);
         });
 
+        it('configures key as service when scoped api only provided with key', () => {
+            class Logger {}
+
+            const container = new Container();
+            container.registerScoped(Logger);
+            const containerChild = container.createChild();
+
+            const logger1 = container.get(Logger);
+            const logger2 = containerChild.get(Logger);
+
+            expect(logger1).to.be.instanceOf(Logger);
+            expect(logger2).to.be.instanceOf(Logger);
+            expect(logger2).not.to.equal(logger1);
+        });
+
         it('configures key as service when singleton api only provided with key', () => {
             class Logger {}
 
@@ -563,6 +719,28 @@ describe('container', () => {
             container.registerSingleton(LoggerBase, Logger);
 
             const app = container.get(App);
+
+            expect(app.logger).to.be.instanceOf(Logger);
+        });
+
+        it('configures concrete scoped via api for abstract dependency', () => {
+            class LoggerBase {}
+            class Logger extends LoggerBase {}
+
+            class App {
+                public static inject() {
+                    return [LoggerBase];
+                }
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            const container = new Container();
+            container.registerScoped(LoggerBase, Logger);
+            const childContainer = container.createChild();
+
+            const app = childContainer.get(App);
 
             expect(app.logger).to.be.instanceOf(Logger);
         });
@@ -886,6 +1064,30 @@ describe('container', () => {
                     const app = childContainer.get(App);
 
                     expect(app.logger).to.be.instanceOf(Logger);
+                });
+
+                it('checks the parent container hierarchy when checkParent is true or default (scoped)', () => {
+                    class Logger {}
+
+                    class App {
+                        public static inject() {
+                            return [OptionalResolver.of(Logger)];
+                        }
+                        public constructor(public logger: Logger) {
+                            this.logger = logger;
+                        }
+                    }
+
+                    const parentContainer = new Container();
+                    parentContainer.registerScoped(Logger, Logger);
+
+                    const childContainer = parentContainer.createChild();
+                    childContainer.registerSingleton(App, App);
+
+                    const app = childContainer.get(App);
+
+                    expect(app.logger).to.be.instanceOf(Logger);
+                    expect(parentContainer.get(Logger)).not.to.be.eq(app.logger);
                 });
             });
 

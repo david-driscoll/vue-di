@@ -16,12 +16,15 @@ export enum Strategy {
     Function = 3,
     Array = 4,
     Alias = 5,
+    Scoped = 6,
 }
 
 @containerResolver
 export class StrategyResolver<T = any> implements Resolver<T> {
     public strategy: StrategyResolver<T> | Strategy;
     public state: any;
+    public originalState: any;
+    private _resolved = false;
 
     /**
      * Creates an instance of the StrategyResolver class.
@@ -30,7 +33,7 @@ export class StrategyResolver<T = any> implements Resolver<T> {
      */
     public constructor(strategy: Strategy, state: any) {
         this.strategy = strategy;
-        this.state = state;
+        this.state = this.originalState = state;
     }
 
     /**
@@ -44,11 +47,19 @@ export class StrategyResolver<T = any> implements Resolver<T> {
             case Strategy.Instance:
                 return this.state;
             case Strategy.Singleton:
+                if (this._resolved) return this.state;
                 const singleton = container.invoke(this.state);
                 this.state = singleton;
-                this.strategy = Strategy.Instance;
+                this._resolved = true;
 
                 return singleton;
+            case Strategy.Scoped:
+                if (this._resolved) return this.state;
+                const scoped = container.invoke(this.state);
+                this.state = scoped;
+                this._resolved = true;
+
+                return scoped;
             case Strategy.Transient:
                 return container.invoke(this.state);
             case Strategy.Function:

@@ -14,17 +14,12 @@ import { Registration } from './registration';
  * @export
  */
 export function Singleton<T extends Function>(ctor: T): void;
-export function Singleton(registerInChild?: boolean): ClassDecorator;
-export function Singleton(key: Key<any>, registerInChild?: boolean): ClassDecorator;
-export function Singleton(
-    keyOrRegisterInChild: Key<any> | boolean = false,
-    registerInChild = false
-): any {
-    if (typeof keyOrRegisterInChild === 'boolean') {
-        return Registration(new SingletonRegistration(keyOrRegisterInChild));
+export function Singleton(): ClassDecorator;
+export function Singleton(key: Key<any>): ClassDecorator;
+export function Singleton(key?: Key<any>): any {
+    if (key) {
+        return Registration(new SingletonRegistration())(key);
+    } else {
+        return Registration(new SingletonRegistration());
     }
-
-    return Registration(new SingletonRegistration(keyOrRegisterInChild, registerInChild))(
-        keyOrRegisterInChild
-    );
 }

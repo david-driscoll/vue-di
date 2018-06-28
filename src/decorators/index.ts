@@ -8,5 +8,6 @@ export * from './optional';
 export * from './parent';
 export * from './registration';
 export * from './resolve';
+export * from './scoped';
 export * from './singleton';
 export * from './transient';

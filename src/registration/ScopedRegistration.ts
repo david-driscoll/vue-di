@@ -8,9 +8,9 @@ import { Container } from '../container/Container';
 import { Key, Resolver } from '../types';
 
 /**
- * Used to allow functions/classes to indicate that they should be registered as singletons with the container.
+ * Used to allow functions/classes to indicate that they should be registered as scoped with the container.
  */
-export class SingletonRegistration<T = any> {
+export class ScopedRegistration<T = any> {
     /**
      * Called by the container to register the resolver.
      * @param container The container the resolver is being registered with.
@@ -19,10 +19,10 @@ export class SingletonRegistration<T = any> {
      * @return The resolver that was registered.
      */
     public registerResolver(container: Container, key: Key<T>, fn: () => T): Resolver<T> {
-        const existingResolver = container.root.getResolver(key);
+        const existingResolver = container.getResolver(key);
 
         return existingResolver === undefined
-            ? container.root.registerSingleton(key, fn)
+            ? container.registerScoped(key, fn)
             : existingResolver;
     }
 }
