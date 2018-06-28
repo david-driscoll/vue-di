@@ -16,6 +16,7 @@
         "inlineSourceMap": true,
         "importHelpers": true,
         "noFallthroughCasesInSwitch": true,
+        "skipLibCheck": true,
         "noImplicitAny": true,
         "noImplicitReturns": true,
         "noImplicitThis": true,
