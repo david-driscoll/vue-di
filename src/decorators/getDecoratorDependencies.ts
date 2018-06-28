@@ -20,7 +20,13 @@ export function getDecoratorDependencies(target: any, name: string) {
         );
     }
     if (!dependencies) {
-        dependencies = Reflect.getOwnMetadata(constants.paramTypes, target).slice();
+        const paramTypes = Reflect.getOwnMetadata(constants.paramTypes, target);
+        if (!paramTypes) {
+            Reflect.defineMetadata(constants.paramTypes, target, []);
+            dependencies = [];
+        } else {
+            dependencies = paramTypes.slice();
+        }
         target.inject = dependencies;
     }
 

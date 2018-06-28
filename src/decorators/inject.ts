@@ -22,7 +22,7 @@ export function Inject(...rest: any[]): any {
                 );
             }
             if (!params) {
-                params = Reflect.getOwnMetadata(constants.paramTypes, target).slice();
+                params = (Reflect.getOwnMetadata(constants.paramTypes, target) || []).slice();
                 target.inject = params;
             }
             params[descriptor] = rest[0];
