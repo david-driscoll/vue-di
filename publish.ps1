@@ -6,5 +6,5 @@ Remove-Item .\dist\src -Recurse
 
 copy .\package.json .\dist\package.json
 pushd .\dist
-# npm publish .
+npm publish .
 popd
