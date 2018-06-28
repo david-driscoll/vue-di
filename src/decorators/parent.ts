@@ -11,11 +11,6 @@ export function Parent(): (
     propertyOrParameterName: string | symbol,
     index?: number
 ) => void;
-export function Parent(
-    target: Object,
-    propertyOrParameterName: string | symbol,
-    index?: number
-): void;
 export function Parent(target?: Object, propertyOrParameterName?: string | symbol, index?: number) {
     const deco = () => {
         const resolver = (x: any) => ParentResolver.of(x);
