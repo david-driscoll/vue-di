@@ -33,7 +33,7 @@ export class FactoryRegistrationBuilder<T> extends RegistrationBuilderBase<T> {
         return this;
     }
 
-    public instancePerScoped() {
+    public instancePerScope() {
         this.resolver.strategy = Strategy.Scoped;
 
         return this;

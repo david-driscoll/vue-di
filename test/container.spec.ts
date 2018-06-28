@@ -843,6 +843,30 @@ describe('container', () => {
             });
 
             describe('All', () => {
+                it('resolves last matching dependencty when getting single', () => {
+                    class LoggerBase {}
+
+                    class VerboseLogger extends LoggerBase {}
+
+                    class Logger extends LoggerBase {}
+
+                    class App {
+                        public static inject() {
+                            return [LoggerBase];
+                        }
+                        public constructor(public logger: LoggerBase) {
+                            this.logger = logger;
+                        }
+                    }
+
+                    const container = new Container();
+                    container.registerTransient(LoggerBase, Logger);
+                    container.registerSingleton(LoggerBase, VerboseLogger);
+                    const app = container.get(App);
+
+                    expect(app.logger).to.be.instanceOf(VerboseLogger);
+                });
+
                 it('resolves all matching dependencies as an array of instances', () => {
                     class LoggerBase {}
 
@@ -866,8 +890,8 @@ describe('container', () => {
 
                     expect(app.loggers).to.be.instanceOf(Array);
                     expect(app.loggers.length).to.equal(2);
-                    expect(app.loggers[0]).to.be.instanceOf(VerboseLogger);
-                    expect(app.loggers[1]).to.be.instanceOf(Logger);
+                    expect(app.loggers[1]).to.be.instanceOf(VerboseLogger);
+                    expect(app.loggers[0]).to.be.instanceOf(Logger);
                 });
 
                 it('resolves all matching dependencies as an array of instances using decorator', () => {
@@ -893,8 +917,8 @@ describe('container', () => {
 
                     expect(app.loggers).to.be.instanceOf(Array);
                     expect(app.loggers.length).to.equal(2);
-                    expect(app.loggers[0]).to.be.instanceOf(VerboseLogger);
-                    expect(app.loggers[1]).to.be.instanceOf(Logger);
+                    expect(app.loggers[1]).to.be.instanceOf(VerboseLogger);
+                    expect(app.loggers[0]).to.be.instanceOf(Logger);
                 });
             });
 

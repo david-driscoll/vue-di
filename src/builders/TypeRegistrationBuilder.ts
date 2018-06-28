@@ -14,7 +14,7 @@ export class TypeRegistrationBuilder<T> extends RegistrationBuilderBase<T> {
         return this;
     }
 
-    public instancePerScoped() {
+    public instancePerScope() {
         this.resolver.strategy = new StrategyResolver(Strategy.Scoped, this.type);
 
         return this;

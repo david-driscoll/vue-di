@@ -298,9 +298,9 @@ export class Container {
         if (result === undefined) {
             allResolvers.set(key, resolver);
         } else if (result instanceof StrategyResolver && result.strategy === Strategy.Array) {
-            result.state.push(resolver);
+            result.state.unshift(resolver);
         } else {
-            allResolvers.set(key, new StrategyResolver(Strategy.Array, [result, resolver]));
+            allResolvers.set(key, new StrategyResolver(Strategy.Array, [resolver, result]));
         }
 
         return resolver;
@@ -356,7 +356,7 @@ export class Container {
     /**
      * Inspects the container to determine if a particular key has been registred.
      * @param key The key that identifies the dependency at resolution time; usually a constructor function.
-     * @param checkParent Indicates whether or not to check the parent container hierarchy.
+     * @param checkParent Indicates whether or not  to check the parent container hierarchy.
      * @return Returns true if the key has been registred; false otherwise.
      */
     public hasHandler<T>(key: Key<T>, checkParent = false): boolean {
