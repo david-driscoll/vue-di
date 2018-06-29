@@ -13,7 +13,12 @@ class Invalid {
     }
 }
 export function clearInvalidParameters(container: any, inject: any[]) {
-    return inject.map(x => (_invalidParameters.some(z => z === x) ? new Invalid(container, x) : x));
+    for (let i = 0; i < inject.length; i++) {
+        if (_invalidParameters.some(z => z === inject[i])) {
+            inject[i] = new Invalid(container, inject[i]) ;
+        }
+    }
+    return inject;
 }
 
 export function validateKey(key: Key<any>) {

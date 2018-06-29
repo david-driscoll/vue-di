@@ -12,6 +12,7 @@ import {
     Scoped,
     Singleton,
     Transient,
+    Resolve,
 } from '../src/decorators';
 import { Inject } from '../src/decorators/inject';
 import { AllResolver } from '../src/resolvers/AllResolver';
@@ -74,9 +75,40 @@ describe('container', () => {
                     constructor(public arg: () => void) {}
                 }
 
+                const container = new Container();
+                expect(() => container.get(App)).to.throw(
+                    /Invalid key found on App looking for type Function/
+                );
+            });
+            it('passes with symbol Inject', () => {
+                @AutoInject()
+                class App {
+                    constructor(
+                        @Inject(Symbol.for('method'))
+                        public arg: () => void
+                    ) {}
+                }
 
                 const container = new Container();
-                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type Function/);
+                expect(() => container.get(App)).not.to.throw(
+                    /Invalid key found on App looking for type Function/
+                );
+            });
+            it('passes with symbol Resolve', () => {
+                @AutoInject()
+                class App {
+                    constructor(
+                        @Resolve(Symbol.for('method'))
+                        public arg: () => void,
+                        @Resolve(Symbol.for('method'))
+                        public arg2: () => void
+                    ) {}
+                }
+
+                const container = new Container();
+                expect(() => container.get(App)).not.to.throw(
+                    /Invalid key found on App looking for type Function/
+                );
             });
 
             it('fails with function dependency', () => {
@@ -85,9 +117,10 @@ describe('container', () => {
                     constructor(public arg: () => void) {}
                 }
 
-
                 const container = new Container();
-                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type Function/);
+                expect(() => container.get(App)).to.throw(
+                    /Invalid key found on App looking for type Function/
+                );
             });
 
             it('fails with string dependency', () => {
@@ -96,9 +129,10 @@ describe('container', () => {
                     constructor(public arg: string) {}
                 }
 
-
                 const container = new Container();
-                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type String/);
+                expect(() => container.get(App)).to.throw(
+                    /Invalid key found on App looking for type String/
+                );
             });
 
             it('fails with number dependency', () => {
@@ -107,9 +141,10 @@ describe('container', () => {
                     constructor(public arg: number) {}
                 }
 
-
                 const container = new Container();
-                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type Number/);
+                expect(() => container.get(App)).to.throw(
+                    /Invalid key found on App looking for type Number/
+                );
             });
 
             it('fails with boolean dependency', () => {
@@ -118,20 +153,22 @@ describe('container', () => {
                     constructor(public arg: boolean) {}
                 }
 
-
                 const container = new Container();
-                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type Boolean/);
+                expect(() => container.get(App)).to.throw(
+                    /Invalid key found on App looking for type Boolean/
+                );
             });
 
             it('fails with object dependency', () => {
                 @Singleton
                 class App {
-                    constructor(public arg: { hello: string; }) {}
+                    constructor(public arg: { hello: string }) {}
                 }
 
-
                 const container = new Container();
-                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type Object/);
+                expect(() => container.get(App)).to.throw(
+                    /Invalid key found on App looking for type Object/
+                );
             });
 
             it('fails with regexp dependency', () => {
@@ -140,9 +177,10 @@ describe('container', () => {
                     constructor(public arg: RegExp) {}
                 }
 
-
                 const container = new Container();
-                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type RegExp/);
+                expect(() => container.get(App)).to.throw(
+                    /Invalid key found on App looking for type RegExp/
+                );
             });
 
             it('fails with array dependency', () => {
@@ -151,9 +189,10 @@ describe('container', () => {
                     constructor(public arg: string[]) {}
                 }
 
-
                 const container = new Container();
-                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type Array/);
+                expect(() => container.get(App)).to.throw(
+                    /Invalid key found on App looking for type Array/
+                );
             });
 
             it('fails with promise dependency', () => {
@@ -162,9 +201,10 @@ describe('container', () => {
                     constructor(public arg: Promise<any>) {}
                 }
 
-
                 const container = new Container();
-                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type Promise/);
+                expect(() => container.get(App)).to.throw(
+                    /Invalid key found on App looking for type Promise/
+                );
             });
         });
     });
@@ -212,32 +252,6 @@ describe('container', () => {
             const container = new Container();
             const app = container.get(ChildApp);
             expect(app.service).to.be.instanceOf(Service);
-        });
-
-        it('loads dependencies for both classes', () => {
-            class ParentApp {
-                public static inject() {
-                    return [Logger];
-                }
-                public constructor(public logger: Logger) {
-                    this.logger = logger;
-                }
-            }
-
-            class ChildApp extends ParentApp {
-                public static inject() {
-                    return [Service];
-                }
-                public constructor(public service: Service, ...rest: any[]) {
-                    super(rest[0]);
-                    this.service = service;
-                }
-            }
-
-            const container = new Container();
-            const app = container.get(ChildApp);
-            expect(app.service).to.be.instanceOf(Service);
-            expect(app.logger).to.be.instanceOf(Logger);
         });
     });
 

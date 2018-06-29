@@ -15,6 +15,7 @@ import { IContainer, Key, RegistrationFactory, Resolver, TypedKey } from '../typ
 import { IContainerConfiguration } from './ContainerConfiguration';
 import { InvocationHandler } from './InvocationHandler';
 import { validateKey, _emptyParameters, clearInvalidParameters } from './validateParameters';
+import { getInjectDependencies } from './getInjectDependencies';
 
 // tslint:disable:max-line-length
 function invokeWithDynamicDependencies(
@@ -111,21 +112,17 @@ const classInvokers: ClassInvokers<Invoker> = {
 };
 // tslint:enable:no-magic-numbers
 
-function isInjectable(f: object): f is { inject: any[] | (() => any[]) } {
-    return f.hasOwnProperty('inject');
-}
+// function isInjectable(f: object): f is { inject: any[] | (() => any[]) } {
+//     return Reflect.hasMetadata(constants.inject, f);
+// }
 
-function getDependencies(f: object) {
-    if (!isInjectable(f)) {
-        return [];
-    }
+// function getDependencies(f: object) {
+//     if (!isInjectable(f)) {
+//         return [];
+//     }
 
-    if (typeof f.inject === 'function') {
-        return f.inject();
-    }
-
-    return f.inject;
-}
+//     return getInjectDependencies(f);
+// }
 
 /**
  * A lightweight, extensible dependency injection container.
@@ -526,21 +523,21 @@ export class Container {
         return resolver.get(child || this, key);
     }
 
-    private _createInvocationHandler(fn: Function & { inject?: any }): InvocationHandler {
-        let dependencies;
-        if (fn.inject === undefined) {
-            dependencies = clearInvalidParameters(
-                fn,
-                Reflect.getOwnMetadata(constants.paramTypes, fn) || _emptyParameters
-            );
-        } else {
-            dependencies = [];
-            let ctor = fn;
-            while (typeof ctor === 'function') {
-                dependencies.push(...getDependencies(ctor));
-                ctor = Object.getPrototypeOf(ctor);
-            }
-        }
+    private _createInvocationHandler(fn: Function): InvocationHandler {
+        let dependencies = getInjectDependencies(fn);
+        // if (fn.inject === undefined) {
+        //     dependencies = clearInvalidParameters(
+        //         fn,
+        //         Reflect.getOwnMetadata(constants.paramTypes, fn) || _emptyParameters
+        //     );
+        // } else {
+        //     dependencies = [];
+        //     let ctor = fn;
+        //     while (typeof ctor === 'function') {
+        //         dependencies.push(...getDependencies(ctor));
+        //         ctor = Object.getPrototypeOf(ctor);
+        //     }
+        // }
 
         const invoker =
             Reflect.getOwnMetadata(constants.invoker, fn) ||

@@ -5,8 +5,7 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import 'reflect-metadata';
-import constants from '../constants';
-import { clearInvalidParameters } from '../container/validateParameters';
+import { getInjectDependencies } from '../container/getInjectDependencies';
 
 /**
  * Used to inject a new instance of a dependency, without regard for existing
@@ -14,16 +13,5 @@ import { clearInvalidParameters } from '../container/validateParameters';
  * under a different key by supplying a key using the `as` method.
  */
 export function getDecoratorDependencies(target: any, name: string) {
-    let dependencies = target.inject;
-    if (typeof dependencies === 'function') {
-        throw new Error(
-            `Decorator ${name} cannot be used with "inject()".  Please use an array instead.`
-        );
-    }
-    if (!dependencies) {
-        dependencies = (Reflect.getOwnMetadata(constants.paramTypes, target) || []).slice();
-        target.inject = clearInvalidParameters(target, dependencies);
-    }
-
-    return dependencies;
+    return getInjectDependencies(target);
 }

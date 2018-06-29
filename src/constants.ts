@@ -5,5 +5,6 @@ export default {
     resource: 'aurelia:resource',
     paramTypes: 'design:paramtypes',
     propertyType: 'design:type',
+    inject: 'aurelia:inject',
     properties: 'design:properties',
 };
