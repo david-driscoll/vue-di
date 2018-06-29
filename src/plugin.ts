@@ -3,7 +3,6 @@ import { CompositeDisposable, isDisposable } from 'ts-disposables';
 import Vue, { VueConstructor } from 'vue';
 import { InjectOptions } from 'vue/types/options';
 import { Container } from './container';
-import { _emptyParameters } from './container/Container';
 import { isResolver, Resolver } from './types';
 
 export interface IOptions {

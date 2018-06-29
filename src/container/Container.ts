@@ -14,18 +14,9 @@ import { Strategy, StrategyResolver } from '../resolvers/StrategyResolver';
 import { IContainer, Key, RegistrationFactory, Resolver, TypedKey } from '../types';
 import { IContainerConfiguration } from './ContainerConfiguration';
 import { InvocationHandler } from './InvocationHandler';
+import { validateKey, _emptyParameters, clearInvalidParameters } from './validateParameters';
 
-export const _emptyParameters = Object.freeze<any>([]);
-
-function validateKey(key: Key<any>) {
-    if (key === null || key === undefined) {
-        throw new Error(
-            // tslint:disable-next-line:max-line-length
-            "key/value cannot be null or undefined. Are you trying to inject/register something that doesn't exist with DI?"
-        );
-    }
-}
-
+// tslint:disable:max-line-length
 function invokeWithDynamicDependencies(
     container: Container,
     fn: { new (...args: any[]): any },
@@ -39,13 +30,17 @@ function invokeWithDynamicDependencies(
     while (i--) {
         lookup = staticDependencies[i];
 
-        if (lookup === null || lookup === undefined) {
-            throw new Error(
-                // tslint:disable-next-line:max-line-length
-                `Constructor Parameter with index ${i} cannot be null or undefined. Are you trying to inject/register something that doesn't exist with DI?`
-            );
-        } else {
-            args[i] = container.get(lookup);
+        switch (lookup) {
+            case null:
+            case undefined:
+                throw new Error(
+                    `Constructor ${
+                        fn.name
+                    } Parameter with index ${i} cannot be null or undefined. Are you trying to inject/register something that doesn't exist with DI?`
+                );
+                break;
+            default:
+                args[i] = container.get(lookup);
         }
     }
 
@@ -55,6 +50,7 @@ function invokeWithDynamicDependencies(
 
     return Reflect.construct(fn, args);
 }
+// tslint:enable:max-line-length
 
 type ClassInvokers<T> = ArrayLike<T> & { fallback: T };
 
@@ -444,10 +440,7 @@ export class Container {
             results = [resolver.get(this, key)];
         }
 
-        return this.parent
-            ? this.parent.getAll(key)
-                .concat(results)
-            : results;
+        return this.parent ? this.parent.getAll(key).concat(results) : results;
     }
 
     /**
@@ -535,9 +528,11 @@ export class Container {
 
     private _createInvocationHandler(fn: Function & { inject?: any }): InvocationHandler {
         let dependencies;
-        Reflect.getOwnMetadata(constants.paramTypes, fn);
         if (fn.inject === undefined) {
-            dependencies = Reflect.getOwnMetadata(constants.paramTypes, fn) || _emptyParameters;
+            dependencies = clearInvalidParameters(
+                fn,
+                Reflect.getOwnMetadata(constants.paramTypes, fn) || _emptyParameters
+            );
         } else {
             dependencies = [];
             let ctor = fn;

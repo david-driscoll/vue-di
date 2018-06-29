@@ -9,9 +9,9 @@ import {
     NewInstance,
     Optional,
     Parent,
+    Scoped,
     Singleton,
     Transient,
-    Scoped,
 } from '../src/decorators';
 import { Inject } from '../src/decorators/inject';
 import { AllResolver } from '../src/resolvers/AllResolver';
@@ -65,6 +65,107 @@ describe('container', () => {
             const app = container.get(App);
 
             expect(app.logger).to.be.instanceOf(Logger);
+        });
+
+        describe('fails to inject for missing dependency', () => {
+            it('fails with function dependency (auto injected)', () => {
+                @AutoInject
+                class App {
+                    constructor(public arg: () => void) {}
+                }
+
+
+                const container = new Container();
+                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type Function/);
+            });
+
+            it('fails with function dependency', () => {
+                @Singleton
+                class App {
+                    constructor(public arg: () => void) {}
+                }
+
+
+                const container = new Container();
+                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type Function/);
+            });
+
+            it('fails with string dependency', () => {
+                @Singleton
+                class App {
+                    constructor(public arg: string) {}
+                }
+
+
+                const container = new Container();
+                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type String/);
+            });
+
+            it('fails with number dependency', () => {
+                @Singleton
+                class App {
+                    constructor(public arg: number) {}
+                }
+
+
+                const container = new Container();
+                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type Number/);
+            });
+
+            it('fails with boolean dependency', () => {
+                @Singleton
+                class App {
+                    constructor(public arg: boolean) {}
+                }
+
+
+                const container = new Container();
+                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type Boolean/);
+            });
+
+            it('fails with object dependency', () => {
+                @Singleton
+                class App {
+                    constructor(public arg: { hello: string; }) {}
+                }
+
+
+                const container = new Container();
+                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type Object/);
+            });
+
+            it('fails with regexp dependency', () => {
+                @Singleton
+                class App {
+                    constructor(public arg: RegExp) {}
+                }
+
+
+                const container = new Container();
+                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type RegExp/);
+            });
+
+            it('fails with array dependency', () => {
+                @Singleton
+                class App {
+                    constructor(public arg: string[]) {}
+                }
+
+
+                const container = new Container();
+                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type Array/);
+            });
+
+            it('fails with promise dependency', () => {
+                @Singleton
+                class App {
+                    constructor(public arg: Promise<any>) {}
+                }
+
+
+                const container = new Container();
+                expect(() =>  container.get(App)).to.throw(/Invalid key found on App looking for type Promise/);
+            });
         });
     });
 

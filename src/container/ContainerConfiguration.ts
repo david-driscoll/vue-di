@@ -11,6 +11,7 @@ import { InvocationHandler } from './InvocationHandler';
  */
 export interface IContainerConfiguration {
     handlers?: Map<any, any>;
+    throwOnMissingDependency?: boolean;
     /**
      * An optional callback which will be called when any function needs an InvocationHandler
      *  created (called once per Function).

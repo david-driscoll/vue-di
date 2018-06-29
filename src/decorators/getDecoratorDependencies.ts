@@ -6,6 +6,7 @@
  */
 import 'reflect-metadata';
 import constants from '../constants';
+import { clearInvalidParameters } from '../container/validateParameters';
 
 /**
  * Used to inject a new instance of a dependency, without regard for existing
@@ -21,7 +22,7 @@ export function getDecoratorDependencies(target: any, name: string) {
     }
     if (!dependencies) {
         dependencies = (Reflect.getOwnMetadata(constants.paramTypes, target) || []).slice();
-        target.inject = dependencies;
+        target.inject = clearInvalidParameters(target, dependencies);
     }
 
     return dependencies;

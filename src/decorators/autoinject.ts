@@ -6,7 +6,7 @@
  */
 import 'reflect-metadata';
 import constants from '../constants';
-import { _emptyParameters } from '../container/Container';
+import { _emptyParameters, clearInvalidParameters } from '../container/validateParameters';
 
 /**
  * Decorator: Directs the TypeScript transpiler to write-out type metadata for the decorated class.
@@ -17,8 +17,10 @@ export function AutoInject(potentialTarget?: any): any {
     const deco = (target: any) => {
         //make a copy of target.inject to avoid changing parent inject
         const previousInject = target.inject ? target.inject.slice() : null;
-        const autoInject: any =
-            Reflect.getOwnMetadata(constants.paramTypes, target) || _emptyParameters;
+        const autoInject: any[] = clearInvalidParameters(
+            target,
+            Reflect.getOwnMetadata(constants.paramTypes, target) || _emptyParameters
+        );
         if (!previousInject) {
             target.inject = autoInject;
         } else {

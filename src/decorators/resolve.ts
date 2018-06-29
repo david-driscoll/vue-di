@@ -29,5 +29,3 @@ export function Resolve(
     // tslint:disable-next-line:no-non-null-assertion
     return deco()(targetOrKey!, propertyKey, index);
 }
-
-export const inject = Resolve;

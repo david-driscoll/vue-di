@@ -6,6 +6,7 @@
  */
 import 'reflect-metadata';
 import constants from '../constants';
+import { clearInvalidParameters } from '../container/validateParameters';
 
 /**
  * Decorator: Specifies the dependencies that should be injected by the DI Container
@@ -23,7 +24,7 @@ export function Inject(...rest: any[]): any {
             }
             if (!params) {
                 params = (Reflect.getOwnMetadata(constants.paramTypes, target) || []).slice();
-                target.inject = params;
+                target.inject = clearInvalidParameters(target, params);
             }
             params[descriptor] = rest[0];
 
