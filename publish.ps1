@@ -9,3 +9,4 @@ copy .\package.json .\dist\package.json
 pushd .\dist
 npm publish .
 popd
+git push
