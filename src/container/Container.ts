@@ -393,10 +393,12 @@ export class Container {
                 return this.autoRegister<T>(key as any).get(this, key);
             }
 
-            const registration: IRegistration<T> = Reflect.getMetadata(constants.registration, key);
+            if (typeof key !== 'symbol' && typeof key !== 'string') {
+                const registration: IRegistration<T> = Reflect.getMetadata(constants.registration, key);
 
-            if (registration) {
-                return registration.registerResolver(this, key, key as any).get(this, key);
+                if (registration) {
+                    return registration.registerResolver(this, key, key as any).get(this, key);
+                }
             }
 
             return this.parent._get(key, this);

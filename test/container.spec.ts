@@ -22,6 +22,7 @@ import { NewInstanceResolver } from '../src/resolvers/NewInstanceResolver';
 import { OptionalResolver } from '../src/resolvers/OptionalResolver';
 import { ParentResolver } from '../src/resolvers/ParentResolver';
 import { IFactory } from '../src/types';
+import constants from '../src/constants';
 
 describe('container', () => {
     describe('injection', () => {
@@ -109,6 +110,38 @@ describe('container', () => {
                 expect(() => container.get(App)).not.to.throw(
                     /Invalid key found on App looking for type Function/
                 );
+            });
+
+            it('passes with scoped symbol Resolve', () => {
+                const Connection = Symbol.for('Connection');
+                @Scoped
+                class SessionAccessor {
+                    public constructor(@Resolve(Connection) public readonly connection: any) {}
+                }
+
+                const parentContainer = new Container();
+                parentContainer.registerInstance(Connection, {});
+                const container = parentContainer.createChild();
+                Reflect.metadata(constants.registration, Connection);
+                const accessor = container.get(SessionAccessor);
+                expect(accessor).be.not.null;
+                expect(accessor.connection).to.be.eq(container.get(Connection));
+            });
+
+            it('passes with scoped string Resolve', () => {
+                const Connection = 'Connection';
+                @Scoped
+                class SessionAccessor {
+                    public constructor(@Resolve(Connection) public readonly connection: any) {}
+                }
+
+                const parentContainer = new Container();
+                parentContainer.registerInstance(Connection, {});
+                const container = parentContainer.createChild();
+                Reflect.metadata(constants.registration, Connection);
+                const accessor = container.get(SessionAccessor);
+                expect(accessor).be.not.null;
+                expect(accessor.connection).to.be.eq(container.get(Connection));
             });
 
             it('fails with function dependency', () => {
