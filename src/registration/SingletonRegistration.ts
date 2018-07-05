@@ -12,6 +12,12 @@ import { Key, Resolver } from '../types';
  */
 export class SingletonRegistration<T = any> {
     /**
+     * Creates an instance of SingletonRegistration.
+     * @param key The key to register as.
+     */
+    public constructor(private readonly _key?: Key<T>) {}
+
+    /**
      * Called by the container to register the resolver.
      * @param container The container the resolver is being registered with.
      * @param key The key the resolver should be registered as.
@@ -19,10 +25,10 @@ export class SingletonRegistration<T = any> {
      * @return The resolver that was registered.
      */
     public registerResolver(container: Container, key: Key<T>, fn: () => T): Resolver<T> {
-        const existingResolver = container.getResolver(key);
+        const existingResolver = container.getResolver(this._key || key, false);
 
         return existingResolver === undefined
-            ? container.root.registerSingleton(key, fn)
+            ? container.registerSingleton(this._key || key, fn)
             : existingResolver;
     }
 }

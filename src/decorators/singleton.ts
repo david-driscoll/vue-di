@@ -5,7 +5,7 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { SingletonRegistration } from '../registration/SingletonRegistration';
-import { Key } from '../types';
+import { keyedDecorator } from './keyedDecorator';
 import { Registration } from './registration';
 
 /**
@@ -13,13 +13,4 @@ import { Registration } from './registration';
  *
  * @export
  */
-export function Singleton<T extends Function>(ctor: T): void;
-export function Singleton(): ClassDecorator;
-export function Singleton(key: Key<any>): ClassDecorator;
-export function Singleton(key?: Key<any>): any {
-    if (key) {
-        return Registration(new SingletonRegistration())(key);
-    } else {
-        return Registration(new SingletonRegistration());
-    }
-}
+export const Singleton = keyedDecorator(key => Registration(new SingletonRegistration(key)));

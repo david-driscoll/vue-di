@@ -29,7 +29,7 @@ describe('Optional property decorator', () => {
         const NewVue = createLocalVue();
         NewVue.use(VueContainer);
 
-        @Singleton()
+        @Singleton.key(Service)
         class Service {
             public value = 1;
         }

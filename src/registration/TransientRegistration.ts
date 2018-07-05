@@ -11,16 +11,11 @@ import { Key, Resolver } from '../types';
  * Used to allow functions/classes to indicate that they should be registered as transients with the container.
  */
 export class TransientRegistration<T = any> {
-    /** @internal */
-    public _key: Key<T>;
-
     /**
      * Creates an instance of TransientRegistration.
      * @param key The key to register as.
      */
-    public constructor(key?: any) {
-        this._key = key;
-    }
+    public constructor(private readonly _key?: Key<T>) {}
 
     /**
      * Called by the container to register the resolver.
@@ -30,7 +25,7 @@ export class TransientRegistration<T = any> {
      * @return The resolver that was registered.
      */
     public registerResolver(container: Container, key: Key<T>, fn: () => T): Resolver<T> {
-        const existingResolver = container.getResolver(this._key || key);
+        const existingResolver = container.getResolver(this._key || key, false);
 
         return existingResolver === undefined
             ? container.registerTransient(this._key || key, fn)

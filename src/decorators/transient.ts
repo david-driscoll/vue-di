@@ -5,20 +5,12 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { TransientRegistration } from '../registration/TransientRegistration';
-import { Key } from '../types';
+import { keyedDecorator } from './keyedDecorator';
 import { Registration } from './registration';
 
 /**
- * Decorator: Specifies to register the decorated item with a "transient" lifetime.
+ * Decorator: Specifies to register the decorated item with a "Transient" lifetime.
  *
  * @export
  */
-export function Transient<T extends Function>(ctor: T): T;
-export function Transient(key?: Key<any>): ClassDecorator;
-export function Transient(key?: Key<any> | Function): any {
-    if (typeof key === 'function') {
-        return Registration(new TransientRegistration(key))(key);
-    }
-
-    return Registration(new TransientRegistration(key));
-}
+export const Transient = keyedDecorator(key => Registration(new TransientRegistration(key)));

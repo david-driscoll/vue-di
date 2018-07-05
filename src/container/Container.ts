@@ -415,7 +415,7 @@ export class Container {
     public getAll<T>(key: Key<T>): ReadonlyArray<T> {
         validateKey(key);
 
-        const resolver = this.getResolver(key);
+        const resolver = this.getResolver(key, true);
 
         if (resolver === undefined) {
             if (this.parent == null) {

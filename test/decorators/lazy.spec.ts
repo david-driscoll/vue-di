@@ -10,7 +10,7 @@ describe('Lazy property decorator', () => {
         const NewVue = createLocalVue();
         NewVue.use(VueContainer);
 
-        @Singleton()
+        @Singleton.key(Service)
         class Service {
             public value = 1;
         }
@@ -46,7 +46,7 @@ describe('Lazy property decorator', () => {
         const NewVue = createLocalVue();
         NewVue.use(VueContainer);
 
-        @Transient()
+        @Transient.key(Service)
         class Service {
             public value = 1;
         }

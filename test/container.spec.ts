@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { __decorate } from 'tslib';
+import constants from '../src/constants';
 import { Container } from '../src/container/Container';
 import {
     All,
@@ -9,10 +9,10 @@ import {
     NewInstance,
     Optional,
     Parent,
+    Resolve,
     Scoped,
     Singleton,
     Transient,
-    Resolve,
 } from '../src/decorators';
 import { Inject } from '../src/decorators/inject';
 import { AllResolver } from '../src/resolvers/AllResolver';
@@ -22,7 +22,6 @@ import { NewInstanceResolver } from '../src/resolvers/NewInstanceResolver';
 import { OptionalResolver } from '../src/resolvers/OptionalResolver';
 import { ParentResolver } from '../src/resolvers/ParentResolver';
 import { IFactory } from '../src/types';
-import constants from '../src/constants';
 
 describe('container', () => {
     describe('injection', () => {
@@ -181,7 +180,7 @@ describe('container', () => {
             });
 
             it('fails with boolean dependency', () => {
-                @Singleton
+                @Singleton.key(App)
                 class App {
                     constructor(public arg: boolean) {}
                 }
@@ -205,7 +204,7 @@ describe('container', () => {
             });
 
             it('fails with regexp dependency', () => {
-                @Singleton
+                @Singleton.key(App)
                 class App {
                     constructor(public arg: RegExp) {}
                 }
@@ -1192,6 +1191,69 @@ describe('container', () => {
                 });
 
                 it('resolves all matching dependencies as an array of instances using decorator [children]', () => {
+                    class LoggerBase {}
+
+                    class VerboseLogger extends LoggerBase {}
+
+                    class Logger extends LoggerBase {}
+
+                    class App {
+                        public static inject = [LoggerBase];
+                        public constructor(public loggers: LoggerBase[]) {
+                            this.loggers = loggers;
+                        }
+                    }
+
+                    All(LoggerBase)(App, 'loggers', 0);
+
+                    const container = new Container();
+                    const childContainer = container.createChild();
+                    container.registerSingleton(LoggerBase, VerboseLogger);
+                    childContainer.registerTransient(LoggerBase, Logger);
+                    const app = childContainer.get(App);
+
+                    expect(app.loggers).to.be.instanceOf(Array);
+                    expect(app.loggers.length).to.equal(2);
+                    expect(app.loggers[0]).to.be.instanceOf(VerboseLogger);
+                    expect(app.loggers[1]).to.be.instanceOf(Logger);
+                });
+
+                it('resolves all matching dependencies as an array of instances [scoped]', () => {
+                    class LoggerBase {}
+
+                    class VerboseLogger extends LoggerBase {}
+
+                    class Logger extends LoggerBase {}
+
+                    class App {
+                        public static inject() {
+                            return [AllResolver.of(LoggerBase)];
+                        }
+                        public constructor(public loggers: LoggerBase[]) {
+                            this.loggers = loggers;
+                        }
+                    }
+
+                    const container = new Container();
+                    container.registerInstance(LoggerBase, new VerboseLogger());
+                    const childContainer = container.createChild();
+                    childContainer.registerInstance(LoggerBase, new Logger());
+                    childContainer.registerInstance(LoggerBase, new VerboseLogger());
+                    const app = childContainer.get(App);
+                    const app2 = container.get(App);
+
+                    expect(app.loggers).to.be.instanceOf(Array);
+                    expect(app.loggers.length).to.equal(3);
+                    expect(app.loggers[0]).to.be.instanceOf(VerboseLogger);
+                    expect(app.loggers[1]).to.be.instanceOf(Logger);
+                    expect(app.loggers[2]).to.be.instanceOf(VerboseLogger);
+
+                    expect(app2.loggers).to.be.instanceOf(Array);
+                    expect(app2.loggers.length).to.equal(1);
+                    expect(app2.loggers[0]).to.be.instanceOf(VerboseLogger);
+                });
+
+                it('resolves all matching dependencies as an array of instances using decorator [with parent registrations]', () => {
                     class LoggerBase {}
 
                     class VerboseLogger extends LoggerBase {}

@@ -1,19 +1,16 @@
+/**
+ * The MIT License (MIT)
+ * https://github.com/aurelia/dependency-injection
+ *
+ * Copyright (c) 2010 - 2018 Blue Spire Inc.
+ */
 import { ScopedRegistration } from '../registration/ScopedRegistration';
-import { Key } from '../types';
+import { keyedDecorator } from './keyedDecorator';
 import { Registration } from './registration';
 
 /**
- * Decorator: Specifies to register the decorated item with a "scoped" lifetime.
+ * Decorator: Specifies to register the decorated item with a "Scoped" lifetime.
  *
  * @export
  */
-export function Scoped<T extends Function>(ctor: T): void;
-export function Scoped(): ClassDecorator;
-export function Scoped(key: Key<any>): ClassDecorator;
-export function Scoped(key?: Key<any>): any {
-    if (key) {
-        return Registration(new ScopedRegistration())(key);
-    } else {
-        return Registration(new ScopedRegistration());
-    }
-}
+export const Scoped = keyedDecorator(key => Registration(new ScopedRegistration(key)));
