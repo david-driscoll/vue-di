@@ -5,7 +5,8 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { containerResolver } from '../protocol/resolver';
-import { IContainer, Key } from '../types';
+import { Key } from '../types';
+import { Container } from '../container/Container';
 
 /**
  * Used to allow functions/classes to specify resolution of all matches to a key.
@@ -37,7 +38,7 @@ export class AllResolver<T = any> {
      * @param container The container to resolve from.
      * @return Returns an array of all matching instances.
      */
-    public get(container: IContainer, key: Key<T>): any {
+    public get(container: Container, key: Key<T>): any {
         return container.getAll(this._key);
     }
 }
