@@ -5,7 +5,7 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { Container } from '../container/Container';
-import { Key, Resolver } from '../types';
+import { Key, Resolver, TypedKey } from '../types';
 
 /**
  * Used to allow functions/classes to indicate that they should be registered as scoped with the container.
@@ -24,7 +24,7 @@ export class ScopedRegistration<T = any> {
      * @param fn The function to create the resolver for.
      * @return The resolver that was registered.
      */
-    public registerResolver(container: Container, key: Key<T>, fn: () => T): Resolver<T> {
+    public registerResolver(container: Container, key: Key<T>, fn: TypedKey<T>): Resolver<T> {
         const existingResolver = container.getResolver(this._key || key, false);
 
         return existingResolver === undefined

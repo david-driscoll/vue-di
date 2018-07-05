@@ -11,7 +11,7 @@ import { Invoker } from '../invokers/Invoker';
 import { containerResolver as resolverDeco } from '../protocol/resolver';
 import { IRegistration } from '../registration/Registration';
 import { Strategy, StrategyResolver } from '../resolvers/StrategyResolver';
-import { Key, RegistrationFactory, Resolver, TypedKey } from '../types';
+import { Key, Resolver, TypedKey } from '../types';
 import { IContainerConfiguration } from './ContainerConfiguration';
 import { getInjectDependencies } from './getInjectDependencies';
 import { InvocationHandler } from './InvocationHandler';
@@ -205,8 +205,8 @@ export class Container {
      * @return The resolver that was registered.
      */
     public registerSingleton<T>(key: TypedKey<T>): Resolver<T>;
-    public registerSingleton<T>(key: Key<T>, fn: RegistrationFactory<T>): Resolver<T>;
-    public registerSingleton<T>(key: Key<T>, fn?: RegistrationFactory<T>): Resolver<T> {
+    public registerSingleton<T>(key: Key<T>, fn: TypedKey<T>): Resolver<T>;
+    public registerSingleton<T>(key: Key<T>, fn?: TypedKey<T>): Resolver<T> {
         return this.registerResolver(
             key,
             new StrategyResolver(Strategy.Singleton, fn === undefined ? key : fn)
@@ -222,8 +222,8 @@ export class Container {
      * @return The resolver that was registered.
      */
     public registerScoped<T>(key: TypedKey<T>): Resolver<T>;
-    public registerScoped<T>(key: Key<T>, fn: RegistrationFactory<T>): Resolver<T>;
-    public registerScoped<T>(key: Key<T>, fn?: RegistrationFactory<T>): Resolver<T> {
+    public registerScoped<T>(key: Key<T>, fn: TypedKey<T>): Resolver<T>;
+    public registerScoped<T>(key: Key<T>, fn?: TypedKey<T>): Resolver<T> {
         return this.registerResolver(
             key,
             new StrategyResolver(Strategy.Scoped, fn === undefined ? key : fn)
@@ -238,8 +238,8 @@ export class Container {
      * @return The resolver that was registered.
      */
     public registerTransient<T>(key: TypedKey<T>): Resolver<T>;
-    public registerTransient<T>(key: Key<T>, fn: RegistrationFactory<T>): Resolver<T>;
-    public registerTransient<T>(key: Key<T>, fn?: RegistrationFactory<T>): Resolver<T> {
+    public registerTransient<T>(key: Key<T>, fn: TypedKey<T>): Resolver<T>;
+    public registerTransient<T>(key: Key<T>, fn?: TypedKey<T>): Resolver<T> {
         return this.registerResolver(
             key,
             new StrategyResolver(Strategy.Transient, fn === undefined ? key : fn)
@@ -255,7 +255,7 @@ export class Container {
      */
     public registerHandler<T>(
         key: Key<T>,
-        handler: (container?: Container, key?: any, resolver?: Resolver<T>) => any
+        handler: (container: Container, key: any, resolver: Resolver<T>) => any
     ): Resolver<T> {
         return this.registerResolver(key, new StrategyResolver(Strategy.Function, handler));
     }
