@@ -10,6 +10,7 @@ import { InvocationHandler } from './InvocationHandler';
  * Used to configure a Container instance.
  */
 export interface IContainerConfiguration {
+    name?: string;
     handlers?: Map<any, any>;
     throwOnMissingDependency?: boolean;
     /**

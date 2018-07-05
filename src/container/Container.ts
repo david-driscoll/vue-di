@@ -11,11 +11,11 @@ import { Invoker } from '../invokers/Invoker';
 import { containerResolver as resolverDeco } from '../protocol/resolver';
 import { IRegistration } from '../registration/Registration';
 import { Strategy, StrategyResolver } from '../resolvers/StrategyResolver';
-import { IContainer, Key, RegistrationFactory, Resolver, TypedKey } from '../types';
+import { Key, RegistrationFactory, Resolver, TypedKey } from '../types';
 import { IContainerConfiguration } from './ContainerConfiguration';
-import { InvocationHandler } from './InvocationHandler';
-import { validateKey, _emptyParameters, clearInvalidParameters } from './validateParameters';
 import { getInjectDependencies } from './getInjectDependencies';
+import { InvocationHandler } from './InvocationHandler';
+import { validateKey, _emptyParameters } from './validateParameters';
 
 // tslint:disable:max-line-length
 function invokeWithDynamicDependencies(
@@ -112,6 +112,8 @@ const classInvokers: ClassInvokers<Invoker> = {
 };
 // tslint:enable:no-magic-numbers
 
+let containerNumber = 0;
+
 /**
  * A lightweight, extensible dependency injection container.
  */
@@ -136,6 +138,10 @@ export class Container {
     private _handlers: Map<any, any>;
     private _resolvers: Map<any, Resolver<any>>;
 
+    public get name() {
+        return this._configuration.name;
+    }
+
     /**
      * Creates an instance of Container.
      * @param configuration Provides some configuration for the new Container instance.
@@ -143,8 +149,9 @@ export class Container {
     public constructor(configuration?: IContainerConfiguration) {
         if (configuration === undefined) {
             // tslint:disable-next-line:no-parameter-reassignment
-            configuration = {};
+            configuration = { name: 'root' };
         }
+        containerNumber++;
 
         this._configuration = configuration;
         this._onHandlerCreated = configuration.onHandlerCreated;
@@ -446,8 +453,11 @@ export class Container {
      * Creates a new dependency injection container whose parent is the current container.
      * @return Returns a new container instance parented to this.
      */
-    public createChild(): Container {
-        const child = new Container(this._configuration);
+    public createChild(name?: string): Container {
+        const child = new Container({
+            ...this._configuration,
+            name: `${(name || 'child')}:${containerNumber}`,
+        });
         (child as any).root = this.root;
         (child as any).parent = this;
 
@@ -505,7 +515,9 @@ export class Container {
 
         if (resolver === undefined) {
             if (this.parent == null) {
-                return (relativeContainer || this).autoRegister(key as any).get(relativeContainer || this, key) as T;
+                return (relativeContainer || this)
+                    .autoRegister(key as any)
+                    .get(relativeContainer || this, key) as T;
             }
 
             return this.parent._get(key, relativeContainer || this);
