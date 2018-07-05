@@ -112,18 +112,6 @@ const classInvokers: ClassInvokers<Invoker> = {
 };
 // tslint:enable:no-magic-numbers
 
-// function isInjectable(f: object): f is { inject: any[] | (() => any[]) } {
-//     return Reflect.hasMetadata(constants.inject, f);
-// }
-
-// function getDependencies(f: object) {
-//     if (!isInjectable(f)) {
-//         return [];
-//     }
-
-//     return getInjectDependencies(f);
-// }
-
 /**
  * A lightweight, extensible dependency injection container.
  */
@@ -356,7 +344,7 @@ export class Container {
         validateKey(key);
 
         return (
-            this._resolvers.has(key) ||
+            !!this.getResolver(key) ||
             (checkParent && this.parent != null && this.parent.hasHandler(key, checkParent))
         );
     }
@@ -366,8 +354,17 @@ export class Container {
      * @param key The key that identifies the dependency at resolution time; usually a constructor function.
      * @return Returns the resolver, if registred, otherwise undefined.
      */
-    public getResolver<T>(key: Key<T>) {
-        return this._resolvers.get(key) as Resolver<T>;
+    public getResolver<T>(key: Key<T>, checkParent = false): Resolver<T> | undefined {
+        let resolver = this._resolvers.get(key);
+        if (checkParent && !resolver && this.parent) {
+            resolver = this.parent.getResolver(key, checkParent);
+            if (resolver instanceof StrategyResolver && resolver.strategy === Strategy.Scoped) {
+                resolver = new StrategyResolver(resolver.strategy, resolver.originalState);
+                this.registerResolver(key, resolver);
+            }
+        }
+
+        return resolver;
     }
 
     /**
@@ -386,7 +383,7 @@ export class Container {
             return (key as any).get(this, key);
         }
 
-        const resolver = this._resolvers.get(key);
+        const resolver = this.getResolver(key, true);
 
         if (resolver === undefined) {
             if (this.parent == null) {
@@ -394,7 +391,10 @@ export class Container {
             }
 
             if (typeof key !== 'symbol' && typeof key !== 'string') {
-                const registration: IRegistration<T> = Reflect.getMetadata(constants.registration, key);
+                const registration: IRegistration<T> = Reflect.getMetadata(
+                    constants.registration,
+                    key
+                );
 
                 if (registration) {
                     return registration.registerResolver(this, key, key as any).get(this, key);
@@ -415,7 +415,7 @@ export class Container {
     public getAll<T>(key: Key<T>): ReadonlyArray<T> {
         validateKey(key);
 
-        const resolver = this._resolvers.get(key);
+        const resolver = this.getResolver(key);
 
         if (resolver === undefined) {
             if (this.parent == null) {
@@ -436,7 +436,7 @@ export class Container {
                 results[len - i - 1] = state[i].get(this, key);
             }
         } else {
-            results = [resolver.get(this, key)];
+            results = [(resolver as any).get(this, key)];
         }
 
         return this.parent ? this.parent.getAll(key).concat(results) : results;
@@ -500,46 +500,22 @@ export class Container {
         (this as any).root = null;
     }
 
-    private _get<T>(key: Key<T>, child?: Container): T {
-        const resolver = this._resolvers.get(key);
+    private _get<T>(key: Key<T>, relativeContainer?: Container): T {
+        const resolver = this.getResolver(key, true);
 
         if (resolver === undefined) {
             if (this.parent == null) {
-                return (child || this).autoRegister(key as any).get(child || this, key) as T;
+                return (relativeContainer || this).autoRegister(key as any).get(relativeContainer || this, key) as T;
             }
 
-            return this.parent._get(key, child || this);
+            return this.parent._get(key, relativeContainer || this);
         }
 
-        if (
-            child &&
-            resolver instanceof StrategyResolver &&
-            resolver.strategy === Strategy.Scoped
-        ) {
-            const childResolver = new StrategyResolver(resolver.strategy, resolver.originalState);
-            child.registerResolver(key, childResolver);
-
-            return child.get(key);
-        }
-
-        return resolver.get(child || this, key);
+        return resolver.get(relativeContainer || this, key);
     }
 
     private _createInvocationHandler(fn: Function): InvocationHandler {
-        let dependencies = getInjectDependencies(fn);
-        // if (fn.inject === undefined) {
-        //     dependencies = clearInvalidParameters(
-        //         fn,
-        //         Reflect.getOwnMetadata(constants.paramTypes, fn) || _emptyParameters
-        //     );
-        // } else {
-        //     dependencies = [];
-        //     let ctor = fn;
-        //     while (typeof ctor === 'function') {
-        //         dependencies.push(...getDependencies(ctor));
-        //         ctor = Object.getPrototypeOf(ctor);
-        //     }
-        // }
+        const dependencies = getInjectDependencies(fn);
 
         const invoker =
             Reflect.getOwnMetadata(constants.invoker, fn) ||

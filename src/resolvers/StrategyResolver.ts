@@ -20,7 +20,7 @@ export enum Strategy {
 }
 
 @containerResolver
-export class StrategyResolver<T = any> implements Resolver<T> {
+export class StrategyResolver<T> implements Resolver<T> {
     public strategy: StrategyResolver<T> | Strategy;
     public state: any;
     public originalState: any;

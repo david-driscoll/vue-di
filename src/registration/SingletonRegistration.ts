@@ -19,7 +19,7 @@ export class SingletonRegistration<T = any> {
      * @return The resolver that was registered.
      */
     public registerResolver(container: Container, key: Key<T>, fn: () => T): Resolver<T> {
-        const existingResolver = container.root.getResolver(key);
+        const existingResolver = container.getResolver(key);
 
         return existingResolver === undefined
             ? container.root.registerSingleton(key, fn)

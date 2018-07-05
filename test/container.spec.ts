@@ -487,7 +487,7 @@ describe('container', () => {
             expect(app1.logger).to.equal(app2.logger);
         });
 
-        it('configures scoped via api [singleton]', () => {
+        it('configures scoped via api [transient]', () => {
             class Logger {
                 private static value = 0;
                 public value = Logger.value++;
@@ -521,7 +521,7 @@ describe('container', () => {
             expect(app1.logger).to.equal(app2.logger);
         });
 
-        it('configures scoped via decorators helper (ES5/6) [singleton]', () => {
+        it('configures scoped via decorators helper (ES5/6) [transient]', () => {
             @Scoped
             class Logger {
                 private static value = 0;
@@ -556,7 +556,74 @@ describe('container', () => {
             expect(app1.logger).to.equal(app2.logger);
         });
 
-        it('configures scoped via api [transient]', () => {
+        it('configures scoped via api [singleton]', () => {
+            class Logger {
+                private static value = 0;
+                public value = Logger.value++;
+            }
+
+            class App1 {
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            Inject(Logger)(App1);
+
+            class App2 {
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            Inject(Logger)(App2);
+
+            const container = new Container();
+            container.registerScoped(Logger);
+            const containerChild = container.createChild();
+            container.registerSingleton(App1);
+            containerChild.registerSingleton(App2);
+
+            const app1 = container.get(App1);
+            const app2 = containerChild.get(App2);
+
+            expect(app1.logger).not.to.equal(app2.logger);
+        });
+
+        it('configures scoped via decorators helper (ES5/6) [singleton]', () => {
+            @Scoped
+            class Logger {
+                private static value = 0;
+                public value = Logger.value++;
+            }
+
+            class App1 {
+                public static inject() {
+                    return [Logger];
+                }
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            class App2 {
+                public static inject() {
+                    return [Logger];
+                }
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            const container = new Container();
+            const containerChild = container.createChild();
+            const app1 = container.get(App1);
+            const app2 = containerChild.get(App2);
+
+            expect(app1.logger).not.to.equal(app2.logger);
+        });
+
+        it('configures scoped via api [scoped]', () => {
             class Logger {
                 private static value = 0;
                 public value = Logger.value++;
@@ -590,13 +657,14 @@ describe('container', () => {
             expect(app1.logger).not.to.equal(app2.logger);
         });
 
-        it('configures scoped via decorators helper (ES5/6) [transient]', () => {
+        it('configures scoped via decorators helper (ES5/6) [scoped]', () => {
             @Scoped
             class Logger {
                 private static value = 0;
                 public value = Logger.value++;
             }
 
+            @Scoped
             class App1 {
                 public static inject() {
                     return [Logger];
@@ -606,6 +674,7 @@ describe('container', () => {
                 }
             }
 
+            @Scoped
             class App2 {
                 public static inject() {
                     return [Logger];
