@@ -456,6 +456,38 @@ describe('container', () => {
             expect(app1.logger).to.equal(app2.logger);
         });
 
+        it('configures singleton via resolver', () => {
+            class Logger {}
+
+            class App1 {
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            Inject(Logger)(App1);
+
+            class App2 {
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            Inject(Logger)(App2);
+
+            const container = new Container();
+            container.registerSingleton(Logger, {
+                get(container) {
+                    return new Logger();
+                },
+            });
+
+            const app1 = container.get(App1);
+            const app2 = container.get(App2);
+
+            expect(app1.logger).to.equal(app2.logger);
+        });
+
         it('configures singleton via decorators helper (ES5/6)', () => {
             @Singleton
             class Logger {}
@@ -511,6 +543,44 @@ describe('container', () => {
             const container = new Container();
             const containerChild = container.createChild();
             container.registerScoped(Logger);
+            container.registerTransient(App1);
+            container.registerTransient(App2);
+
+            const app1 = containerChild.get(App1);
+            const app2 = containerChild.get(App2);
+
+            expect(app1.logger).to.equal(app2.logger);
+        });
+
+        it('configures scoped via resolver [transient]', () => {
+            class Logger {
+                private static value = 0;
+                public value = Logger.value++;
+            }
+
+            class App1 {
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            Inject(Logger)(App1);
+
+            class App2 {
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            Inject(Logger)(App2);
+
+            const container = new Container();
+            const containerChild = container.createChild();
+            container.registerScoped(Logger, {
+                get(container) {
+                    return new Logger();
+                },
+            });
             container.registerTransient(App1);
             container.registerTransient(App2);
 
@@ -589,6 +659,44 @@ describe('container', () => {
             expect(app1.logger).not.to.equal(app2.logger);
         });
 
+        it('configures scoped via resolver [singleton]', () => {
+            class Logger {
+                private static value = 0;
+                public value = Logger.value++;
+            }
+
+            class App1 {
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            Inject(Logger)(App1);
+
+            class App2 {
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            Inject(Logger)(App2);
+
+            const container = new Container();
+            container.registerScoped(Logger, {
+                get(container) {
+                    return new Logger();
+                },
+            });
+            const containerChild = container.createChild();
+            container.registerSingleton(App1);
+            containerChild.registerSingleton(App2);
+
+            const app1 = container.get(App1);
+            const app2 = containerChild.get(App2);
+
+            expect(app1.logger).not.to.equal(app2.logger);
+        });
+
         it('configures scoped via decorators helper (ES5/6) [singleton]', () => {
             @Scoped
             class Logger {
@@ -646,6 +754,44 @@ describe('container', () => {
 
             const container = new Container();
             container.registerScoped(Logger);
+            const containerChild = container.createChild();
+            container.registerScoped(App1);
+            containerChild.registerScoped(App2);
+
+            const app1 = container.get(App1);
+            const app2 = containerChild.get(App2);
+
+            expect(app1.logger).not.to.equal(app2.logger);
+        });
+
+        it('configures scoped via resolver [scoped]', () => {
+            class Logger {
+                private static value = 0;
+                public value = Logger.value++;
+            }
+
+            class App1 {
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            Inject(Logger)(App1);
+
+            class App2 {
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            Inject(Logger)(App2);
+
+            const container = new Container();
+            container.registerScoped(Logger, {
+                get(container) {
+                    return new Logger();
+                },
+            });
             const containerChild = container.createChild();
             container.registerScoped(App1);
             containerChild.registerScoped(App2);
@@ -714,6 +860,40 @@ describe('container', () => {
 
             const container = new Container();
             container.registerTransient(Logger, Logger);
+
+            const app1 = container.get(App1);
+            const app2 = container.get(App2);
+
+            expect(app1.logger).not.to.equal(app2.logger);
+        });
+
+        it('configures transient (non singleton) via resolver', () => {
+            class Logger {}
+
+            class App1 {
+                public static inject() {
+                    return [Logger];
+                }
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            class App2 {
+                public static inject() {
+                    return [Logger];
+                }
+                public constructor(public logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            const container = new Container();
+            container.registerTransient(Logger, {
+                get(container) {
+                    return new Logger();
+                },
+            });
 
             const app1 = container.get(App1);
             const app2 = container.get(App2);

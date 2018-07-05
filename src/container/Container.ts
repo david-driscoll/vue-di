@@ -456,7 +456,7 @@ export class Container {
     public createChild(name?: string): Container {
         const child = new Container({
             ...this._configuration,
-            name: `${(name || 'child')}:${containerNumber}`,
+            name: `${name || 'child'}:${containerNumber}`,
         });
         (child as any).root = this.root;
         (child as any).parent = this;
@@ -496,6 +496,25 @@ export class Container {
                 true
             );
         }
+    }
+
+    /**
+     * Invokes a function, recursively resolving its dependencies.
+     * @param fn The function to invoke with the auto-resolved dependencies.
+     * @param key The key being invoked.
+     * @param dynamicDependencies Additional function dependencies to use during invocation.
+     * @return Returns the instance resulting from calling the function.
+     */
+    public invokeWithKey<T>(
+        fn: Function | { get(container: Container, key: Key<T>): T },
+        key: Key<T>,
+        dynamicDependencies?: any[]
+    ) {
+        if (typeof fn !== 'function') {
+            return fn.get(this, key);
+        }
+
+        return this.invoke(fn, dynamicDependencies);
     }
 
     /**

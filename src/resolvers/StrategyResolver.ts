@@ -42,26 +42,26 @@ export class StrategyResolver<T> implements Resolver<T> {
      * @param key The key that the resolver was registered as.
      * @return Returns the resolved object.
      */
-    public get(container: Container, key?: Key<T>): any {
+    public get(container: Container, key: Key<T>): any {
         switch (this.strategy) {
             case Strategy.Instance:
                 return this.state;
             case Strategy.Singleton:
                 if (this._resolved) return this.state;
-                const singleton = container.invoke(this.state);
+                const singleton = container.invokeWithKey(this.state, key);
                 this.state = singleton;
                 this._resolved = true;
 
                 return singleton;
             case Strategy.Scoped:
                 if (this._resolved) return this.state;
-                const scoped = container.invoke(this.state);
+                const scoped = container.invokeWithKey(this.state, key);
                 this.state = scoped;
                 this._resolved = true;
 
                 return scoped;
             case Strategy.Transient:
-                return container.invoke(this.state);
+                return container.invokeWithKey(this.state, key);
             case Strategy.Function:
                 return this.state(container, key, this);
             case Strategy.Array:
