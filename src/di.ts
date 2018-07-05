@@ -14,11 +14,13 @@ import {
     Singleton,
     Transient,
 } from './decorators';
+import { Key } from './types';
 
 export * from './container';
 export * from './decorators';
 export * from './protocol/protocol';
 export * from './types';
+export { Builder, Container };
 
 export default {
     Builder,
@@ -36,5 +38,3 @@ export default {
     Singleton,
     Transient,
 };
-
-export { Builder, Container };
