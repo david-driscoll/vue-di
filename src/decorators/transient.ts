@@ -5,6 +5,7 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { TransientRegistration } from '../registration/TransientRegistration';
+import { Key } from '../types';
 import { keyedDecorator } from './keyedDecorator';
 import { Registration } from './registration';
 
@@ -13,4 +14,4 @@ import { Registration } from './registration';
  *
  * @export
  */
-export const Transient = keyedDecorator(key => Registration(new TransientRegistration(key)));
+export const Transient = keyedDecorator((key?: Key<any>) => Registration(new TransientRegistration(key)));

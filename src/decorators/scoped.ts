@@ -5,6 +5,7 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { ScopedRegistration } from '../registration/ScopedRegistration';
+import { Key } from '../types';
 import { keyedDecorator } from './keyedDecorator';
 import { Registration } from './registration';
 
@@ -13,4 +14,4 @@ import { Registration } from './registration';
  *
  * @export
  */
-export const Scoped = keyedDecorator(key => Registration(new ScopedRegistration(key)));
+export const Scoped = keyedDecorator<any>((key?: Key<any>) => Registration(new ScopedRegistration(key)));

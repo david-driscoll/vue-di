@@ -1,13 +1,13 @@
 import { Key } from '../types';
 
-export function keyedDecorator(factory: (key?: Key<any>) => ClassDecorator) {
+export function keyedDecorator<T>(factory: (key?: Key<T>) => ClassDecorator) {
     function Decorator<TFunction extends Function>(target: TFunction): TFunction | void {
         return factory()(target);
     }
 
     // tslint:disable-next-line:prefer-object-spread
     return Object.assign(Decorator, {
-        key(key: Key<any>) {
+        key(key: Key<T>) {
             return factory(key);
         },
     });

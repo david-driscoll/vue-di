@@ -5,6 +5,7 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import { SingletonRegistration } from '../registration/SingletonRegistration';
+import { Key } from '../types';
 import { keyedDecorator } from './keyedDecorator';
 import { Registration } from './registration';
 
@@ -13,4 +14,4 @@ import { Registration } from './registration';
  *
  * @export
  */
-export const Singleton = keyedDecorator(key => Registration(new SingletonRegistration(key)));
+export const Singleton = keyedDecorator((key?: Key<any>) => Registration(new SingletonRegistration(key)));
