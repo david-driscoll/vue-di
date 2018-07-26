@@ -13,10 +13,10 @@ import {
     Resolve,
     Singleton,
     Transient,
-} from './di';
+} from './index';
 
 import { install } from './plugin';
-export * from './di';
+export * from './index';
 
 export default {
     Builder,

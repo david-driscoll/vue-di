@@ -1,17 +1,17 @@
 import typescript from 'rollup-plugin-typescript2';
 
 export default {
-    input: './src/di.ts',
+    input: './src/index.ts',
     output: [
         {
-            name: 'di',
-            file: './dist/di.esm.js',
+            name: 'index',
+            file: './dist/index.esm.js',
             format: 'es',
             sourcemap: true,
         },
         {
-            name: 'di',
-            file: './dist/di.cjs.js',
+            name: 'index',
+            file: './dist/index.cjs.js',
             format: 'cjs',
             sourcemap: true,
         },

@@ -6,9 +6,9 @@
         "url": "github.com/david-driscoll/vue-di"
     },
     "description": "Dependency injection for Vue using a derived Aurelia container",
-    "main": "di.js",
-    "module": "di.esm.js",
-    "jsnext:main": "di.esm.js",
+    "main": "index.js",
+    "module": "index.esm.js",
+    "jsnext:main": "index.esm.js",
     "types": "di.d.ts",
     "scripts": {
         "build": "npm run rollup:di && npm run rollup:vue && tsc -p . -outDir dist",
