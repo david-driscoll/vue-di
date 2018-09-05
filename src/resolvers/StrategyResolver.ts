@@ -6,22 +6,13 @@
  */
 import { Container } from '../container/Container';
 import { containerResolver } from '../protocol/resolver';
-import { Key, Resolver } from '../types';
+import { Key, Resolver, Strategy, IStrategyResolver } from '../types';
 
-export enum Strategy {
-    Unset = -1,
-    Instance = 0,
-    Singleton = 1,
-    Transient = 2,
-    Function = 3,
-    Array = 4,
-    Alias = 5,
-    Scoped = 6,
-}
+export { Strategy };
 
 @containerResolver
-export class StrategyResolver<T> implements Resolver<T> {
-    public strategy: StrategyResolver<T> | Strategy;
+export class StrategyResolver<T> implements Resolver<T>, IStrategyResolver<T> {
+    public strategy: Strategy;
     public state: any;
     public originalState: any;
     private _resolved = false;
@@ -71,5 +62,9 @@ export class StrategyResolver<T> implements Resolver<T> {
             default:
                 throw new Error('Invalid strategy: ' + this.strategy);
         }
+    }
+
+    public clone() {
+        return new StrategyResolver(this.strategy, this.originalState);
     }
 }

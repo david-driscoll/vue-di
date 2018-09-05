@@ -11,7 +11,7 @@ import { Invoker } from '../invokers/Invoker';
 import { containerResolver as resolverDeco } from '../protocol/resolver';
 import { IRegistration } from '../registration/Registration';
 import { Strategy, StrategyResolver } from '../resolvers/StrategyResolver';
-import { Key, Resolver, TypedKey } from '../types';
+import { Key, Resolver, TypedKey, isStrategyResolver } from '../types';
 import { IContainerConfiguration } from './ContainerConfiguration';
 import { getInjectDependencies } from './getInjectDependencies';
 import { InvocationHandler } from './InvocationHandler';
@@ -362,13 +362,17 @@ export class Container {
      * @return Returns the resolver, if registred, otherwise undefined.
      */
     public getResolver<T>(key: Key<T>, checkParent = false): Resolver<T> | undefined {
+        return this._getResolver(key, checkParent ? this : undefined);
+    }
+
+    private _getResolver<T>(key: Key<T>, relativeContainer?: Container): Resolver<T> | undefined {
         let resolver = this._resolvers.get(key);
-        if (checkParent && !resolver && this.parent) {
-            resolver = this.parent.getResolver(key, checkParent);
-            if (resolver instanceof StrategyResolver && resolver.strategy === Strategy.Scoped) {
-                resolver = new StrategyResolver(resolver.strategy, resolver.originalState);
-                this.registerResolver(key, resolver);
-            }
+        if (relativeContainer && !resolver && this.parent) {
+            resolver = this.parent._getResolver(key, relativeContainer);
+        }
+        if (!this._resolvers.get(key) && isStrategyResolver(resolver) && resolver.strategy === Strategy.Scoped) {
+            resolver = resolver.clone();
+            this.registerResolver(key, resolver);
         }
 
         return resolver;

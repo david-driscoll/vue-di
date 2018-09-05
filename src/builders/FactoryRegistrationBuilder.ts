@@ -1,14 +1,13 @@
 import { Container } from '../container/Container';
 import { Strategy } from '../resolvers/StrategyResolver';
-import { FactoryMethod, Key, Resolver } from '../types';
+import { FactoryMethod, Key, Resolver, IStrategyResolver } from '../types';
 import { RegistrationBuilderBase } from './RegistrationBuilderBase';
 
-class RegistrationFactoryResolver implements Resolver<any> {
-    public strategy = Strategy.Instance;
-    private instance: any;
-    public constructor(private readonly factory: FactoryMethod<any>) {}
+class RegistrationFactoryResolver<T> implements IStrategyResolver<T> {
+    private instance!: T;
+    public constructor(private readonly factory: FactoryMethod<T>, public strategy = Strategy.Instance) {}
 
-    public get(container: Container, key: Key<any>): any {
+    public get(container: Container, key: Key<T>): T {
         if (this.strategy === Strategy.Singleton || this.strategy === Strategy.Scoped) {
             if (!this.instance) {
                 this.instance = this.factory(container, key);
@@ -18,6 +17,10 @@ class RegistrationFactoryResolver implements Resolver<any> {
         }
 
         return this.factory(container, key);
+    }
+
+    public clone() {
+        return new RegistrationFactoryResolver<T>(this.factory, this.strategy);
     }
 }
 

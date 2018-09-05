@@ -22,6 +22,7 @@ import { NewInstanceResolver } from '../src/resolvers/NewInstanceResolver';
 import { OptionalResolver } from '../src/resolvers/OptionalResolver';
 import { ParentResolver } from '../src/resolvers/ParentResolver';
 import { IFactory } from '../src/types';
+import { Builder } from '../src';
 
 describe('container', () => {
     describe('injection', () => {
@@ -1652,6 +1653,28 @@ describe('container', () => {
 
                     expect(app.logger).to.be.instanceOf(Logger);
                     expect(parentContainer.get(Logger)).not.to.be.eq(app.logger);
+                });
+
+                it('should work with scoped from parent and child containers', () => {
+                    const config = Symbol.for('config');
+                    const asSelf = Symbol.for('asSelf');
+                    const parentContainer = new Container();
+                    new Builder(parentContainer)
+                        .register(c => {
+                            return c.get(config);
+                        })
+                        .as(asSelf)
+                        .instancePerScope();
+
+                    const childContainer = parentContainer.createChild();
+                    childContainer.registerInstance(config, { something: 'awesome' });
+
+                    expect(childContainer.get(asSelf)).to.be.eql({ something: 'awesome' });
+
+                    const childContainer2 = parentContainer.createChild();
+                    childContainer2.registerInstance(config, { something: 'awesome2' });
+
+                    expect(childContainer2.get(asSelf)).to.be.eql({ something: 'awesome2' });
                 });
             });
 

@@ -4,7 +4,6 @@ import { RegistrationBuilderBase } from './RegistrationBuilderBase';
 
 export class InstanceRegistrationBuilder<T> extends RegistrationBuilderBase<T> {
     public constructor(container: Container, instance: T) {
-        super(container);
-        this.resolver.strategy = new StrategyResolver(Strategy.Instance, instance);
+        super(container, new StrategyResolver(Strategy.Instance, instance));
     }
 }
