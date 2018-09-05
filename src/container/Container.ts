@@ -11,11 +11,11 @@ import { Invoker } from '../invokers/Invoker';
 import { containerResolver as resolverDeco } from '../protocol/resolver';
 import { IRegistration } from '../registration/Registration';
 import { Strategy, StrategyResolver } from '../resolvers/StrategyResolver';
-import { Key, Resolver, TypedKey, isStrategyResolver } from '../types';
+import { isStrategyResolver, Key, Resolver, TypedKey } from '../types';
 import { IContainerConfiguration } from './ContainerConfiguration';
 import { getInjectDependencies } from './getInjectDependencies';
 import { InvocationHandler } from './InvocationHandler';
-import { validateKey, _emptyParameters } from './validateParameters';
+import { _emptyParameters, validateKey } from './validateParameters';
 
 // tslint:disable:max-line-length
 function invokeWithDynamicDependencies(
@@ -134,8 +134,9 @@ export class Container {
     public readonly root: Container;
 
     private _configuration: IContainerConfiguration;
-    private _onHandlerCreated?: (handler: InvocationHandler) => InvocationHandler;
-    private _handlers: Map<any, any>;
+    private _onHandlerCreated?: IContainerConfiguration['onHandlerCreated'];
+    private _onRegisterResolver?: IContainerConfiguration['onRegisterResolver'];
+    private _handlers: Map<any, InvocationHandler>;
     private _resolvers: Map<any, Resolver<any>>;
 
     public get name() {
@@ -155,6 +156,7 @@ export class Container {
 
         this._configuration = configuration;
         this._onHandlerCreated = configuration.onHandlerCreated;
+        this._onRegisterResolver = configuration.onRegisterResolver;
         this._handlers = configuration.handlers || (configuration.handlers = new Map());
         this._resolvers = new Map();
         this.root = this;
@@ -279,6 +281,7 @@ export class Container {
      */
     public registerResolver<T>(key: Key<T>, resolver: Resolver<T>): Resolver<T> {
         validateKey(key);
+        resolver = this._onRegisterResolver != null ? this._onRegisterResolver(key, resolver) : resolver;
 
         const allResolvers = this._resolvers;
         const result = allResolvers.get(key);
@@ -363,19 +366,6 @@ export class Container {
      */
     public getResolver<T>(key: Key<T>, checkParent = false): Resolver<T> | undefined {
         return this._getResolver(key, checkParent ? this : undefined);
-    }
-
-    private _getResolver<T>(key: Key<T>, relativeContainer?: Container): Resolver<T> | undefined {
-        let resolver = this._resolvers.get(key);
-        if (relativeContainer && !resolver && this.parent) {
-            resolver = this.parent._getResolver(key, relativeContainer);
-        }
-        if (!this._resolvers.get(key) && isStrategyResolver(resolver) && resolver.strategy === Strategy.Scoped) {
-            resolver = resolver.clone();
-            this.registerResolver(key, resolver);
-        }
-
-        return resolver;
     }
 
     /**
@@ -531,6 +521,19 @@ export class Container {
         (this as any)._configuration = null;
         (this as any).parent = null;
         (this as any).root = null;
+    }
+
+    private _getResolver<T>(key: Key<T>, relativeContainer?: Container): Resolver<T> | undefined {
+        let resolver = this._resolvers.get(key);
+        if (relativeContainer && !resolver && this.parent) {
+            resolver = this.parent._getResolver(key, relativeContainer);
+        }
+        if (!this._resolvers.get(key) && isStrategyResolver(resolver) && resolver.strategy === Strategy.Scoped) {
+            resolver = resolver.clone();
+            this.registerResolver(key, resolver);
+        }
+
+        return resolver;
     }
 
     private _get<T>(key: Key<T>, relativeContainer?: Container): T {
