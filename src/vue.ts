@@ -19,12 +19,12 @@ import { install } from './plugin';
 export * from './index';
 
 export default {
-    Builder,
-    Container,
-    install,
     All,
     AutoInject,
+    Builder,
+    Container,
     Factory,
+    install,
     Lazy,
     NewInstance,
     Optional,
@@ -50,9 +50,6 @@ declare module 'vue/types/vue' {
 
 declare module 'vue/types/options' {
     interface ComponentOptions<V extends Vue> {
-        dependencies?: {
-            [key: string]: Key<any>;
-        };
         createChildContainer?: boolean;
         registerServices?(container: Container): void;
     }

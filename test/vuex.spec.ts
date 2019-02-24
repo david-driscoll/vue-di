@@ -4,7 +4,7 @@ import * as Vuex from 'vuex';
 import { Store } from 'vuex';
 import { getModule, Mutation, VuexModule } from 'vuex-module-decorators';
 import VueContainer, { Container } from '../src/vue';
-import { InjectModule } from '../src/vuex';
+import { InjectModule } from "../src/InjectModule";
 Vue.use(Vuex);
 
 describe('vuexTests', () => {
