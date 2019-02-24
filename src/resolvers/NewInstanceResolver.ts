@@ -6,7 +6,7 @@
  */
 import { Container } from '../container/Container';
 import { containerResolver } from '../protocol/resolver';
-import { Key, Resolver } from '../types';
+import { Key, Resolver, ConstructorOf, Strategy } from '../types';
 
 /**
  * Used to inject a new instance of a dependency, without regard for existing
@@ -21,12 +21,12 @@ export class NewInstanceResolver<T = any> implements Resolver<T> {
      * @param dynamicDependencies An optional list of dynamic dependencies.
      * @return Returns an instance of NewInstance for the key.
      */
-    public static of<T>(key: Function, ...dynamicDependencies: any[]) {
+    public static of<T>(key: Key<T>, ...dynamicDependencies: any[]) {
         return new NewInstanceResolver<T>(key, ...dynamicDependencies);
     }
 
     /** @internal */
-    public _key: Function;
+    public _key: Key<T>;
     /** @internal */
     public _asKey: Key<any>;
     /** @internal */
@@ -37,7 +37,7 @@ export class NewInstanceResolver<T = any> implements Resolver<T> {
      * @param key The key to resolve/instantiate.
      * @param dynamicDependencies An optional list of dynamic dependencies.
      */
-    public constructor(key: Function, ...dynamicDependencies: any[]) {
+    public constructor(key: Key<T>, ...dynamicDependencies: any[]) {
         this._key = key;
         this._asKey = key as any;
         this._dynamicDependencies = dynamicDependencies;
@@ -52,14 +52,20 @@ export class NewInstanceResolver<T = any> implements Resolver<T> {
     public get(container: Container, key: Key<T>): T {
         const dynamicDependencies =
             this._dynamicDependencies.length > 0
-                ? this._dynamicDependencies.map(
-                      dependency =>
-                          dependency['protocol:aurelia:resolver']
-                              ? dependency.get(container)
-                              : container.get(dependency)
+                ? this._dynamicDependencies.map(dependency =>
+                      dependency['protocol:aurelia:resolver']
+                          ? dependency.get(container)
+                          : container.get(dependency)
                   )
                 : undefined;
-        const instance = container.invoke<T>(this._key, dynamicDependencies);
+
+        let _key = this._key;
+        const resolver = container.getResolver(_key as any);
+        if (resolver && (resolver as any).strategy === Strategy.Function) {
+            _key = (resolver as any).state;
+        }
+
+        const instance = container.invoke<T>(_key as any, dynamicDependencies);
         container.registerInstance(this._asKey, instance);
 
         return instance;

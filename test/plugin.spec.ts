@@ -2,13 +2,13 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { IDisposable } from 'ts-disposables';
 import Component from 'vue-class-component';
-import { Inject } from 'vue-property-decorator';
+import { Inject as PropertyInject } from 'vue-property-decorator'
 import { createLocalVue, mount } from 'vue-test-utils';
-import { AutoInject, Lazy, Resolve, Singleton } from '../src/decorators';
-// tslint:disable:max-classes-per-file
-
+import { AutoInject, Inject, Lazy, Resolve, Singleton } from '../src/decorators';
+import { Strategy, StrategyResolver } from '../src/resolvers';
 import VueContainer, { Container } from '../src/vue';
 
+// tslint:disable:max-classes-per-file
 @AutoInject
 class Stuff {
     public value = 123;
@@ -59,14 +59,51 @@ describe('pluginTests', () => {
             const NewVue = createLocalVue();
             NewVue.use(VueContainer);
 
-            const vm: any = new NewVue({
-                dependencies: {
-                    things: Item /*?*/,
-                },
-            });
+            @Component
+            class Test extends NewVue {
+                @Inject()
+                public things!: Item;
+            }
+
+            const vm: any = new Test({});
 
             vm.things.should.not.be.null;
             vm.things.stuff.value.should.be.eq(123);
+        });
+
+        it('should setup dependendcies w/string', () => {
+            const NewVue = createLocalVue();
+            NewVue.use(VueContainer);
+            NewVue.container.registerInstance('item', new Item(new Stuff()));
+
+            @Component
+            class Test extends NewVue {
+                @Inject('item')
+                public things!: Item;
+            }
+
+            const vm: any = new Test({});
+
+            vm.things.should.not.be.null;
+            vm.things.stuff.value.should.be.eq(123);
+            vm.things.should.be.eq(NewVue.container.get('item'));
+        });
+        it('should setup dependendcies w/symbol', () => {
+            const NewVue = createLocalVue();
+            NewVue.use(VueContainer);
+            NewVue.container.registerInstance(Symbol.for('item'), new Item(new Stuff()));
+
+            @Component
+            class Test extends NewVue {
+                @Inject(Symbol.for('item'))
+                public things!: Item;
+            }
+
+            const vm: any = new Test({});
+
+            vm.things.should.not.be.null;
+            vm.things.stuff.value.should.be.eq(123);
+            vm.things.should.be.eq(NewVue.container.get(Symbol.for('item')));
         });
 
         it('should work with child components (and use $parent)', () => {
@@ -76,13 +113,13 @@ describe('pluginTests', () => {
             const item = mount(
                 {
                     template: '<div>test123 <child-vue></child-vue></div>',
-                    dependencies: {
-                        things: DisposableItem,
+                    inject: {
+                        things: new StrategyResolver(Strategy.Singleton, DisposableItem) as any,
                     },
                     components: {
                         'child-vue': {
-                            dependencies: {
-                                things: Item,
+                            inject: {
+                                things: new StrategyResolver(Strategy.Singleton, Item) as any,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -102,13 +139,13 @@ describe('pluginTests', () => {
                 {
                     template: '<div>test123 <child-vue></child-vue></div>',
                     createChildContainer: true,
-                    dependencies: {
-                        things: DisposableItem,
+                    inject: {
+                        things: new StrategyResolver(Strategy.Singleton, DisposableItem) as any,
                     },
                     components: {
                         'child-vue': {
-                            dependencies: {
-                                things: DisposableItem,
+                            inject: {
+                                things: new StrategyResolver(Strategy.Singleton, DisposableItem) as any,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -135,8 +172,8 @@ describe('pluginTests', () => {
                     components: {
                         'child-vue': {
                             // createChildContainer: true,
-                            dependencies: {
-                                things: DisposableItem,
+                            inject: {
+                                things: new StrategyResolver(Strategy.Singleton, DisposableItem) as any,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -181,7 +218,7 @@ describe('pluginTests', () => {
 
             const vm: any = new NewVue({
                 inject: {
-                    things: Item as any /*?*/,
+                    things: new StrategyResolver(Strategy.Singleton, Item) as any /*?*/,
                 },
             });
 
@@ -197,12 +234,12 @@ describe('pluginTests', () => {
                 {
                     template: '<div>test123 <child-vue></child-vue></div>',
                     inject: {
-                        things: DisposableItem as any,
+                        things: new StrategyResolver(Strategy.Singleton, DisposableItem) as any,
                     },
                     components: {
                         'child-vue': {
                             inject: {
-                                things: Item as any,
+                                things: new StrategyResolver(Strategy.Singleton, Item) as any,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -223,12 +260,12 @@ describe('pluginTests', () => {
                     template: '<div>test123 <child-vue></child-vue></div>',
                     createChildContainer: true,
                     inject: {
-                        things: DisposableItem as any,
+                        things: new StrategyResolver(Strategy.Singleton, DisposableItem) as any,
                     },
                     components: {
                         'child-vue': {
                             inject: {
-                                things: DisposableItem as any,
+                                things: new StrategyResolver(Strategy.Singleton, DisposableItem) as any,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -256,7 +293,7 @@ describe('pluginTests', () => {
                         'child-vue': {
                             // createChildContainer: true,
                             inject: {
-                                things: DisposableItem as any,
+                                things: new StrategyResolver(Strategy.Singleton, DisposableItem) as any,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -271,49 +308,6 @@ describe('pluginTests', () => {
             item.destroy();
 
             things._disposed.should.be.true;
-        });
-
-        it('should work with resolve attributes', () => {
-            const NewVue = createLocalVue();
-            NewVue.use(VueContainer);
-
-            @Singleton
-            class Service {
-                public value = 1;
-            }
-
-            @Component
-            class MyComponent2 extends NewVue {
-                @Inject(Service as any)
-                public service!: Service;
-            }
-
-            const wrapper2a = mount<MyComponent2>(MyComponent2);
-            const wrapper2b = mount<MyComponent2>(MyComponent2);
-
-            wrapper2b.vm.service.should.be.eq(wrapper2a.vm.service);
-        });
-
-        it('should work with resolve attributes and symbol', () => {
-            const NewVue = createLocalVue();
-            NewVue.use(VueContainer);
-
-            class Service {
-                public value = 1;
-            }
-
-            const symbol = Symbol(Service.toString());
-            NewVue.container.registerSingleton(symbol, Service);
-
-            @Component
-            class MyComponent2 extends NewVue {
-                @Inject(symbol) public service!: Service;
-            }
-
-            const wrapper2a = mount<MyComponent2>(MyComponent2);
-            const wrapper2b = mount<MyComponent2>(MyComponent2);
-
-            wrapper2b.vm.service.should.be.eq(wrapper2a.vm.service);
         });
 
         it('use the given container instead of creating a new one', () => {

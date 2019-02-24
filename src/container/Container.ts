@@ -11,7 +11,7 @@ import { Invoker } from '../invokers/Invoker';
 import { containerResolver as resolverDeco } from '../protocol/resolver';
 import { IRegistration } from '../registration/Registration';
 import { Strategy, StrategyResolver } from '../resolvers/StrategyResolver';
-import { isStrategyResolver, Key, Resolver, TypedKey } from '../types';
+import { isStrategyResolver, Key, Resolver, TypedKey, ConstructorOf } from '../types';
 import { IContainerConfiguration } from './ContainerConfiguration';
 import { getInjectDependencies } from './getInjectDependencies';
 import { InvocationHandler } from './InvocationHandler';
@@ -41,6 +41,7 @@ function invokeWithDynamicDependencies(
                 );
                 break;
             default:
+            lookup//?
                 args[i] = container.get(lookup);
         }
     }
@@ -257,7 +258,9 @@ export class Container {
      */
     public registerHandler<T>(
         key: Key<T>,
-        handler: (container: Container, key: any, resolver: Resolver<T>) => any
+        handler:
+            | ((container: Container, key: any, resolver: Resolver<T>) => any)
+            | ConstructorOf<any>
     ): Resolver<T> {
         return this.registerResolver(key, new StrategyResolver(Strategy.Function, handler));
     }
@@ -281,7 +284,8 @@ export class Container {
      */
     public registerResolver<T>(key: Key<T>, resolver: Resolver<T>): Resolver<T> {
         validateKey(key);
-        resolver = this._onRegisterResolver != null ? this._onRegisterResolver(key, resolver) : resolver;
+        resolver =
+            this._onRegisterResolver != null ? this._onRegisterResolver(key, resolver) : resolver;
 
         const allResolvers = this._resolvers;
         const result = allResolvers.get(key);
@@ -481,7 +485,6 @@ export class Container {
                 handler = this._createInvocationHandler(fn);
                 this._handlers.set(fn, handler);
             }
-
             return handler.invoke(this, dynamicDependencies);
         } catch (e) {
             throw AggregateError(
@@ -528,7 +531,11 @@ export class Container {
         if (relativeContainer && !resolver && this.parent) {
             resolver = this.parent._getResolver(key, relativeContainer);
         }
-        if (!this._resolvers.get(key) && isStrategyResolver(resolver) && resolver.strategy === Strategy.Scoped) {
+        if (
+            !this._resolvers.get(key) &&
+            isStrategyResolver(resolver) &&
+            resolver.strategy === Strategy.Scoped
+        ) {
             resolver = resolver.clone();
             this.registerResolver(key, resolver);
         }

@@ -46,13 +46,15 @@ export class InvocationHandler {
      * @return The result of the function invocation.
      */
     public invoke(container: Container, dynamicDependencies?: any[]): any {
-        return dynamicDependencies !== undefined
-            ? this.invoker.invokeWithDynamicDependencies(
-                  container,
-                  this.fn as any,
-                  this.dependencies,
-                  dynamicDependencies
-              )
-            : this.invoker.invoke(container, this.fn as any, this.dependencies);
+        if (dynamicDependencies !== undefined) {
+            this.invoker //?
+            return this.invoker.invokeWithDynamicDependencies(
+                container,
+                this.fn as any,
+                this.dependencies,
+                dynamicDependencies
+            );
+        }
+        return this.invoker.invoke(container, this.fn as any, this.dependencies);
     }
 }

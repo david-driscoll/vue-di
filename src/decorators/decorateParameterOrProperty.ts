@@ -1,28 +1,48 @@
 import 'reflect-metadata';
 import constants from '../constants';
-import { Resolver } from '../types';
+import { Resolver, Key, ConstructorOf, isResolver } from '../types';
 import { getDecoratorDependencies } from './getDecoratorDependencies';
 import { createVueDecorator } from './shim-component-decorators';
+import { StrategyResolver, Strategy } from '../resolvers';
 
-export function decorateParameterOrProperty(resolver: (type: any) => Resolver<any>, name: string) {
+export function decorateParameterOrProperty(
+    keyProvider: (type: ConstructorOf<any>) => Key<any>,
+    name: string
+) {
     return (target: Object, propertyOrParameterName: string | symbol, index?: number) => {
         if (typeof index === 'number') {
             const params = getDecoratorDependencies(target, name);
-            params[index] = resolver(params[index]);
+            params[index] = keyProvider(params[index]);
         } else {
             const propertyType = Reflect.getOwnMetadata(
                 constants.propertyType,
                 target,
                 propertyOrParameterName
             );
-            const instance = resolver(propertyType);
-            Reflect.defineMetadata(constants.resolver, instance, target, propertyOrParameterName);
-
-            return createVueDecorator((options: any, key: string | symbol) => {
-                if (!options.dependencies) {
-                    options.dependencies = {};
+            let resolver: Resolver<any>;
+            {
+                const resolverOrKey = keyProvider(propertyType);
+                if (isResolver(resolverOrKey)) {
+                    resolver = resolverOrKey;
+                } else if (typeof resolverOrKey === 'function') {
+                    resolver = new StrategyResolver(Strategy.Singleton, resolverOrKey);
+                } else {
+                    resolver = new StrategyResolver(Strategy.Alias, resolverOrKey);
                 }
-                options.dependencies[key] = instance;
+            }
+
+            Reflect.defineMetadata(constants.resolver, resolver, target, propertyOrParameterName);
+
+            return createVueDecorator((options: any, propertyName: string | symbol) => {
+                if (!options.inject) options.inject = {};
+                if (Array.isArray(options.inject)) {
+                    const currentInject = options.inject;
+                    options.inject = {};
+                    for (let item of currentInject) {
+                        options.inject[item] = item;
+                    }
+                }
+                options.inject[propertyName] = resolver;
             })(target, propertyOrParameterName);
         }
     };

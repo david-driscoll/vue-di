@@ -1,5 +1,10 @@
 module.exports = function(wallaby) {
     return {
+        workers: {
+            initial: 2,
+            regular: 2,
+        },
+
         files: ['src/**/*.ts'],
 
         tests: ['test/**/*.spec.ts'],

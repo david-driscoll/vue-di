@@ -1,5 +1,6 @@
 export * from './all';
 export * from './autoinject';
+export * from './dependencies';
 export * from './factory';
 export * from './lazy';
 export * from './newInstance';

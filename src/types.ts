@@ -3,7 +3,9 @@ import { Container } from './container/Container';
 /**
  * Used to allow functions/classes to specify custom dependency resolution logic.
  */
-export type TypedKey<T> = { new (...args: any[]): T } | Resolver<T>;
+
+export type ConstructorOf<C> = { new (...args: any[]): C };
+export type TypedKey<T> = ConstructorOf<T> | Resolver<T>;
 export type Key<T> = string | symbol | TypedKey<T>;
 // tslint:disable-next-line:interface-name
 export interface IFactory<T> {

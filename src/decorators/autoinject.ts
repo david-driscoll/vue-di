@@ -5,9 +5,8 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import 'reflect-metadata';
-import constants from '../constants';
-import { _emptyParameters, clearInvalidParameters } from '../container/validateParameters';
 import { getInjectDependencies } from '../container/getInjectDependencies';
+import { _emptyParameters } from '../container/validateParameters';
 
 /**
  * Decorator: Directs the TypeScript transpiler to write-out type metadata for the decorated class.

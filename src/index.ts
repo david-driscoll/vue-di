@@ -3,6 +3,7 @@ import { Container } from './container';
 import {
     All,
     AutoInject,
+    Dependencies,
     Factory,
     Inject,
     Lazy,
@@ -27,6 +28,7 @@ export default {
     Container,
     All,
     AutoInject,
+    Dependencies,
     Factory,
     Lazy,
     Inject,

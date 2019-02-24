@@ -1,9 +1,11 @@
 import { expect } from 'chai';
+import { Builder } from '../src';
 import constants from '../src/constants';
 import { Container } from '../src/container/Container';
 import {
     All,
     AutoInject,
+    Dependencies,
     Factory,
     Lazy,
     NewInstance,
@@ -22,7 +24,6 @@ import { NewInstanceResolver } from '../src/resolvers/NewInstanceResolver';
 import { OptionalResolver } from '../src/resolvers/OptionalResolver';
 import { ParentResolver } from '../src/resolvers/ParentResolver';
 import { IFactory } from '../src/types';
-import { Builder } from '../src';
 
 describe('container', () => {
     describe('injection', () => {
@@ -73,7 +74,7 @@ describe('container', () => {
             it('fails with function dependency (auto injected)', () => {
                 @AutoInject
                 class App {
-                    constructor(public arg: () => void) {}
+                    public constructor(public arg: () => void) {}
                 }
 
                 const container = new Container();
@@ -84,7 +85,7 @@ describe('container', () => {
             it('passes with symbol Inject', () => {
                 @AutoInject()
                 class App {
-                    constructor(
+                    public constructor(
                         @Inject(Symbol.for('method'))
                         public arg: () => void
                     ) {}
@@ -98,7 +99,7 @@ describe('container', () => {
             it('passes with symbol Resolve', () => {
                 @AutoInject()
                 class App {
-                    constructor(
+                    public constructor(
                         @Resolve(Symbol.for('method'))
                         public arg: () => void,
                         @Resolve(Symbol.for('method'))
@@ -147,7 +148,7 @@ describe('container', () => {
             it('fails with function dependency', () => {
                 @Singleton
                 class App {
-                    constructor(public arg: () => void) {}
+                    public constructor(public arg: () => void) {}
                 }
 
                 const container = new Container();
@@ -159,7 +160,7 @@ describe('container', () => {
             it('fails with string dependency', () => {
                 @Singleton
                 class App {
-                    constructor(public arg: string) {}
+                    public constructor(public arg: string) {}
                 }
 
                 const container = new Container();
@@ -171,7 +172,7 @@ describe('container', () => {
             it('fails with number dependency', () => {
                 @Singleton
                 class App {
-                    constructor(public arg: number) {}
+                    public constructor(public arg: number) {}
                 }
 
                 const container = new Container();
@@ -183,7 +184,7 @@ describe('container', () => {
             it('fails with boolean dependency', () => {
                 @Singleton.key(App)
                 class App {
-                    constructor(public arg: boolean) {}
+                    public constructor(public arg: boolean) {}
                 }
 
                 const container = new Container();
@@ -192,22 +193,10 @@ describe('container', () => {
                 );
             });
 
-            it('fails with object dependency', () => {
-                @Singleton
-                class App {
-                    constructor(public arg: { hello: string }) {}
-                }
-
-                const container = new Container();
-                expect(() => container.get(App)).to.throw(
-                    /Invalid key found on App looking for type Object/
-                );
-            });
-
             it('fails with regexp dependency', () => {
                 @Singleton.key(App)
                 class App {
-                    constructor(public arg: RegExp) {}
+                    public constructor(public arg: RegExp) {}
                 }
 
                 const container = new Container();
@@ -219,7 +208,7 @@ describe('container', () => {
             it('fails with array dependency', () => {
                 @Singleton
                 class App {
-                    constructor(public arg: string[]) {}
+                    public constructor(public arg: string[]) {}
                 }
 
                 const container = new Container();
@@ -231,7 +220,7 @@ describe('container', () => {
             it('fails with promise dependency', () => {
                 @Singleton
                 class App {
-                    constructor(public arg: Promise<any>) {}
+                    public constructor(public arg: Promise<any>) {}
                 }
 
                 const container = new Container();
@@ -369,6 +358,42 @@ describe('container', () => {
             expect(app4.service).to.be.instanceOf(Service);
             expect(app4.logger).to.be.instanceOf(Logger);
         });
+
+        it('not fail with inherited inject() method', function() {
+            @AutoInject
+            class ParentApp {
+                logger: Logger;
+                constructor(logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            @AutoInject
+            class App {
+                logger: Logger;
+                constructor(logger: Logger) {
+                    this.logger = logger;
+                }
+            }
+
+            @AutoInject
+            class ChildApp extends ParentApp {
+                service: Service;
+                constructor(service: Service, logger: Logger) {
+                    super(logger);
+                    this.service = service;
+                }
+            }
+
+            let container = new Container();
+
+            let app1 = container.get(ParentApp);
+            expect(app1.logger).to.be.instanceOf(Logger);
+
+            let app2 = container.get(ChildApp);
+            expect(app2.logger).to.be.instanceOf(Logger);
+            expect(app2.service).to.be.instanceOf(Service);
+        });
     });
 
     describe('registration', () => {
@@ -412,7 +437,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App1);
+            Dependencies(Logger)(App1);
 
             class App2 {
                 public constructor(public logger: Logger) {
@@ -420,7 +445,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App2);
+            Dependencies(Logger)(App2);
 
             const container = new Container();
             const app1 = container.get(App1);
@@ -438,7 +463,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App1);
+            Dependencies(Logger)(App1);
 
             class App2 {
                 public constructor(public logger: Logger) {
@@ -446,7 +471,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App2);
+            Dependencies(Logger)(App2);
 
             const container = new Container();
             container.registerSingleton(Logger, Logger);
@@ -466,7 +491,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App1);
+            Dependencies(Logger)(App1);
 
             class App2 {
                 public constructor(public logger: Logger) {
@@ -474,7 +499,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App2);
+            Dependencies(Logger)(App2);
 
             const container = new Container();
             container.registerSingleton(Logger, {
@@ -531,7 +556,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App1);
+            Dependencies(Logger)(App1);
 
             class App2 {
                 public constructor(public logger: Logger) {
@@ -539,7 +564,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App2);
+            Dependencies(Logger)(App2);
 
             const container = new Container();
             const containerChild = container.createChild();
@@ -565,7 +590,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App1);
+            Dependencies(Logger)(App1);
 
             class App2 {
                 public constructor(public logger: Logger) {
@@ -573,7 +598,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App2);
+            Dependencies(Logger)(App2);
 
             const container = new Container();
             const containerChild = container.createChild();
@@ -638,7 +663,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App1);
+            Dependencies(Logger)(App1);
 
             class App2 {
                 public constructor(public logger: Logger) {
@@ -646,7 +671,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App2);
+            Dependencies(Logger)(App2);
 
             const container = new Container();
             container.registerScoped(Logger);
@@ -672,7 +697,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App1);
+            Dependencies(Logger)(App1);
 
             class App2 {
                 public constructor(public logger: Logger) {
@@ -680,7 +705,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App2);
+            Dependencies(Logger)(App2);
 
             const container = new Container();
             container.registerScoped(Logger, {
@@ -743,7 +768,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App1);
+            Dependencies(Logger)(App1);
 
             class App2 {
                 public constructor(public logger: Logger) {
@@ -751,7 +776,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App2);
+            Dependencies(Logger)(App2);
 
             const container = new Container();
             container.registerScoped(Logger);
@@ -777,7 +802,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App1);
+            Dependencies(Logger)(App1);
 
             class App2 {
                 public constructor(public logger: Logger) {
@@ -785,7 +810,7 @@ describe('container', () => {
                 }
             }
 
-            Inject(Logger)(App2);
+            Dependencies(Logger)(App2);
 
             const container = new Container();
             container.registerScoped(Logger, {
@@ -1221,14 +1246,15 @@ describe('container', () => {
                 it('provides a function which, when called, will return the instance using decorator', () => {
                     class Logger {}
 
+                    @AutoInject
                     class App1 {
                         public static inject = [Logger];
-                        public constructor(public getLogger: () => Logger) {
+                        public constructor(@Lazy(Logger) public getLogger: () => Logger) {
                             this.getLogger = getLogger;
                         }
                     }
 
-                    Lazy(Logger)(App1, 'getLogger', 0);
+                    // Lazy(Logger)(App1, 'getLogger', 0);
 
                     const container = new Container();
                     const app1 = container.get(App1);
@@ -1474,7 +1500,7 @@ describe('container', () => {
                         }
                     }
 
-                    Inject(Logger)(App1, null, 0);
+                    Inject(Logger)(App1, '', 0);
 
                     const container = new Container();
                     const app1 = container.get(App1);
@@ -1983,6 +2009,29 @@ describe('container', () => {
                     expect(app1.logger).to.be.instanceOf(Logger);
                     expect(app1.logger).not.to.equal(logger);
                     expect(app1.logger.dep()).to.be.instanceOf(Dependency);
+                });
+
+                it('inject a new instance of a dependency with registered handler', () => {
+                    class Mock {}
+
+                    class App1 {
+                        public static inject() {
+                            return [NewInstanceResolver.of(Logger)];
+                        }
+                        public logger: Logger;
+                        public constructor(logger: Logger) {
+                            this.logger = logger;
+                        }
+                    }
+
+                    const container = new Container();
+                    container.registerHandler(Logger, () => new Mock());
+                    const logger = container.get(Logger);
+                    const app1 = container.get(App1);
+
+                    expect(logger).to.be.instanceOf(Mock);
+                    expect(app1.logger).to.be.instanceOf(Mock);
+                    expect(app1.logger).to.not.be.eq(logger);
                 });
             });
         });

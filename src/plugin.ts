@@ -3,7 +3,7 @@ import { CompositeDisposable, isDisposable } from 'ts-disposables';
 import Vue, { VueConstructor } from 'vue';
 import { InjectOptions } from 'vue/types/options';
 import { Container } from './container';
-import { isResolver, Resolver } from './types';
+import { isResolver, Resolver, Key } from './types';
 
 export interface IOptions {
     container: Container;
@@ -30,11 +30,9 @@ function innerInstall(Vue: VueConstructor, options: Partial<IOptions>) {
         container: Container,
         disposable: CompositeDisposable,
         name: string | symbol,
-        resolverOrType: any
+        resolver: Resolver<any>
     ) {
-        const value = isResolver(resolverOrType)
-            ? resolverOrType.get(container, undefined as any)
-            : container.get(resolverOrType);
+        const value = resolver.get(container, undefined as any);
 
         if (value && isDisposable(value)) {
             disposable.add(value);
@@ -46,23 +44,6 @@ function innerInstall(Vue: VueConstructor, options: Partial<IOptions>) {
             writable: false,
             value,
         });
-    }
-
-    function getDependencies(
-        instance: Vue,
-        container: Container,
-        disposable: CompositeDisposable,
-        dependencies: {
-            [key: string]: symbol | string | { new (...args: any[]): any } | Resolver<any>;
-        }
-    ) {
-        for (const key in dependencies) {
-            if (dependencies.hasOwnProperty(key)) {
-                // tslint:disable-next-line:no-non-null-assertion
-                const resolverOrType = dependencies[key];
-                resolveValue(instance, container, disposable, key, resolverOrType);
-            }
-        }
     }
 
     function getInjections(
@@ -78,13 +59,17 @@ function innerInstall(Vue: VueConstructor, options: Partial<IOptions>) {
         // tslint:disable-next-line:forin
         for (const key in dependencies) {
             const dep = dependencies[key];
-            if (typeof dep !== 'symbol' && typeof dep !== 'string') {
-                if (dep.from) {
-                    if (container.hasHandler(dep.from) || typeof dep.from === 'function') {
-                        resolveValue(instance, container, disposable, key, dep.from);
-                        delete dependencies[key];
-                        continue;
-                    }
+            if (isResolver(dep)) {
+                resolveValue(instance, container, disposable, key, dep);
+                delete dependencies[key];
+                continue;
+            }
+            if ( typeof dep === 'object' && dep.from) {
+                // tslint:disable-next-line: strict-type-predicates
+                if (isResolver(dep.from)) {
+                    resolveValue(instance, container, disposable, key, dep.from);
+                    delete dependencies[key];
+                    continue;
                 }
             }
         }
@@ -126,9 +111,9 @@ function innerInstall(Vue: VueConstructor, options: Partial<IOptions>) {
                 disposable.add(container);
             }
 
-            if (this.$options.dependencies) {
-                getDependencies(this, container, disposable, this.$options.dependencies);
-            }
+            // if (this.$options.dependencies) {
+            //     getDependencies(this, container, disposable, this.$options.dependencies);
+            // }
             if (this.$options.inject) {
                 getInjections(this, container, disposable, this.$options.inject);
             }
