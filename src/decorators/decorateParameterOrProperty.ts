@@ -20,20 +20,18 @@ export function decorateParameterOrProperty(
                 target,
                 propertyOrParameterName
             );
-                const resolverOrKey = keyProvider(propertyType);
+            const resolverOrKey = keyProvider(propertyType);
 
-            Reflect.defineMetadata(constants.resolver, resolverOrKey, target, propertyOrParameterName);
+            Reflect.defineMetadata(
+                constants.resolver,
+                resolverOrKey,
+                target,
+                propertyOrParameterName
+            );
 
             return createVueDecorator((options: any, propertyName: string | symbol) => {
-                if (!options.inject) options.inject = {};
-                if (Array.isArray(options.inject)) {
-                    const currentInject = options.inject;
-                    options.inject = {};
-                    for (let item of currentInject) {
-                        options.inject[item] = item;
-                    }
-                }
-                options.inject[propertyName] = { key: resolverOrKey };
+                if (!options.dependencies) options.dependencies = {};
+                options.dependencies[propertyName] = resolverOrKey;
             })(target, propertyOrParameterName);
         }
     };

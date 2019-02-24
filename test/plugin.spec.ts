@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { IDisposable } from 'ts-disposables';
 import Component from 'vue-class-component';
-import { Inject as PropertyInject } from 'vue-property-decorator'
+import { Inject as PropertyInject } from 'vue-property-decorator';
 import { createLocalVue, mount } from 'vue-test-utils';
 import { AutoInject, Inject, Lazy, Resolve, Singleton } from '../src/decorators';
 import { Strategy, StrategyResolver } from '../src/resolvers';
@@ -113,17 +113,19 @@ describe('pluginTests', () => {
             const item = mount(
                 {
                     template: '<div>test123 <child-vue></child-vue></div>',
-                    inject: {
-                        things: { key: DisposableItem } as any,
+                    dependencies: {
+                        things: DisposableItem,
                     },
                     provide: {
-                        provided: 'here is a value'
+                        provided: 'here is a value',
                     },
                     components: {
                         'child-vue': {
+                            dependencies: {
+                                things: Item,
+                            },
                             inject: {
                                 provided: { from: 'provided' },
-                                things: { key: Item } as any,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -144,13 +146,13 @@ describe('pluginTests', () => {
                 {
                     template: '<div>test123 <child-vue></child-vue></div>',
                     createChildContainer: true,
-                    inject: {
-                        things: { key: DisposableItem } as any,
+                    dependencies: {
+                        things: DisposableItem,
                     },
                     components: {
                         'child-vue': {
-                            inject: {
-                                things: { key: DisposableItem } as any,
+                            dependencies: {
+                                things: DisposableItem,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -177,8 +179,8 @@ describe('pluginTests', () => {
                     components: {
                         'child-vue': {
                             // createChildContainer: true,
-                            inject: {
-                                things: { key: DisposableItem } as any,
+                            dependencies: {
+                                things: DisposableItem,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -222,8 +224,8 @@ describe('pluginTests', () => {
             NewVue.use(VueContainer);
 
             const vm: any = new NewVue({
-                inject: {
-                    things: { key: Item } as any /*?*/,
+                dependencies: {
+                    things: Item /*?*/,
                 },
             });
 
@@ -238,13 +240,13 @@ describe('pluginTests', () => {
             const item = mount(
                 {
                     template: '<div>test123 <child-vue></child-vue></div>',
-                    inject: {
-                        things: { key: DisposableItem} as any,
+                    dependencies: {
+                        things: DisposableItem,
                     },
                     components: {
                         'child-vue': {
-                            inject: {
-                                things: { key: Item} as any,
+                            dependencies: {
+                                things: Item,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -264,13 +266,13 @@ describe('pluginTests', () => {
                 {
                     template: '<div>test123 <child-vue></child-vue></div>',
                     createChildContainer: true,
-                    inject: {
-                        things: { key: DisposableItem} as any,
+                    dependencies: {
+                        things: DisposableItem,
                     },
                     components: {
                         'child-vue': {
-                            inject: {
-                                things: { key: DisposableItem} as any,
+                            dependencies: {
+                                things: DisposableItem,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -297,8 +299,8 @@ describe('pluginTests', () => {
                     components: {
                         'child-vue': {
                             // createChildContainer: true,
-                            inject: {
-                                things: { key: DisposableItem} as any,
+                            dependencies: {
+                                things: DisposableItem,
                             },
                             template: '<div>hello world</div>',
                         },

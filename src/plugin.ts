@@ -5,10 +5,6 @@ import { InjectOptions } from 'vue/types/options';
 import { Container } from './container';
 import { Key } from './types';
 
-function isVdiInjection(value: any): value is { key: Key<any> } {
-    return value && value.key;
-}
-
 export interface IOptions {
     container: Container;
 }
@@ -50,32 +46,15 @@ function innerInstall(Vue: VueConstructor, options: Partial<IOptions>) {
         });
     }
 
-    function getInjections(
+    function getDependencies(
         instance: Vue,
         container: Container,
         disposable: CompositeDisposable,
-        dependencies: InjectOptions
+        dependencies: { [key: string]: Key<any> }
     ) {
-        if (Array.isArray(dependencies)) {
-            return;
-        }
-
         // tslint:disable-next-line:forin
-        for (const key in dependencies) {
-            const dep = dependencies[key];
-            if (isVdiInjection(dep)) {
-                resolveValue(instance, container, disposable, key, dep.key);
-                delete dependencies[key];
-                continue;
-            }
-            if ( typeof dep === 'object' && dep.from) {
-                // tslint:disable-next-line: strict-type-predicates
-                if (isVdiInjection(dep.from)) {
-                    resolveValue(instance, container, disposable, key, dep.from.key);
-                    delete dependencies[key];
-                    continue;
-                }
-            }
+        for (const [key, dep] of Object.entries(dependencies)) {
+            resolveValue(instance, container, disposable, key, dep);
         }
     }
 
@@ -88,7 +67,7 @@ function innerInstall(Vue: VueConstructor, options: Partial<IOptions>) {
             return findContainer(instance.$parent);
         }
 
-        return Vue.container;
+        return Vue.container || Container.instance;
     }
 
     Vue.mixin({
@@ -115,11 +94,8 @@ function innerInstall(Vue: VueConstructor, options: Partial<IOptions>) {
                 disposable.add(container);
             }
 
-            // if (this.$options.dependencies) {
-            //     getDependencies(this, container, disposable, this.$options.dependencies);
-            // }
-            if (this.$options.inject) {
-                getInjections(this, container, disposable, this.$options.inject);
+            if ((this.$options as any).dependencies) {
+                getDependencies(this, container, disposable, (this.$options as any).dependencies);
             }
         },
         destroyed(this: { container: Container }) {
