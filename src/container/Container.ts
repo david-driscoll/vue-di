@@ -185,6 +185,16 @@ export class Container {
     }
 
     /**
+     * @param onRegisterResolver The callback to be called when a Resolver is created.
+     */
+    public setRegisterResolver(
+        onRegisterResolver: (key: Key<any>, resolver: Resolver<any>) => Resolver<any>
+    ) {
+        this._onRegisterResolver = onRegisterResolver;
+        this._configuration.onRegisterResolver = onRegisterResolver;
+    }
+
+    /**
      * Registers an existing object instance with the container.
      * @param key The key that identifies the dependency at resolution time; usually a constructor function.
      * @param instance The instance that will be resolved when the key is matched. This defaults to the key
@@ -324,7 +334,7 @@ export class Container {
             return registration.registerResolver(this, key, fn);
         }
 
-        throw new Error('Cannot auto register a non method');
+        throw new Error(`Cannot auto register a non method for key ${key.toString()}`);
     }
 
     /**

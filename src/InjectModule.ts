@@ -9,18 +9,21 @@ import { ConstructorOf, Key, Resolver, TypedKey } from './types';
 
 class VuexRegistration implements IRegistration<any> {
     private value: any;
+    public name: string;
     public constructor(
         private readonly module: () => any,
         private readonly target: ConstructorOf<VuexModule>,
-        private readonly name: string
-    ) {}
+        private readonly options: ModuleOptions
+    ) {
+        this.name = options.name!;
+    }
     public registerResolver(container: Container, key: Key<any>, fn: TypedKey<any>): Resolver<any> {
         return {
             get: (container: Container, key: any) => {
                 if (this.value) return this.value;
                 const store = container.get(Store);
                 const module = getModule(this.module() as any, store);
-                staticStateGenerator(this.target as any, store, this.name, module);
+                staticStateGenerator(this.target as any, store, this.options.name!, module);
                 this.value = module;
                 // (module as any)._container = container;
                 return module;
@@ -57,7 +60,8 @@ export function InjectModule(
     }
 ) {
     if (module && !options.name) {
-        const path = module.id.substring(module.id.indexOf('/store/') + 7);
+        const id = module.id.replace(/[\\|\/]/g, '/');
+        const path = id.substring(id.indexOf('/store/') + 7);
         options.name = join(dirname(path), basename(basename(path, '.js'), '.ts')).replace(
             /[\\|\/]/g,
             '/'
@@ -65,7 +69,7 @@ export function InjectModule(
         options.namespaced = true;
     }
     return function(target: ConstructorOf<VuexModule>): any {
-        Registration(new VuexRegistration(() => item as any, target, options.name!))(target);
+        Registration(new VuexRegistration(() => item as any, target, options))(target);
         const item = Module(options)(target);
         return item;
     };
