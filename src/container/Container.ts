@@ -41,7 +41,6 @@ function invokeWithDynamicDependencies(
                 );
                 break;
             default:
-            lookup//?
                 args[i] = container.get(lookup);
         }
     }

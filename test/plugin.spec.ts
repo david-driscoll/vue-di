@@ -116,9 +116,13 @@ describe('pluginTests', () => {
                     inject: {
                         things: new StrategyResolver(Strategy.Singleton, DisposableItem) as any,
                     },
+                    provide: {
+                        provided: 'here is a value'
+                    },
                     components: {
                         'child-vue': {
                             inject: {
+                                provided: { from: 'provided' },
                                 things: new StrategyResolver(Strategy.Singleton, Item) as any,
                             },
                             template: '<div>hello world</div>',
@@ -129,6 +133,7 @@ describe('pluginTests', () => {
             );
 
             (item.vm.$children[0] as any).things.stuff.value.should.be.eq(123);
+            (item.vm.$children[0] as any).provided.should.be.eq('here is a value');
         });
 
         it('should dispose of items', () => {

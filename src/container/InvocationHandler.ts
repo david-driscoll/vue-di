@@ -47,7 +47,6 @@ export class InvocationHandler {
      */
     public invoke(container: Container, dynamicDependencies?: any[]): any {
         if (dynamicDependencies !== undefined) {
-            this.invoker //?
             return this.invoker.invokeWithDynamicDependencies(
                 container,
                 this.fn as any,

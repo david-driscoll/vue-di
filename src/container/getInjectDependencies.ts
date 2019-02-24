@@ -4,7 +4,6 @@ import { _emptyParameters, clearInvalidParameters } from './validateParameters';
 // tslint:disable: no-unsafe-any
 
 export function getInjectDependencies(target: any) {
-    target //?
     if (Reflect.hasOwnMetadata(constants.inject, target)) {
         return Reflect.getOwnMetadata(constants.inject, target);
     }
