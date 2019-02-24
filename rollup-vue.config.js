@@ -25,10 +25,7 @@ export default {
                 },
                 exclude: [
                     'test/**/*.ts',
-                    'src/decorators/invokeAsFactory.ts',
-                    'src/decorators/invoker.ts',
-                    'src/invokers/FactoryInvoker.ts',
-                    'src/resolvers/index.ts',
+                    'src/vuex.ts',
                 ],
             },
             typescript: require('typescript'),

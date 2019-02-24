@@ -1,17 +1,17 @@
 import typescript from 'rollup-plugin-typescript2';
 
 export default {
-    input: './src/index.ts',
+    input: './src/vuex.ts',
     output: [
         {
-            name: 'index',
-            file: './dist/index.esm.js',
+            name: 'vue-di',
+            file: './dist/vuex.esm.js',
             format: 'es',
             sourcemap: true,
         },
         {
-            name: 'index',
-            file: './dist/index.cjs.js',
+            name: 'vue-di',
+            file: './dist/vuex.cjs.js',
             format: 'cjs',
             sourcemap: true,
         },
@@ -25,9 +25,7 @@ export default {
                 },
                 exclude: [
                     'test/**/*.ts',
-                    'src/plugin.ts',
                     'src/vue.ts',
-                    'src/vuex.ts',
                 ],
             },
             typescript: require('typescript'),
