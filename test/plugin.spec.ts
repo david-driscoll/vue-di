@@ -114,7 +114,7 @@ describe('pluginTests', () => {
                 {
                     template: '<div>test123 <child-vue></child-vue></div>',
                     inject: {
-                        things: new StrategyResolver(Strategy.Singleton, DisposableItem) as any,
+                        things: { key: DisposableItem } as any,
                     },
                     provide: {
                         provided: 'here is a value'
@@ -123,7 +123,7 @@ describe('pluginTests', () => {
                         'child-vue': {
                             inject: {
                                 provided: { from: 'provided' },
-                                things: new StrategyResolver(Strategy.Singleton, Item) as any,
+                                things: { key: Item } as any,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -145,12 +145,12 @@ describe('pluginTests', () => {
                     template: '<div>test123 <child-vue></child-vue></div>',
                     createChildContainer: true,
                     inject: {
-                        things: new StrategyResolver(Strategy.Singleton, DisposableItem) as any,
+                        things: { key: DisposableItem } as any,
                     },
                     components: {
                         'child-vue': {
                             inject: {
-                                things: new StrategyResolver(Strategy.Singleton, DisposableItem) as any,
+                                things: { key: DisposableItem } as any,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -178,7 +178,7 @@ describe('pluginTests', () => {
                         'child-vue': {
                             // createChildContainer: true,
                             inject: {
-                                things: new StrategyResolver(Strategy.Singleton, DisposableItem) as any,
+                                things: { key: DisposableItem } as any,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -223,7 +223,7 @@ describe('pluginTests', () => {
 
             const vm: any = new NewVue({
                 inject: {
-                    things: new StrategyResolver(Strategy.Singleton, Item) as any /*?*/,
+                    things: { key: Item } as any /*?*/,
                 },
             });
 
@@ -239,12 +239,12 @@ describe('pluginTests', () => {
                 {
                     template: '<div>test123 <child-vue></child-vue></div>',
                     inject: {
-                        things: new StrategyResolver(Strategy.Singleton, DisposableItem) as any,
+                        things: { key: DisposableItem} as any,
                     },
                     components: {
                         'child-vue': {
                             inject: {
-                                things: new StrategyResolver(Strategy.Singleton, Item) as any,
+                                things: { key: Item} as any,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -265,12 +265,12 @@ describe('pluginTests', () => {
                     template: '<div>test123 <child-vue></child-vue></div>',
                     createChildContainer: true,
                     inject: {
-                        things: new StrategyResolver(Strategy.Singleton, DisposableItem) as any,
+                        things: { key: DisposableItem} as any,
                     },
                     components: {
                         'child-vue': {
                             inject: {
-                                things: new StrategyResolver(Strategy.Singleton, DisposableItem) as any,
+                                things: { key: DisposableItem} as any,
                             },
                             template: '<div>hello world</div>',
                         },
@@ -298,7 +298,7 @@ describe('pluginTests', () => {
                         'child-vue': {
                             // createChildContainer: true,
                             inject: {
-                                things: new StrategyResolver(Strategy.Singleton, DisposableItem) as any,
+                                things: { key: DisposableItem} as any,
                             },
                             template: '<div>hello world</div>',
                         },
