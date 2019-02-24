@@ -3,7 +3,11 @@ import { CompositeDisposable, isDisposable } from 'ts-disposables';
 import Vue, { VueConstructor } from 'vue';
 import { InjectOptions } from 'vue/types/options';
 import { Container } from './container';
-import { isResolver, Resolver, Key } from './types';
+import { Key } from './types';
+
+function isVdiInjection(value: any): value is { key: Key<any> } {
+    return value && value.key;
+}
 
 export interface IOptions {
     container: Container;
@@ -30,9 +34,9 @@ function innerInstall(Vue: VueConstructor, options: Partial<IOptions>) {
         container: Container,
         disposable: CompositeDisposable,
         name: string | symbol,
-        resolver: Resolver<any>
+        key: Key<any>
     ) {
-        const value = resolver.get(container, undefined as any);
+        const value = container.get(key);
 
         if (value && isDisposable(value)) {
             disposable.add(value);
@@ -59,15 +63,15 @@ function innerInstall(Vue: VueConstructor, options: Partial<IOptions>) {
         // tslint:disable-next-line:forin
         for (const key in dependencies) {
             const dep = dependencies[key];
-            if (isResolver(dep)) {
-                resolveValue(instance, container, disposable, key, dep);
+            if (isVdiInjection(dep)) {
+                resolveValue(instance, container, disposable, key, dep.key);
                 delete dependencies[key];
                 continue;
             }
             if ( typeof dep === 'object' && dep.from) {
                 // tslint:disable-next-line: strict-type-predicates
-                if (isResolver(dep.from)) {
-                    resolveValue(instance, container, disposable, key, dep.from);
+                if (isVdiInjection(dep.from)) {
+                    resolveValue(instance, container, disposable, key, dep.from.key);
                     delete dependencies[key];
                     continue;
                 }

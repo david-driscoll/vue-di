@@ -4,6 +4,7 @@ import { Resolver, Key, ConstructorOf, isResolver } from '../types';
 import { getDecoratorDependencies } from './getDecoratorDependencies';
 import { createVueDecorator } from './shim-component-decorators';
 import { StrategyResolver, Strategy } from '../resolvers';
+import { IRegistration } from '../registration/Registration';
 
 export function decorateParameterOrProperty(
     keyProvider: (type: ConstructorOf<any>) => Key<any>,
@@ -19,19 +20,9 @@ export function decorateParameterOrProperty(
                 target,
                 propertyOrParameterName
             );
-            let resolver: Resolver<any>;
-            {
                 const resolverOrKey = keyProvider(propertyType);
-                if (isResolver(resolverOrKey)) {
-                    resolver = resolverOrKey;
-                } else if (typeof resolverOrKey === 'function') {
-                    resolver = new StrategyResolver(Strategy.Singleton, resolverOrKey);
-                } else {
-                    resolver = new StrategyResolver(Strategy.Alias, resolverOrKey);
-                }
-            }
 
-            Reflect.defineMetadata(constants.resolver, resolver, target, propertyOrParameterName);
+            Reflect.defineMetadata(constants.resolver, resolverOrKey, target, propertyOrParameterName);
 
             return createVueDecorator((options: any, propertyName: string | symbol) => {
                 if (!options.inject) options.inject = {};
@@ -42,7 +33,7 @@ export function decorateParameterOrProperty(
                         options.inject[item] = item;
                     }
                 }
-                options.inject[propertyName] = resolver;
+                options.inject[propertyName] = { key: resolverOrKey };
             })(target, propertyOrParameterName);
         }
     };
