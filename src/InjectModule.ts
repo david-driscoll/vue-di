@@ -7,6 +7,7 @@ import { Container } from './container';
 import { Registration } from './decorators';
 import { IRegistration } from './registration/Registration';
 import { ConstructorOf, Key, Resolver, TypedKey } from './types';
+import './vue';
 
 class VuexRegistration implements IRegistration<any> {
     private value: any;
