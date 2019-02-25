@@ -13,10 +13,10 @@ import {
     Transient,
 } from './index';
 
-import { InjectModule } from './InjectModule';
+import { InjectModule, InjectVuexModule } from './InjectModule';
 export * from './index';
 
-export { InjectModule };
+export { InjectModule, InjectVuexModule };
 
 export default {
     All,
@@ -32,4 +32,5 @@ export default {
     Singleton,
     Transient,
     InjectModule,
+    InjectVuexModule,
 };
