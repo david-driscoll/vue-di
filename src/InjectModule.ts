@@ -1,6 +1,7 @@
 import { basename, dirname, join } from 'path';
-import { Store } from 'vuex';
-import { getModule, Module, VuexModule } from 'vuex-module-decorators';
+import Vue from 'vue';
+import { ActionContext, ActionTree, GetterTree, Module as Mod, ModuleTree, MutationTree, Store } from 'vuex';
+import { getModule, VuexModule, Module } from 'vuex-module-decorators';
 import { ModuleOptions } from 'vuex-module-decorators/dist/types/moduleoptions';
 import { Container } from './container';
 import { Registration } from './decorators';
@@ -73,4 +74,41 @@ export function InjectModule(
         const item = Module(options)(target);
         return item;
     };
+}
+
+export class InjectVuexModule<S = ThisType<any>, R = any> {
+
+    protected get container() {
+        return Vue.container;
+    }
+    /*
+     * To use with `extends Class` syntax along with decorators
+     */
+    private static namespaced?: boolean;
+    private static state?: any | (() => any);
+    private static getters?: GetterTree<any, any>;
+    private static actions?: ActionTree<any, any>;
+    private static mutations?: MutationTree<any>;
+    private static modules?: ModuleTree<any>;
+    protected context!: ActionContext<S, R>;
+
+    /*
+     * To use with `new VuexModule(<ModuleOptions>{})` syntax
+     */
+
+    private modules?: ModuleTree<any>;
+    private namespaced?: boolean;
+    private getters?: GetterTree<S, R>;
+    private state?: S | (() => S);
+    private mutations?: MutationTree<S>;
+    private actions?: ActionTree<S, R>;
+
+    constructor(module: Mod<S, any>) {
+        this.actions = module.actions;
+        this.mutations = module.mutations;
+        this.state = module.state;
+        this.getters = module.getters;
+        this.namespaced = module.namespaced;
+        this.modules = module.modules;
+    }
 }
