@@ -13,7 +13,7 @@ class VuexRegistration implements IRegistration<any> {
     public name: string;
     public constructor(
         private readonly module: () => any,
-        private readonly target: ConstructorOf<VuexModule>,
+        private readonly target: ConstructorOf<InjectVuexModule>,
         private readonly options: ModuleOptions
     ) {
         this.name = options.name!;
@@ -69,7 +69,7 @@ export function InjectModule(
         );
         options.namespaced = true;
     }
-    return function(target: ConstructorOf<VuexModule>): any {
+    return function(target: ConstructorOf<InjectVuexModule>): any {
         Registration(new VuexRegistration(() => item as any, target, options))(target);
         const item = Module(options)(target);
         return item;
