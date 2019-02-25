@@ -4,7 +4,7 @@ import * as Vuex from 'vuex';
 import { Store } from 'vuex';
 import { getModule, Mutation, VuexModule } from 'vuex-module-decorators';
 import VueContainer, { Container } from '../src/vue';
-import { InjectModule } from "../src/InjectModule";
+import { InjectModule, InjectVuexModule } from "../src/InjectModule";
 Vue.use(Vuex);
 
 describe('vuexTests', () => {
@@ -13,7 +13,7 @@ describe('vuexTests', () => {
         NewVue.use(VueContainer, { container: new Container() });
 
         @InjectModule({ stateFactory: true, name: 'layout' })
-        class LayoutModule extends VuexModule {
+        class LayoutModule extends InjectVuexModule {
             public title = 'default';
 
             @Mutation
@@ -36,7 +36,7 @@ describe('vuexTests', () => {
         NewVue.use(VueContainer, { container: new Container() });
 
         @InjectModule({ stateFactory: true }, { id: './store/layout.ts' })
-        class LayoutModule extends VuexModule {
+        class LayoutModule extends InjectVuexModule {
             public title = 'default';
 
             @Mutation
