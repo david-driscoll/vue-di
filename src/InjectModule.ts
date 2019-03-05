@@ -26,6 +26,10 @@ class VuexRegistration implements IRegistration<any> {
                 const store = container.get(Store);
                 const module = getModule(this.module() as any, store);
                 staticStateGenerator(this.target as any, store, this.options.name!, module);
+                for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(this.target.prototype))) {
+                    if ((module as any)[key]) continue;
+                    Object.defineProperty(module, key, prop);
+                }
                 this.value = module;
                 // (module as any)._container = container;
                 return module;
@@ -78,10 +82,6 @@ export function InjectModule(
 }
 
 export class InjectVuexModule<S = ThisType<any>, R = any> {
-
-    protected get container() {
-        return Vue.container;
-    }
     /*
      * To use with `extends Class` syntax along with decorators
      */
@@ -104,12 +104,16 @@ export class InjectVuexModule<S = ThisType<any>, R = any> {
     private mutations?: MutationTree<S>;
     private actions?: ActionTree<S, R>;
 
-    constructor(module: Mod<S, any>) {
+    public constructor(module: Mod<S, any>) {
         this.actions = module.actions;
         this.mutations = module.mutations;
         this.state = module.state;
         this.getters = module.getters;
         this.namespaced = module.namespaced;
         this.modules = module.modules;
+    }
+
+    protected getContainer() {
+        return Vue.container;
     }
 }
