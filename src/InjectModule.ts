@@ -27,7 +27,7 @@ class VuexRegistration implements IRegistration<any> {
                 const module = getModule(this.module() as any, store);
                 staticStateGenerator(this.target as any, store, this.options.name!, module);
                 for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(this.target.prototype))) {
-                    if ((module as any)[key]) continue;
+                    if ((module as any)[key] && !Object.getOwnPropertyDescriptor(module, key)) continue;
                     Object.defineProperty(module, key, prop);
                 }
                 this.value = module;
