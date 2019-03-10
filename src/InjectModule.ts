@@ -1,6 +1,14 @@
 import { basename, dirname, join } from 'path';
 import Vue from 'vue';
-import { ActionContext, ActionTree, GetterTree, Module as Mod, ModuleTree, MutationTree, Store } from 'vuex';
+import {
+    ActionContext,
+    ActionTree,
+    GetterTree,
+    Module as Mod,
+    ModuleTree,
+    MutationTree,
+    Store,
+} from 'vuex';
 import { getModule, VuexModule, Module } from 'vuex-module-decorators';
 import { ModuleOptions } from 'vuex-module-decorators/dist/types/moduleoptions';
 import { Container } from './container';
@@ -26,8 +34,23 @@ class VuexRegistration implements IRegistration<any> {
                 const store = container.get(Store);
                 const module = getModule(this.module() as any, store);
                 staticStateGenerator(this.target as any, store, this.options.name!, module);
-                for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(this.target.prototype))) {
-                    if ((module as any)[key] && !Object.getOwnPropertyDescriptor(module, key)) continue;
+                Object.defineProperty(module, 'store', {
+                    configurable: false,
+                    enumerable: true,
+                    value: store,
+                    writable: false,
+                });
+                Object.defineProperty(module, 'container', {
+                    configurable: false,
+                    enumerable: true,
+                    value: container,
+                    writable: false,
+                });
+                for (const [key, prop] of Object.entries(
+                    Object.getOwnPropertyDescriptors(this.target.prototype)
+                )) {
+                    if ((module as any)[key] && !Object.getOwnPropertyDescriptor(module, key))
+                        continue;
                     Object.defineProperty(module, key, prop);
                 }
                 this.value = module;
@@ -92,6 +115,8 @@ export class InjectVuexModule<S = ThisType<any>, R = any> {
     private static mutations?: MutationTree<any>;
     private static modules?: ModuleTree<any>;
     protected context!: ActionContext<S, R>;
+    protected container!: Container;
+    protected store!: Store<R>;
 
     /*
      * To use with `new VuexModule(<ModuleOptions>{})` syntax
