@@ -2,11 +2,10 @@ import { expect } from 'chai';
 import * as sinon from 'sinon';
 import { IDisposable } from 'ts-disposables';
 import Component from 'vue-class-component';
-import { Inject as PropertyInject } from 'vue-property-decorator';
 import { createLocalVue, mount } from 'vue-test-utils';
 import { AutoInject, Inject, Lazy, Resolve, Singleton } from '../src/decorators';
-import { Strategy, StrategyResolver } from '../src/resolvers';
 import VueContainer, { Container } from '../src/vue';
+import { defaultInjectable } from '../src/decorators/decorateParameterOrProperty';
 
 // tslint:disable:max-classes-per-file
 @AutoInject
@@ -113,18 +112,26 @@ describe('pluginTests', () => {
             const item = mount(
                 {
                     template: '<div>test123 <child-vue></child-vue></div>',
-                    dependencies: {
-                        things: DisposableItem,
+                    inject: {
+                        things: {
+                            from: Symbol(),
+                            default(this: import('vue').VueConstructor) {
+                                return this.container.get(DisposableItem);
+                            },
+                        },
                     },
                     provide: {
                         provided: 'here is a value',
                     },
                     components: {
                         'child-vue': {
-                            dependencies: {
-                                things: Item,
-                            },
                             inject: {
+                                things: {
+                                    from: Symbol(),
+                                    default(this: import('vue').VueConstructor) {
+                                        return this.container.get(Item);
+                                    },
+                                },
                                 provided: { from: 'provided' },
                             },
                             template: '<div>hello world</div>',
@@ -146,13 +153,13 @@ describe('pluginTests', () => {
                 {
                     template: '<div>test123 <child-vue></child-vue></div>',
                     createChildContainer: true,
-                    dependencies: {
-                        things: DisposableItem,
+                    inject: {
+                        things: defaultInjectable(DisposableItem)
                     },
                     components: {
                         'child-vue': {
-                            dependencies: {
-                                things: DisposableItem,
+                            inject: {
+                                things: defaultInjectable(DisposableItem)
                             },
                             template: '<div>hello world</div>',
                         },
@@ -179,8 +186,8 @@ describe('pluginTests', () => {
                     components: {
                         'child-vue': {
                             // createChildContainer: true,
-                            dependencies: {
-                                things: DisposableItem,
+                            inject: {
+                                things: defaultInjectable(DisposableItem),
                             },
                             template: '<div>hello world</div>',
                         },
@@ -224,8 +231,8 @@ describe('pluginTests', () => {
             NewVue.use(VueContainer);
 
             const vm: any = new NewVue({
-                dependencies: {
-                    things: Item /*?*/,
+                inject: {
+                    things: defaultInjectable(Item) /*?*/,
                 },
             });
 
@@ -240,13 +247,13 @@ describe('pluginTests', () => {
             const item = mount(
                 {
                     template: '<div>test123 <child-vue></child-vue></div>',
-                    dependencies: {
-                        things: DisposableItem,
+                    inject: {
+                        things: defaultInjectable(DisposableItem),
                     },
                     components: {
                         'child-vue': {
-                            dependencies: {
-                                things: Item,
+                            inject: {
+                                things: defaultInjectable(Item),
                             },
                             template: '<div>hello world</div>',
                         },
@@ -266,13 +273,13 @@ describe('pluginTests', () => {
                 {
                     template: '<div>test123 <child-vue></child-vue></div>',
                     createChildContainer: true,
-                    dependencies: {
-                        things: DisposableItem,
+                    inject: {
+                        things: defaultInjectable(DisposableItem),
                     },
                     components: {
                         'child-vue': {
-                            dependencies: {
-                                things: DisposableItem,
+                            inject: {
+                                things: defaultInjectable(DisposableItem),
                             },
                             template: '<div>hello world</div>',
                         },
@@ -299,8 +306,8 @@ describe('pluginTests', () => {
                     components: {
                         'child-vue': {
                             // createChildContainer: true,
-                            dependencies: {
-                                things: DisposableItem,
+                            inject: {
+                                things: defaultInjectable(DisposableItem),
                             },
                             template: '<div>hello world</div>',
                         },

@@ -1,10 +1,10 @@
 import 'reflect-metadata';
+import { CompositeDisposable, isDisposable } from 'ts-disposables';
+import Vue, { ComponentOptions } from 'vue';
 import constants from '../constants';
-import { Resolver, Key, ConstructorOf, isResolver } from '../types';
+import { ConstructorOf, Key } from '../types';
 import { getDecoratorDependencies } from './getDecoratorDependencies';
 import { createVueDecorator } from './shim-component-decorators';
-import { StrategyResolver, Strategy } from '../resolvers';
-import { IRegistration } from '../registration/Registration';
 
 export function decorateParameterOrProperty(
     keyProvider: (type: ConstructorOf<any>) => Key<any>,
@@ -29,10 +29,43 @@ export function decorateParameterOrProperty(
                 propertyOrParameterName
             );
 
-            return createVueDecorator((options: any, propertyName: string | symbol) => {
-                if (!options.dependencies) options.dependencies = {};
-                options.dependencies[propertyName] = resolverOrKey;
-            })(target, propertyOrParameterName);
+            return createVueDecorator(
+                (options: ComponentOptions<Vue>, propertyName: string | symbol) => {
+                    if (ensureInject(options)) {
+                        options.inject[propertyName as any] = defaultInjectable(resolverOrKey);
+                    }
+                }
+            )(target, propertyOrParameterName);
         }
     };
+}
+
+export function defaultInjectable(resolver: Key<any>) {
+    return {
+        default(this: Vue) {
+            const disposable: CompositeDisposable = (this as any).__$disposable;
+            const value = this.container.get(resolver);
+
+            if (value && isDisposable(value)) {
+                disposable.add(value);
+            }
+
+            return value;
+        },
+    };
+}
+
+function ensureInject(
+    options: ComponentOptions<Vue>
+): options is { inject: { [key: string]: { from?: string | symbol; default?: any } } } {
+    if (!options.inject) options.inject = {};
+    if (Array.isArray(options.inject)) {
+        const currentInject = options.inject;
+        options.inject = {};
+        for (const item of currentInject) {
+            options.inject[item] = item;
+        }
+    }
+
+    return true;
 }

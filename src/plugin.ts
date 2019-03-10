@@ -1,9 +1,8 @@
 import 'reflect-metadata';
-import { CompositeDisposable, isDisposable } from 'ts-disposables';
+import { CompositeDisposable } from 'ts-disposables';
 import Vue, { VueConstructor } from 'vue';
-import { InjectOptions } from 'vue/types/options';
 import { Container } from './container';
-import { Key } from './types';
+// tslint:disable: no-unsafe-any strict-boolean-expressions
 
 export interface IOptions {
     container: Container;
@@ -16,6 +15,7 @@ export function install(outerVue: any, outerOptions: any = {}) {
 
     return innerInstall(Vue, options);
 }
+
 // tslint:disable-next-line:no-shadowed-variable variable-name
 function innerInstall(Vue: VueConstructor, options: Partial<IOptions>) {
     if (!options.container) {
@@ -23,39 +23,6 @@ function innerInstall(Vue: VueConstructor, options: Partial<IOptions>) {
     } else {
         Vue.container = options.container;
         Vue.container.makeGlobal();
-    }
-
-    function resolveValue(
-        instance: Vue,
-        container: Container,
-        disposable: CompositeDisposable,
-        name: string | symbol,
-        key: Key<any>
-    ) {
-        const value = container.get(key);
-
-        if (value && isDisposable(value)) {
-            disposable.add(value);
-        }
-
-        Object.defineProperty(instance, name, {
-            enumerable: true,
-            configurable: false,
-            writable: false,
-            value,
-        });
-    }
-
-    function getDependencies(
-        instance: Vue,
-        container: Container,
-        disposable: CompositeDisposable,
-        dependencies: { [key: string]: Key<any> }
-    ) {
-        // tslint:disable-next-line:forin
-        for (const [key, dep] of Object.entries(dependencies)) {
-            resolveValue(instance, container, disposable, key, dep);
-        }
     }
 
     function findContainer(instance: Vue): Container {
@@ -84,18 +51,14 @@ function innerInstall(Vue: VueConstructor, options: Partial<IOptions>) {
             if (this.$options.registerServices) this.$options.registerServices(container);
 
             Object.defineProperty(this, 'container', {
-                enumerable: true,
                 configurable: false,
-                writable: false,
+                enumerable: true,
                 value: container,
+                writable: false,
             });
 
             if (createContainer) {
                 disposable.add(container);
-            }
-
-            if ((this.$options as any).dependencies) {
-                getDependencies(this, container, disposable, (this.$options as any).dependencies);
             }
         },
         destroyed(this: { container: Container }) {
