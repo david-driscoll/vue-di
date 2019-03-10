@@ -49,7 +49,7 @@ class VuexRegistration implements IRegistration<any> {
                 for (const [key, prop] of Object.entries(
                     Object.getOwnPropertyDescriptors(this.target.prototype)
                 )) {
-                    if ((module as any)[key] && !Object.getOwnPropertyDescriptor(module, key))
+                    if ((module as any)[key] || Object.getOwnPropertyDescriptor(module, key))
                         continue;
                     Object.defineProperty(module, key, prop);
                 }
