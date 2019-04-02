@@ -1,6 +1,6 @@
 {
     "name": "vue-di",
-    "version": "0.17.0",
+    "version": "0.17.1",
     "repository": {
         "type": "git",
         "url": "github.com/david-driscoll/vue-di"
