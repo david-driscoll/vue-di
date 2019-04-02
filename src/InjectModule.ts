@@ -2,14 +2,10 @@ import { basename, dirname, join } from 'path';
 import Vue from 'vue';
 import {
     ActionContext,
-    ActionTree,
-    GetterTree,
     Module as Mod,
-    ModuleTree,
-    MutationTree,
     Store,
 } from 'vuex';
-import { getModule, VuexModule, Module } from 'vuex-module-decorators';
+import { getModule, Module } from 'vuex-module-decorators';
 import { ModuleOptions } from 'vuex-module-decorators/dist/types/moduleoptions';
 import { Container } from './container';
 import { Registration } from './decorators';
@@ -17,23 +13,37 @@ import { IRegistration } from './registration/Registration';
 import { ConstructorOf, Key, Resolver, TypedKey } from './types';
 import './vue';
 
+// tslint:disable: no-unsafe-any strict-boolean-expressions
+function getPath<T>(path: string, defaultValue?: T) {
+    if (path.indexOf('/') === -1) {
+        return (obj: any) => obj[path];
+    }
+
+    const pathItems = path.split('/');
+    return (obj: any) => pathItems.reduce((a, c) => (a && a[c] ? a[c] : defaultValue || null), obj);
+}
+// tslint:enable: no-unsafe-any strict-boolean-expressions
+
+
 class VuexRegistration implements IRegistration<any> {
     private value: any;
     public name: string;
+    private getPath: (obj: any) => any;
     public constructor(
         private readonly module: () => any,
         private readonly target: ConstructorOf<InjectVuexModule>,
         private readonly options: ModuleOptions
     ) {
         this.name = options.name!;
+        this.getPath = getPath(this.name);
     }
-    public registerResolver(container: Container, key: Key<any>, fn: TypedKey<any>): Resolver<any> {
+    public registerResolver(): Resolver<any> {
         return {
-            get: (container: Container, key: any) => {
+            get: (container: Container) => {
                 if (this.value) return this.value;
                 const store = container.get(Store);
                 const module = getModule(this.module() as any, store);
-                staticStateGenerator(this.target as any, store, this.options.name!, module);
+                staticStateGenerator(this.target as any, store, this.getPath, module);
                 Object.defineProperty(module, 'store', {
                     configurable: false,
                     enumerable: true,
@@ -61,26 +71,27 @@ class VuexRegistration implements IRegistration<any> {
     }
 }
 
-function staticStateGenerator(
-    module: { state(): any },
+function staticStateGenerator<S>(
+    module: Function & Mod<S, any>,
     store: Store<any>,
-    name: string,
+    getPath: (obj: any) => any,
     statics: any
 ) {
-    const state = module.state();
-    Object.keys(state).forEach(function(key) {
+    const state = typeof module.state === 'function' ? (module.state as any)() as S : module.state as S;
+    Object.keys(state).forEach(key => {
         if (state.hasOwnProperty(key)) {
             // If not undefined or function means it is a state value
-            if (['undefined', 'function'].indexOf(typeof state[key]) === -1) {
+            if (['undefined', 'function'].indexOf(typeof (state as any)[key]) === -1) {
                 Object.defineProperty(statics, key, {
                     get() {
-                        return store.state[name][key];
+                        return getPath(store.state)[key];
                     },
                 });
             }
         }
     });
 }
+
 
 export function InjectModule(
     options: ModuleOptions,
@@ -105,37 +116,12 @@ export function InjectModule(
 }
 
 export class InjectVuexModule<S = ThisType<any>, R = any> {
-    /*
-     * To use with `extends Class` syntax along with decorators
-     */
-    private static namespaced?: boolean;
-    private static state?: any | (() => any);
-    private static getters?: GetterTree<any, any>;
-    private static actions?: ActionTree<any, any>;
-    private static mutations?: MutationTree<any>;
-    private static modules?: ModuleTree<any>;
     protected context!: ActionContext<S, R>;
     protected container!: Container;
     protected store!: Store<R>;
 
-    /*
-     * To use with `new VuexModule(<ModuleOptions>{})` syntax
-     */
 
-    private modules?: ModuleTree<any>;
-    private namespaced?: boolean;
-    private getters?: GetterTree<S, R>;
-    private state?: S | (() => S);
-    private mutations?: MutationTree<S>;
-    private actions?: ActionTree<S, R>;
-
-    public constructor(module: Mod<S, any>) {
-        this.actions = module.actions;
-        this.mutations = module.mutations;
-        this.state = module.state;
-        this.getters = module.getters;
-        this.namespaced = module.namespaced;
-        this.modules = module.modules;
+    public constructor() {
     }
 
     protected getContainer() {
