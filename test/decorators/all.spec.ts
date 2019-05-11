@@ -3,7 +3,7 @@ import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 
 import { All } from '../../src/decorators';
-import VueContainer from '../../src/vue';
+import VueContainer from '../../vue';
 
 describe('All property decorator', () => {
     it('should work with a singleton service', () => {

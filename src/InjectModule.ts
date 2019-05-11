@@ -11,7 +11,7 @@ import { Container } from './container';
 import { Registration } from './decorators';
 import { IRegistration } from './registration/Registration';
 import { ConstructorOf, Key, Resolver, TypedKey } from './types';
-import './vue';
+import '../vue';
 
 // tslint:disable: no-unsafe-any strict-boolean-expressions
 function getPath<T>(path: string, defaultValue?: T) {

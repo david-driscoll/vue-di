@@ -62,3 +62,8 @@ dist/
 
 src/**/*.js
 test/**/*.spec.js
+*.js
+*.d.ts
+*.map
+!src/nuxtPlugin.js
+!rollup*.js

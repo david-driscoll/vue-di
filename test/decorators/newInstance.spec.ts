@@ -3,7 +3,7 @@ import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 
 import { NewInstance, Resolve, Singleton } from '../../src/decorators';
-import VueContainer from '../../src/vue';
+import VueContainer from '../../vue';
 
 describe('NewInstance property decorator', () => {
     it('should work with a singleton service', () => {

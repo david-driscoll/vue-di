@@ -1,14 +1,14 @@
 {
     "compilerOptions": {
-        "lib": [
-            "es2017"
-        ],
+        "lib": ["es2017"],
         "target": "es5",
         "module": "commonjs",
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
         "strict": true,
         "diagnostics": true,
+        "declaration": true,
+        "declarationMap": true,
         "downlevelIteration": true,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
@@ -28,8 +28,5 @@
     "typeAcquisition": {
         "enable": true
     },
-    "include": [
-        "src/**/*",
-        "test/**/*"
-    ]
+    "include": ["src/**/*", "test/**/*", "nuxtPlugin.js", "nuxt.ts", "vue.ts", "vuex.ts"]
 }

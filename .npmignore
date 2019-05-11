@@ -1,7 +1,6 @@
-src/
 test/
 package-lock.json
-rollup.config.js
+rollup.*.js
 tsconfig.json
 tslint.json
 wallaby.conf.js
@@ -10,3 +9,5 @@ wallaby.conf.js
 .gitignore
 .rpt2_cache/
 *.tgz
+*.ts
+!*.d.ts

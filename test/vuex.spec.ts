@@ -1,10 +1,12 @@
 import Vue from 'vue';
 import { createLocalVue } from 'vue-test-utils';
 import * as Vuex from 'vuex';
+// tslint:disable-next-line: no-duplicate-imports
 import { Store } from 'vuex';
 import { getModule, Mutation, VuexModule } from 'vuex-module-decorators';
-import VueContainer, { Container } from '../src/vue';
-import { InjectModule, InjectVuexModule } from "../src/InjectModule";
+import { Container } from '../src/container/Container';
+import { InjectModule, InjectVuexModule } from '../src/InjectModule';
+import VueContainer from '../vue';
 Vue.use(Vuex);
 
 describe('vuexTests', () => {

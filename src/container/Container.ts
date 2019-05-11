@@ -39,7 +39,6 @@ function invokeWithDynamicDependencies(
                         fn.name
                     } Parameter with index ${i} cannot be null or undefined. Are you trying to inject/register something that doesn't exist with DI?`
                 );
-                break;
             default:
                 args[i] = container.get(lookup);
         }

@@ -1,7 +1,7 @@
 import typescript from 'rollup-plugin-typescript2';
 
 export default {
-    input: './src/vue.ts',
+    input: './vue.ts',
     output: [
         {
             name: 'vue-di',
@@ -25,7 +25,7 @@ export default {
                 },
                 exclude: [
                     'test/**/*.ts',
-                    'src/vuex.ts',
+                    'vuex.ts',
                 ],
             },
             typescript: require('typescript'),

@@ -6,12 +6,12 @@
         "url": "github.com/david-driscoll/vue-di"
     },
     "description": "Dependency injection for Vue using a derived Aurelia container",
-    "main": "index.js",
-    "module": "index.esm.js",
-    "jsnext:main": "index.esm.js",
-    "types": "di.d.ts",
+    "main": "src/index.js",
+    "module": "dist/index.esm.js",
+    "jsnext:main": "dist/index.esm.js",
+    "types": "src/index.d.ts",
     "scripts": {
-        "build": "npm run rollup:di && npm run rollup:vue && npm run rollup:vuex && tsc -p . -outDir dist",
+        "build": "npm run rollup:di && npm run rollup:vue && npm run rollup:vuex && tsc -p .",
         "rollup:di": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
         "rollup:vue": "rollup -c rollup-vue.config.js --environment INCLUDE_DEPS,BUILD:production",
         "rollup:vuex": "rollup -c rollup-vuex.config.js --environment INCLUDE_DEPS,BUILD:production",
@@ -28,6 +28,7 @@
     },
     "dependencies": {},
     "devDependencies": {
+        "@nuxt/vue-app": "^2.6.3",
         "@types/chai": "^4.1.7",
         "@types/chai-as-promised": "^7.1.0",
         "@types/mocha": "^5.2.6",

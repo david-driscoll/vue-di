@@ -1,40 +1,9 @@
 import Vue from 'vue';
-import {
-    All,
-    AutoInject,
-    Builder,
-    Container,
-    Factory,
-    Key,
-    Lazy,
-    NewInstance,
-    Optional,
-    Parent,
-    Resolve,
-    Singleton,
-    Transient,
-} from './index';
-
-import { install } from './plugin';
-export * from './index';
-
-export default {
-    All,
-    AutoInject,
-    Builder,
-    Container,
-    Factory,
-    install,
-    Lazy,
-    NewInstance,
-    Optional,
-    Parent,
-    Resolve,
-    Singleton,
-    Transient,
-};
-
+import { Container } from './src/container';
+import { install } from './src/plugin';
+import { Key } from './src/types';
 export { install };
+export default { install };
 
 // tslint:disable:interface-name
 declare module 'vue/types/vue' {

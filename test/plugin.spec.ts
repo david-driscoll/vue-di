@@ -4,8 +4,9 @@ import { IDisposable } from 'ts-disposables';
 import Component from 'vue-class-component';
 import { createLocalVue, mount } from 'vue-test-utils';
 import { AutoInject, Inject, Lazy, Resolve, Singleton } from '../src/decorators';
-import VueContainer, { Container } from '../src/vue';
+import VueContainer from '../vue';
 import { defaultInjectable } from '../src/decorators/decorateParameterOrProperty';
+import { Container } from '../src/container';
 
 // tslint:disable:max-classes-per-file
 @AutoInject

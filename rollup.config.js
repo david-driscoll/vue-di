@@ -26,8 +26,9 @@ export default {
                 exclude: [
                     'test/**/*.ts',
                     'src/plugin.ts',
-                    'src/vue.ts',
-                    'src/vuex.ts',
+                    'vue.ts',
+                    'vuex.ts',
+                    'nuxt.ts',
                 ],
             },
             typescript: require('typescript'),
