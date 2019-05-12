@@ -1,17 +1,13 @@
 import { basename, dirname, join } from 'path';
 import Vue from 'vue';
-import {
-    ActionContext,
-    Module as Mod,
-    Store,
-} from 'vuex';
+import { ActionContext, Module as Mod, Store } from 'vuex';
 import { getModule, Module } from 'vuex-module-decorators';
 import { ModuleOptions } from 'vuex-module-decorators/dist/types/moduleoptions';
 import { Container } from './container';
 import { Registration } from './decorators';
+import constants from './constants';
 import { IRegistration } from './registration/Registration';
 import { ConstructorOf, Key, Resolver, TypedKey } from './types';
-import '../vue';
 
 // tslint:disable: no-unsafe-any strict-boolean-expressions
 function getPath<T>(path: string, defaultValue?: T) {
@@ -22,8 +18,11 @@ function getPath<T>(path: string, defaultValue?: T) {
     const pathItems = path.split('/');
     return (obj: any) => pathItems.reduce((a, c) => (a && a[c] ? a[c] : defaultValue || null), obj);
 }
-// tslint:enable: no-unsafe-any strict-boolean-expressions
 
+function hasDecorators(value: any): value is { __decorators__: Array<(obj: any) => void> } {
+    return !!value.__decorators__;
+}
+// tslint:enable: no-unsafe-any strict-boolean-expressions
 
 class VuexRegistration implements IRegistration<any> {
     private value: any;
@@ -55,6 +54,29 @@ class VuexRegistration implements IRegistration<any> {
                     value: container,
                     writable: false,
                 });
+                if (hasDecorators(this.target)) {
+                    const { inject } = this.target.__decorators__.reduce(
+                        (acc, value) => {
+                            value(acc);
+                            return acc;
+                        },
+                        { inject: {} as any }
+                    );
+                    for (const key of Object.keys(inject)) {
+                        const type = Reflect.getOwnMetadata(
+                            constants.propertyType,
+                            this.target.prototype,
+                            key
+                        );
+                        if (!type) continue;
+                        Object.defineProperty(module, key, {
+                            configurable: false,
+                            enumerable: true,
+                            value: container.get(type),
+                            writable: false,
+                        });
+                    }
+                }
                 for (const [key, prop] of Object.entries(
                     Object.getOwnPropertyDescriptors(this.target.prototype)
                 )) {
@@ -97,8 +119,7 @@ export class InjectVuexModule<S = ThisType<any>, R = any> {
     protected container!: Container;
     protected store!: Store<R>;
 
-    public constructor() {
-    }
+    public constructor() {}
 
     protected getContainer() {
         return Vue.container;
