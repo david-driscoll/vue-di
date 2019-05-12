@@ -43,7 +43,6 @@ class VuexRegistration implements IRegistration<any> {
                 if (this.value) return this.value;
                 const store = container.get(Store);
                 const module = getModule(this.module() as any, store);
-                staticStateGenerator(this.target as any, store, this.getPath, module);
                 Object.defineProperty(module, 'store', {
                     configurable: false,
                     enumerable: true,
@@ -71,28 +70,6 @@ class VuexRegistration implements IRegistration<any> {
     }
 }
 
-function staticStateGenerator<S>(
-    module: Function & Mod<S, any>,
-    store: Store<any>,
-    getPath: (obj: any) => any,
-    statics: any
-) {
-    const state = typeof module.state === 'function' ? (module.state as any)() as S : module.state as S;
-    Object.keys(state).forEach(key => {
-        if (state.hasOwnProperty(key)) {
-            // If not undefined or function means it is a state value
-            if (['undefined', 'function'].indexOf(typeof (state as any)[key]) === -1) {
-                Object.defineProperty(statics, key, {
-                    get() {
-                        return getPath(store.state)[key];
-                    },
-                });
-            }
-        }
-    });
-}
-
-
 export function InjectModule(
     options: ModuleOptions,
     module?: {
@@ -119,7 +96,6 @@ export class InjectVuexModule<S = ThisType<any>, R = any> {
     protected context!: ActionContext<S, R>;
     protected container!: Container;
     protected store!: Store<R>;
-
 
     public constructor() {
     }
