@@ -44,13 +44,13 @@ class VuexRegistration implements IRegistration<any> {
                 const module = getModule(this.module() as any, store);
                 Object.defineProperty(module, 'store', {
                     configurable: false,
-                    enumerable: true,
+                    enumerable: false,
                     value: store,
                     writable: false,
                 });
                 Object.defineProperty(module, 'container', {
                     configurable: false,
-                    enumerable: true,
+                    enumerable: false,
                     value: container,
                     writable: false,
                 });
@@ -71,7 +71,7 @@ class VuexRegistration implements IRegistration<any> {
                         if (!type) continue;
                         Object.defineProperty(module, key, {
                             configurable: false,
-                            enumerable: true,
+                            enumerable: false,
                             value: container.get(type),
                             writable: false,
                         });
