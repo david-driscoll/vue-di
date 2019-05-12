@@ -44,7 +44,7 @@ export function defaultInjectable(resolver: Key<any>) {
     return {
         default(this: Vue) {
             const disposable: CompositeDisposable = (this as any).__$disposable;
-            const value = this.container.get(resolver);
+            const value = this.$container.get(resolver);
 
             if (value && isDisposable(value)) {
                 disposable.add(value);

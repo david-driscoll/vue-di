@@ -7,6 +7,7 @@ import { AutoInject, Inject, Lazy, Resolve, Singleton } from '../src/decorators'
 import VueContainer from '../vue';
 import { defaultInjectable } from '../src/decorators/decorateParameterOrProperty';
 import { Container } from '../src/container';
+import Vue from 'vue';
 
 // tslint:disable:max-classes-per-file
 @AutoInject
@@ -116,8 +117,8 @@ describe('pluginTests', () => {
                     inject: {
                         things: {
                             from: Symbol(),
-                            default(this: import('vue').VueConstructor) {
-                                return this.container.get(DisposableItem);
+                            default(this: Vue) {
+                                return this.$container.get(DisposableItem);
                             },
                         },
                     },
@@ -129,8 +130,8 @@ describe('pluginTests', () => {
                             inject: {
                                 things: {
                                     from: Symbol(),
-                                    default(this: import('vue').VueConstructor) {
-                                        return this.container.get(Item);
+                                    default(this: Vue) {
+                                        return this.$container.get(Item);
                                     },
                                 },
                                 provided: { from: 'provided' },

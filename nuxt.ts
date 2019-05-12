@@ -1,6 +1,7 @@
 import { Context } from '@nuxt/vue-app';
-import { Container } from './src/container/Container';
 import { resolve } from 'path';
+import { Container } from './src/container/Container';
+import './vue';
 // tslint:disable no-unsafe-any
 
 export default async function VueDiModule(this: { options: any; nuxt: any }) {
@@ -20,11 +21,5 @@ VueDiModule.meta = require('./package.json');
 declare module '@nuxt/vue-app' {
     interface Context {
         container: Container;
-    }
-}
-
-declare module 'vue/types/vue' {
-    interface Vue {
-        $container: Container;
     }
 }

@@ -26,8 +26,8 @@ function innerInstall(Vue: VueConstructor, options: Partial<IOptions>) {
     }
 
     function findContainer(instance: Vue): Container {
-        if (instance.container) {
-            return instance.container;
+        if (instance.$container) {
+            return instance.$container;
         }
 
         if (instance.$parent) {
@@ -50,7 +50,7 @@ function innerInstall(Vue: VueConstructor, options: Partial<IOptions>) {
 
             if (this.$options.registerServices) this.$options.registerServices(container);
 
-            Object.defineProperty(this, 'container', {
+            Object.defineProperty(this, '$container', {
                 configurable: false,
                 enumerable: true,
                 value: container,
@@ -61,7 +61,7 @@ function innerInstall(Vue: VueConstructor, options: Partial<IOptions>) {
                 disposable.add(container);
             }
         },
-        destroyed(this: { container: Container }) {
+        destroyed(this: { $container: Container }) {
             (this as any).__$disposable.dispose();
         },
     });

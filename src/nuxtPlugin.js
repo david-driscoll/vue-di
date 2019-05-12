@@ -7,5 +7,4 @@ export default (context, inject) => {
     Vue.use(VueDi, { container });
     container.makeGlobal();
     context.container = context.app.container = container;
-    inject('container', container);
 }
