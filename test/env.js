@@ -2,9 +2,11 @@
 
 require('ts-node').register({
     project: 'tsconfig.json',
+    transpileOnly: true,
     compilerOptions: {
         target: 'es5',
         module: 'commonjs',
+        allowJs: true
     },
 });
 require('jsdom-global')();
