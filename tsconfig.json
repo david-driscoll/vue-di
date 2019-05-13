@@ -4,6 +4,7 @@
         "target": "esnext",
         "module": "esnext",
         "moduleResolution": "node",
+        "outDir": "esm",
         "allowSyntheticDefaultImports": true,
         "strict": true,
         "diagnostics": true,
@@ -23,7 +24,9 @@
         "preserveConstEnums": true,
         "strictFunctionTypes": true,
         "strictNullChecks": true,
-        "stripInternal": true
+        "stripInternal": true,
+        "incremental": true,
+        "tsBuildInfoFile": "esnext.tsbuildinfo"
     },
     "typeAcquisition": {
         "enable": true

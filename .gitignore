@@ -67,3 +67,4 @@ test/**/*.spec.js
 *.map
 !src/nuxtPlugin.js
 !rollup*.js
+*.tsbuildinfo

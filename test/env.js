@@ -1,5 +1,6 @@
 // strange bug
 
+require('ts-node').register({ project: 'tsconfig.cjs.json' });
 require('jsdom-global')();
 
 const vueFull = require('vue/dist/vue.common.js');

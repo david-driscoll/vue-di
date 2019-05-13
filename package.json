@@ -1,6 +1,6 @@
 {
     "name": "vue-di",
-    "version": "0.19.0",
+    "version": "0.19.1",
     "repository": {
         "type": "git",
         "url": "github.com/david-driscoll/vue-di"
@@ -11,11 +11,12 @@
     "browser": "",
     "types": "esm/src/index.d.ts",
     "scripts": {
-        "build": "npm run rollup:di && npm run rollup:vue && npm run rollup:vuex && tsc -p . && tsc -p tsconfig.cjs.json",
+        "build": "npm run rollup:di && npm run rollup:vue && npm run rollup:vuex && npm run build:ts",
+        "build:ts": "tsc -p . && tsc -p tsconfig.cjs.json",
         "rollup:di": "rollup -c --environment INCLUDE_DEPS,BUILD:production",
         "rollup:vue": "rollup -c rollup-vue.config.js --environment INCLUDE_DEPS,BUILD:production",
         "rollup:vuex": "rollup -c rollup-vuex.config.js --environment INCLUDE_DEPS,BUILD:production",
-        "test": "tsc -p . && tsc -p tsconfig.cjs.json && mocha",
+        "test": "npm run build:ts && mocha",
         "prettier": "prettier **/*.ts --write",
         "lint": "tslint -p tsconfig.json --fix"
     },
@@ -38,6 +39,7 @@
         "@types/sinon-chai": "^3.2.2",
         "chai": "^4.2.0",
         "chai-as-promised": "^7.1.1",
+        "esm": "^3.2.22",
         "jsdom": "^15.0.0",
         "jsdom-global": "^3.0.2",
         "lodash": "^4.17.11",
