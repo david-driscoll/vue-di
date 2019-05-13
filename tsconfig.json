@@ -4,7 +4,6 @@
         "target": "esnext",
         "module": "esnext",
         "moduleResolution": "node",
-        "outDir": "esm",
         "allowSyntheticDefaultImports": true,
         "strict": true,
         "diagnostics": true,
