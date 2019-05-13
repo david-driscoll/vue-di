@@ -15,7 +15,6 @@ import {
     Singleton,
     Transient,
 } from './decorators';
-import { Key } from './types';
 
 export * from './container';
 export * from './decorators';

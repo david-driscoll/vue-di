@@ -1,13 +1,13 @@
 import { basename, dirname, join } from 'path';
 import Vue from 'vue';
-import { ActionContext, Module as Mod, Store } from 'vuex';
+import { ActionContext, Store } from 'vuex';
 import { getModule, Module } from 'vuex-module-decorators';
 import { ModuleOptions } from 'vuex-module-decorators/dist/types/moduleoptions';
+import constants from './constants';
 import { Container } from './container';
 import { Registration } from './decorators';
-import constants from './constants';
 import { IRegistration } from './registration/Registration';
-import { ConstructorOf, Key, Resolver, TypedKey } from './types';
+import { ConstructorOf, Resolver } from './types';
 
 // tslint:disable: no-unsafe-any strict-boolean-expressions
 function getPath<T>(path: string, defaultValue?: T) {
