@@ -1,6 +1,6 @@
 import { basename, dirname, join } from 'path';
 import Vue from 'vue';
-import { ActionContext, Store. Module as Mod } from 'vuex';
+import { ActionContext, Store, Module as Mod } from 'vuex';
 import { getModule, Module } from 'vuex-module-decorators';
 import { ModuleOptions } from 'vuex-module-decorators/dist/types/moduleoptions';
 import constants from './constants';
@@ -45,7 +45,9 @@ class VuexRegistration implements IRegistration<any> {
                     const m = getModule(this.module() as any, store);
                     const proxyModule: any = {};
                     staticStateGenerator(this.target, store, this.getPath, proxyModule);
-                    for (const [key, descriptor] of Object.entries(Object.getOwnPropertyDescriptors(m))) {
+                    for (const [key, descriptor] of Object.entries(
+                        Object.getOwnPropertyDescriptors(m)
+                    )) {
                         if (Object.getOwnPropertyDescriptor(proxyModule, key)) {
                             continue;
                         }
@@ -54,17 +56,19 @@ class VuexRegistration implements IRegistration<any> {
 
                     return proxyModule;
                 })();
-                Object.defineProperty(module, 'store', {
-                    configurable: false,
-                    enumerable: false,
-                    value: store,
-                    writable: false,
-                });
-                Object.defineProperty(module, 'container', {
-                    configurable: false,
-                    enumerable: false,
-                    value: container,
-                    writable: false,
+                Object.defineProperties(module, {
+                    store: {
+                        configurable: false,
+                        enumerable: false,
+                        value: store,
+                        writable: false,
+                    },
+                    container: {
+                        configurable: false,
+                        enumerable: false,
+                        value: container,
+                        writable: false,
+                    },
                 });
                 if (hasDecorators(this.target)) {
                     const { inject } = this.target.__decorators__.reduce(
@@ -110,7 +114,8 @@ function staticStateGenerator<S>(
     getPath: (obj: any) => any,
     statics: any
 ) {
-    const state = typeof module.state === 'function' ? (module.state as any)() as S : module.state as S;
+    const state =
+        typeof module.state === 'function' ? ((module.state as any)() as S) : (module.state as S);
     Object.keys(state).forEach(key => {
         if (state.hasOwnProperty(key)) {
             // If not undefined or function means it is a state value
