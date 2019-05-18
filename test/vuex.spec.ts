@@ -173,4 +173,73 @@ describe('vuexTests', () => {
 
         m.thing.value.should.be.eq('one');
     });
+
+    it('should resolve and attach resolved values as getters (but not state)', async () => {
+        const NewVue = createLocalVue();
+        NewVue.use(VueContainer, { container: new Container() });
+
+        @AutoInject
+        class Thing {
+            value = 'one';
+        }
+
+        @InjectModule({ stateFactory: true }, { id: './store/layout.ts' })
+        class LayoutModule extends InjectVuexModule {
+            @Resolve()
+            public thing!: Thing;
+
+            public title = 'default';
+
+            @Mutation
+            public setTitle(title: string) {
+                this.title = title;
+            }
+        }
+
+        const store = new Store({});
+        NewVue.container.registerInstance(Store, store);
+        store.registerModule('layout', LayoutModule as any);
+
+        const m = NewVue.container.get(LayoutModule);
+
+        m.thing.value.should.be.eq('one');
+    });
+
+    it('should resolve and attach resolved values as getters (but not state) with internal usage', async () => {
+        const NewVue = createLocalVue();
+        NewVue.use(VueContainer, { container: new Container() });
+
+        @AutoInject
+        class Thing {
+            value = 'one';
+        }
+
+        @InjectModule({ stateFactory: true }, { id: './store/layout.ts' })
+        class LayoutModule extends InjectVuexModule {
+            @Resolve()
+            public thing!: Thing;
+
+            public title = 'default';
+
+            @Mutation
+            public setTitle(title: string) {
+                this.title = title;
+            }
+
+            @Action({})
+            public doStuff() {
+                this.setTitle(this.thing.value);
+            }
+        }
+
+        const store = new Store({});
+        NewVue.container.registerInstance(Store, store);
+        store.registerModule('layout', LayoutModule as any);
+
+        const m = NewVue.container.get(LayoutModule);
+
+        m.doStuff();
+
+        m.title.should.be.eq('one');
+    });
 });

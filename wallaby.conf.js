@@ -5,7 +5,7 @@ module.exports = function(wallaby) {
             regular: 2,
         },
 
-        files: ['src/**/*.ts', '*.ts'],
+        files: ['src/**/*.ts', '*.ts', 'tsconfig.json', '!*.nuxt.d.ts'],
 
         tests: ['test/**/*.spec.ts'],
 

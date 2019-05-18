@@ -41,9 +41,12 @@ class VuexRegistration implements IRegistration<any> {
             get: (container: Container) => {
                 if (this.value) return this.value;
                 const store = container.get(Store);
+                (this.options as any).store = store;
                 const module = (() => {
-                    const m = getModule(this.module() as any, store);
+                    const moduleItem = this.module()
+                    const m = getModule(moduleItem as any, store);
                     const proxyModule: any = {};
+                    moduleItem._statics = proxyModule;
                     staticStateGenerator(this.target, store, this.getPath, proxyModule);
                     for (const [key, descriptor] of Object.entries(
                         Object.getOwnPropertyDescriptors(m)
@@ -53,7 +56,6 @@ class VuexRegistration implements IRegistration<any> {
                         }
                         Object.defineProperty(proxyModule, key, descriptor);
                     }
-
                     return proxyModule;
                 })();
                 Object.defineProperties(module, {
@@ -101,7 +103,6 @@ class VuexRegistration implements IRegistration<any> {
                     Object.defineProperty(module, key, prop);
                 }
                 this.value = module;
-                // (module as any)._container = container;
                 return module;
             },
         };
@@ -121,6 +122,8 @@ function staticStateGenerator<S>(
             // If not undefined or function means it is a state value
             if (['undefined', 'function'].indexOf(typeof (state as any)[key]) === -1) {
                 Object.defineProperty(statics, key, {
+                    enumerable: true,
+                    configurable: false,
                     get() {
                         return getPath(store.state)[key];
                     },
