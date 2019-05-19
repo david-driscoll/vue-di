@@ -12,3 +12,4 @@ export * from './resolve';
 export * from './scoped';
 export * from './singleton';
 export * from './transient';
+export * from './wrap';

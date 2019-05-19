@@ -15,6 +15,7 @@ import {
     Scoped,
     Singleton,
     Transient,
+    Wrap,
 } from '../src/decorators';
 import { Inject } from '../src/decorators/inject';
 import { AllResolver } from '../src/resolvers/AllResolver';
@@ -24,6 +25,7 @@ import { NewInstanceResolver } from '../src/resolvers/NewInstanceResolver';
 import { OptionalResolver } from '../src/resolvers/OptionalResolver';
 import { ParentResolver } from '../src/resolvers/ParentResolver';
 import { IFactory } from '../src/types';
+import { spy } from 'sinon';
 
 describe('container', () => {
     describe('injection', () => {
@@ -2034,6 +2036,160 @@ describe('container', () => {
                     expect(app1.logger).to.not.be.eq(logger);
                 });
             });
+        });
+    });
+
+    describe('wrap', () => {
+        it('should wrap dependencies', () => {
+            @Singleton
+            class Item {
+                public value = 'one';
+            }
+            @Singleton
+            @Wrap({
+                get(value) {
+                    return {
+                        item: {
+                            value: 'two',
+                        },
+                    };
+                },
+            })
+            class SessionAccessor {
+                public constructor(public readonly item: Item) {}
+            }
+
+            const container = new Container();
+            const accessor = container.get(SessionAccessor);
+            accessor.item.value.should.be.eq('two');
+        });
+        it('should wrap dependencies only once', () => {
+            @Singleton
+            class Item {
+                public value = 'one';
+            }
+            const get = spy(() => ({ item: { value: 'two' } }));
+            @Singleton
+            @Wrap({ get })
+            class SessionAccessor {
+                public constructor(public readonly item: Item) {}
+            }
+
+            const container = new Container();
+            const accessor = container.get(SessionAccessor);
+            container.get(SessionAccessor);
+            container.get(SessionAccessor);
+            container.get(SessionAccessor);
+            accessor.item.value.should.be.eq('two');
+            get.should.have.been.calledOnce;
+        });
+        it('should wrap dependencies only once when scoped', () => {
+            @Singleton
+            class Item {
+                public value = 'one';
+            }
+            const get = spy(() => ({ item: { value: 'two' } }));
+            @Scoped
+            @Wrap({ get })
+            class SessionAccessor {
+                public constructor(public readonly item: Item) {}
+            }
+
+            const container = new Container();
+            const accessor = container.get(SessionAccessor);
+            container.get(SessionAccessor);
+            container.get(SessionAccessor);
+            container.get(SessionAccessor);
+            accessor.item.value.should.be.eq('two');
+            get.should.have.been.calledOnce;
+        });
+        it('should wrap dependencies only once when scoped with children', () => {
+            @Singleton
+            class Item {
+                public value = 'one';
+            }
+            const get = spy(() => ({ item: { value: 'two' } }));
+            @Scoped
+            @Wrap({ get })
+            class SessionAccessor {
+                public constructor(public readonly item: Item) {}
+            }
+
+            const parentContainer = new Container();
+            const childContainer1 = parentContainer.createChild();
+            const childContainer2 = parentContainer.createChild();
+            const childContainer3 = parentContainer.createChild();
+
+            const accessor = childContainer1.get(SessionAccessor);
+            childContainer1.get(SessionAccessor);
+            childContainer2.get(SessionAccessor);
+            childContainer2.get(SessionAccessor);
+            childContainer3.get(SessionAccessor);
+            childContainer3.get(SessionAccessor);
+            childContainer3.get(SessionAccessor);
+            parentContainer.get(SessionAccessor);
+            parentContainer.get(SessionAccessor);
+            accessor.item.value.should.be.eq('two');
+            get.should.have.been.called.callCount(4);
+        });
+        it('should wrap dependencies only once when transient', () => {
+            @Singleton
+            class Item {
+                public value = 'one';
+            }
+            const get = spy(() => ({ item: { value: 'two' } }));
+            @Wrap({ get })
+            @Transient
+            class SessionAccessor {
+                public constructor(public readonly item: Item) {}
+            }
+
+            const parentContainer = new Container();
+            const childContainer1 = parentContainer.createChild();
+            const childContainer2 = parentContainer.createChild();
+            const childContainer3 = parentContainer.createChild();
+
+            const accessor = childContainer1.get(SessionAccessor);
+            childContainer1.get(SessionAccessor);
+            childContainer2.get(SessionAccessor);
+            childContainer2.get(SessionAccessor);
+            childContainer3.get(SessionAccessor);
+            childContainer3.get(SessionAccessor);
+            childContainer3.get(SessionAccessor);
+            parentContainer.get(SessionAccessor);
+            parentContainer.get(SessionAccessor);
+            accessor.item.value.should.be.eq('two');
+            get.should.have.been.called.callCount(9);
+        });
+        it('should wrap dependencies only once when transient', () => {
+            @Singleton
+            class Item {
+                public value = 'one';
+            }
+            const get = spy(() => ({ item: { value: 'two' } }));
+            @Wrap({ get })
+            @Wrap({ get })
+            @Transient
+            class SessionAccessor {
+                public constructor(public readonly item: Item) {}
+            }
+
+            const parentContainer = new Container();
+            const childContainer1 = parentContainer.createChild();
+            const childContainer2 = parentContainer.createChild();
+            const childContainer3 = parentContainer.createChild();
+
+            const accessor = childContainer1.get(SessionAccessor);
+            childContainer1.get(SessionAccessor);
+            childContainer2.get(SessionAccessor);
+            childContainer2.get(SessionAccessor);
+            childContainer3.get(SessionAccessor);
+            childContainer3.get(SessionAccessor);
+            childContainer3.get(SessionAccessor);
+            parentContainer.get(SessionAccessor);
+            parentContainer.get(SessionAccessor);
+            accessor.item.value.should.be.eq('two');
+            get.should.have.been.called.callCount(18);
         });
     });
 });

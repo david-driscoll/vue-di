@@ -19,6 +19,11 @@ export interface Resolver<T> {
     get(container: Container, key: Key<T>): T;
 }
 
+// tslint:disable-next-line:interface-name
+export interface IWrappedResolver<T> {
+    get(value: T, container: Container, key: Key<T>): T;
+}
+
 export interface IStrategyResolver<T> extends Resolver<T> {
     strategy: Strategy;
     clone(): IStrategyResolver<T>;

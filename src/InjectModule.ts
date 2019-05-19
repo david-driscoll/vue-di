@@ -7,7 +7,8 @@ import constants from './constants';
 import { Container } from './container';
 import { Registration } from './decorators';
 import { IRegistration } from './registration/Registration';
-import { ConstructorOf, Resolver } from './types';
+import { ConstructorOf, Resolver, Strategy, TypedKey, Key } from './types';
+import { StrategyResolver } from './resolvers';
 
 // tslint:disable: no-unsafe-any strict-boolean-expressions
 function getPath<T>(path: string, defaultValue?: T) {
@@ -36,76 +37,81 @@ class VuexRegistration implements IRegistration<any> {
         this.name = options.name!;
         this.getPath = getPath(this.name);
     }
-    public registerResolver(): Resolver<any> {
-        return {
-            get: (container: Container) => {
-                if (this.value) return this.value;
-                const store = container.get(Store);
-                (this.options as any).store = store;
-                const module = (() => {
-                    const moduleItem = this.module()
-                    const m = getModule(moduleItem as any, store);
-                    const proxyModule: any = {};
-                    moduleItem._statics = proxyModule;
-                    staticStateGenerator(this.target, store, this.getPath, proxyModule);
-                    for (const [key, descriptor] of Object.entries(
-                        Object.getOwnPropertyDescriptors(m)
-                    )) {
-                        if (Object.getOwnPropertyDescriptor(proxyModule, key)) {
-                            continue;
-                        }
-                        Object.defineProperty(proxyModule, key, descriptor);
-                    }
-                    return proxyModule;
-                })();
-                Object.defineProperties(module, {
-                    store: {
-                        configurable: false,
-                        enumerable: false,
-                        value: store,
-                        writable: false,
-                    },
-                    container: {
-                        configurable: false,
-                        enumerable: false,
-                        value: container,
-                        writable: false,
-                    },
-                });
-                if (hasDecorators(this.target)) {
-                    const { inject } = this.target.__decorators__.reduce(
-                        (acc, value) => {
-                            value(acc);
-                            return acc;
-                        },
-                        { inject: {} as any }
-                    );
-                    for (const key of Object.keys(inject)) {
-                        const type = Reflect.getOwnMetadata(
-                            constants.propertyType,
-                            this.target.prototype,
-                            key
-                        );
-                        if (!type) continue;
-                        Object.defineProperty(module, key, {
-                            configurable: false,
-                            enumerable: false,
-                            value: container.get(type),
-                            writable: false,
-                        });
-                    }
+    public registerResolver(container: Container, key: Key<any>): Resolver<any> {
+        const existingResolver = container.getResolver(key, false);
+
+        if (!existingResolver) {
+            const resolver = new StrategyResolver<any>(
+                Strategy.Singleton,
+                () => this.createModule(container)
+            );
+            return container.registerResolver(key, resolver);
+        }
+
+        return existingResolver;
+    }
+
+    private createModule(container: Container) {
+        const store = container.get(Store);
+        (this.options as any).store = store;
+        const module = (() => {
+            const moduleItem = this.module();
+            const m = getModule(moduleItem as any, store);
+            const proxyModule: any = {};
+            moduleItem._statics = proxyModule;
+            staticStateGenerator(this.target, store, this.getPath, proxyModule);
+            for (const [key, descriptor] of Object.entries(Object.getOwnPropertyDescriptors(m))) {
+                if (Object.getOwnPropertyDescriptor(proxyModule, key)) {
+                    continue;
                 }
-                for (const [key, prop] of Object.entries(
-                    Object.getOwnPropertyDescriptors(this.target.prototype)
-                )) {
-                    if ((module as any)[key] || Object.getOwnPropertyDescriptor(module, key))
-                        continue;
-                    Object.defineProperty(module, key, prop);
-                }
-                this.value = module;
-                return module;
+                Object.defineProperty(proxyModule, key, descriptor);
+            }
+            return proxyModule;
+        })();
+        Object.defineProperties(module, {
+            store: {
+                configurable: false,
+                enumerable: false,
+                value: store,
+                writable: false,
             },
-        };
+            container: {
+                configurable: false,
+                enumerable: false,
+                value: container,
+                writable: false,
+            },
+        });
+        if (hasDecorators(this.target)) {
+            const { inject } = this.target.__decorators__.reduce(
+                (acc, value) => {
+                    value(acc);
+                    return acc;
+                },
+                { inject: {} as any }
+            );
+            for (const key of Object.keys(inject)) {
+                const type = Reflect.getOwnMetadata(
+                    constants.propertyType,
+                    this.target.prototype,
+                    key
+                );
+                if (!type) continue;
+                Object.defineProperty(module, key, {
+                    configurable: false,
+                    enumerable: false,
+                    value: container.get(type),
+                    writable: false,
+                });
+            }
+        }
+        for (const [key, prop] of Object.entries(
+            Object.getOwnPropertyDescriptors(this.target.prototype)
+        )) {
+            if ((module as any)[key] || Object.getOwnPropertyDescriptor(module, key)) continue;
+            Object.defineProperty(module, key, prop);
+        }
+        return module;
     }
 }
 

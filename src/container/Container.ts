@@ -11,7 +11,14 @@ import { Invoker } from '../invokers/Invoker';
 import { containerResolver as resolverDeco } from '../protocol/resolver';
 import { IRegistration } from '../registration/Registration';
 import { Strategy, StrategyResolver } from '../resolvers/StrategyResolver';
-import { isStrategyResolver, Key, Resolver, TypedKey, ConstructorOf } from '../types';
+import {
+    isStrategyResolver,
+    Key,
+    Resolver,
+    TypedKey,
+    ConstructorOf,
+    IWrappedResolver,
+} from '../types';
 import { IContainerConfiguration } from './ContainerConfiguration';
 import { getInjectDependencies } from './getInjectDependencies';
 import { InvocationHandler } from './InvocationHandler';
@@ -515,11 +522,12 @@ export class Container {
         key: Key<T>,
         dynamicDependencies?: any[]
     ) {
-        if (typeof fn !== 'function') {
-            return fn.get(this, key);
+        const value = typeof fn !== 'function' ? fn.get(this, key) : this.invoke(fn, dynamicDependencies);
+        if (typeof key !== 'symbol' && typeof key !== 'string' && Reflect.hasOwnMetadata(constants.wrap, key)) {
+            const wrap: IWrappedResolver<any> = Reflect.getOwnMetadata(constants.wrap, key);
+            return wrap.get(value, this, key);
         }
-
-        return this.invoke(fn, dynamicDependencies);
+        return value;
     }
 
     /**

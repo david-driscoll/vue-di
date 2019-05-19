@@ -7,7 +7,7 @@ import { getModule, Mutation, VuexModule, Action } from 'vuex-module-decorators'
 import { Container } from '../src/container/Container';
 import { InjectModule, InjectVuexModule } from '../src/InjectModule';
 import VueContainer from '../vue';
-import { AutoInject, Resolve } from '../src';
+import { AutoInject, Resolve, Wrap } from '../src';
 Vue.use(Vuex);
 
 describe('vuexTests', () => {
@@ -241,5 +241,55 @@ describe('vuexTests', () => {
         m.doStuff();
 
         m.title.should.be.eq('one');
+    });
+
+    it('should work with wrap semantics', async () => {
+        const NewVue = createLocalVue();
+        NewVue.use(VueContainer, { container: new Container() });
+
+        @AutoInject
+        class Thing {
+            value = 'one';
+        }
+
+        @Wrap({
+            get(value) {
+                Object.defineProperty(value, 'extravalue', {
+                    enumerable: true,
+                    configurable: false,
+                    value: '123456',
+                });
+                return value;
+            },
+        })
+        @InjectModule({ stateFactory: true }, { id: './store/layout.ts' })
+        class LayoutModule extends InjectVuexModule {
+            @Resolve()
+            public thing!: Thing;
+
+            public title = 'default';
+
+            @Mutation
+            public setTitle(title: string) {
+                this.title = title;
+            }
+
+            @Action({})
+            public doStuff() {
+                this.setTitle(this.thing.value);
+            }
+        }
+
+        const store = new Store({});
+        NewVue.container.registerInstance(Store, store);
+        store.registerModule('layout', LayoutModule as any);
+
+        const m = NewVue.container.get(LayoutModule);
+        m; //?
+
+        m.doStuff();
+
+        m.title.should.be.eq('one');
+        (m as any).extravalue.should.be.eq('123456');
     });
 });
