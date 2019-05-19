@@ -41,10 +41,10 @@ class VuexRegistration implements IRegistration<any> {
         const existingResolver = container.getResolver(key, false);
 
         if (!existingResolver) {
-            const resolver = new StrategyResolver<any>(
-                Strategy.Singleton,
-                () => this.createModule(container)
-            );
+            const createModule = this.createModule.bind(this);
+            const resolver = new StrategyResolver<any>(Strategy.Singleton, function() {
+                return createModule(container);
+            });
             return container.registerResolver(key, resolver);
         }
 
