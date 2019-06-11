@@ -67,6 +67,7 @@ test/**/*.spec.js
 *.map
 !src/nuxtPlugin.js
 !rollup*.js
+!webpack*.js
 *.tsbuildinfo
 esm/
 cjs/

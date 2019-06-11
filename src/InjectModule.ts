@@ -124,7 +124,7 @@ function staticStateGenerator<S>(
     const state =
         typeof module.state === 'function' ? ((module.state as any)() as S) : (module.state as S);
     Object.keys(state).forEach(key => {
-        if (state.hasOwnProperty(key)) {
+        if ((state as any).hasOwnProperty(key)) {
             // If not undefined or function means it is a state value
             if (['undefined', 'function'].indexOf(typeof (state as any)[key]) === -1) {
                 Object.defineProperty(statics, key, {
