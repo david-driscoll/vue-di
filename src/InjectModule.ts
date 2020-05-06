@@ -42,7 +42,7 @@ class VuexRegistration implements IRegistration<any> {
 
         if (!existingResolver) {
             const createModule = this.createModule.bind(this);
-            const resolver = new StrategyResolver<any>(Strategy.Singleton, function() {
+            const resolver = new StrategyResolver<any>(Strategy.Singleton, function () {
                 return createModule(container);
             });
             return container.registerResolver(key, resolver);
@@ -52,16 +52,20 @@ class VuexRegistration implements IRegistration<any> {
     }
 
     private createModule(container: Container) {
+        container; //?
         const store = container.get(Store);
         (this.options as any).store = store;
         const module = (() => {
             const moduleItem = this.module();
-            const m = getModule(moduleItem as any, store);
+            const m = getModule(moduleItem as any);
             const proxyModule: any = {};
+            moduleItem._statics; //?
             moduleItem._statics = proxyModule;
             staticStateGenerator(this.target, store, this.getPath, proxyModule);
             for (const [key, descriptor] of Object.entries(Object.getOwnPropertyDescriptors(m))) {
+                key; //?
                 if (Object.getOwnPropertyDescriptor(proxyModule, key)) {
+                    key; //?
                     continue;
                 }
                 Object.defineProperty(proxyModule, key, descriptor);
@@ -108,7 +112,11 @@ class VuexRegistration implements IRegistration<any> {
         for (const [key, prop] of Object.entries(
             Object.getOwnPropertyDescriptors(this.target.prototype)
         )) {
-            if ((module as any)[key] || Object.getOwnPropertyDescriptor(module, key)) continue;
+            key; //?
+            if ((module as any)[key] || Object.getOwnPropertyDescriptor(module, key)) {
+                key; //?
+                continue;
+            }
             Object.defineProperty(module, key, prop);
         }
         return module;
@@ -123,7 +131,7 @@ function staticStateGenerator<S>(
 ) {
     const state =
         typeof module.state === 'function' ? ((module.state as any)() as S) : (module.state as S);
-    Object.keys(state).forEach(key => {
+    Object.keys(state).forEach((key) => {
         if ((state as any).hasOwnProperty(key)) {
             // If not undefined or function means it is a state value
             if (['undefined', 'function'].indexOf(typeof (state as any)[key]) === -1) {
@@ -154,7 +162,7 @@ export function InjectModule(
         );
         options.namespaced = true;
     }
-    return function(target: ConstructorOf<InjectVuexModule>): any {
+    return function (target: ConstructorOf<InjectVuexModule>): any {
         Registration(new VuexRegistration(() => item as any, target, options))(target);
         const item = Module(options)(target);
         return item;
