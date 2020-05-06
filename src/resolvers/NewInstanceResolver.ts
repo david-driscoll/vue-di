@@ -52,7 +52,7 @@ export class NewInstanceResolver<T = any> implements Resolver<T> {
     public get(container: Container, key: Key<T>): T {
         const dynamicDependencies =
             this._dynamicDependencies.length > 0
-                ? this._dynamicDependencies.map(dependency =>
+                ? this._dynamicDependencies.map((dependency) =>
                       dependency['protocol:aurelia:resolver']
                           ? dependency.get(container)
                           : container.get(dependency)

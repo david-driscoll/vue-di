@@ -23,7 +23,7 @@ export function Inject(
     propertyKey?: string | symbol,
     index?: number
 ): any {
-    const deco = (k?: Key<any>) => decorateParameterOrProperty(x => k || x, 'resolve');
+    const deco = (k?: Key<any>) => decorateParameterOrProperty((x) => k || x, 'resolve');
     if (propertyKey == null) {
         return deco(targetOrKey as any);
     }

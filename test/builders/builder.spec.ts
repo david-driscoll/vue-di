@@ -13,7 +13,7 @@ describe('Builder', () => {
             const builder = new Builder(container);
             const symbol = Symbol(Service.toString());
 
-            builder.register(_ => new Service()).as(Service);
+            builder.register((_) => new Service()).as(Service);
 
             container.get(Service).should.not.be.null;
         });
@@ -24,7 +24,7 @@ describe('Builder', () => {
             const builder = new Builder(container);
             const symbol = Symbol(Service.toString());
 
-            builder.register(_ => _.get(Service)).as(symbol);
+            builder.register((_) => _.get(Service)).as(symbol);
 
             container.get<Service>(symbol).should.not.be.null;
         });
@@ -35,7 +35,7 @@ describe('Builder', () => {
             const builder = new Builder(container);
             const symbol = Symbol(Service.toString());
 
-            builder.register(_ => _.get(Service)).as(Service);
+            builder.register((_) => _.get(Service)).as(Service);
 
             expect(() => container.get<Service>(symbol)).to.throw(
                 'Cannot auto register a non method'
@@ -49,7 +49,7 @@ describe('Builder', () => {
             const symbol = Symbol(Service.toString());
 
             builder
-                .register(_ => new Service())
+                .register((_) => new Service())
                 .as(Service)
                 .as(symbol)
                 .singleInstance();
@@ -76,11 +76,7 @@ describe('Builder', () => {
             const builder = new Builder(container);
             const symbol = Symbol(Service.toString());
 
-            builder
-                .registerType(Service)
-                .asSelf()
-                .as(symbol)
-                .singleInstance();
+            builder.registerType(Service).asSelf().as(symbol).singleInstance();
 
             container.get(Service).should.be.equal(container.get(symbol));
         });
@@ -104,11 +100,7 @@ describe('Builder', () => {
             const builder = new Builder(container);
             const symbol = Symbol(Service.toString());
 
-            builder
-                .registerType(Service)
-                .asSelf()
-                .as(symbol)
-                .singleInstance();
+            builder.registerType(Service).asSelf().as(symbol).singleInstance();
 
             container.get(Service).should.be.equal(container.get(symbol));
         });
@@ -132,10 +124,7 @@ describe('Builder', () => {
             const builder = new Builder(container);
             const symbol = Symbol(Service.toString());
 
-            builder
-                .registerInstance(new Service())
-                .as(symbol)
-                .as(Service);
+            builder.registerInstance(new Service()).as(symbol).as(Service);
 
             container.get(Service).should.be.equal(container.get(symbol));
         });
@@ -159,10 +148,7 @@ describe('Builder', () => {
             const builder = new Builder(container);
             const symbol = Symbol(Service.toString());
 
-            builder
-                .registerInstance(new Service())
-                .as(Service)
-                .as(symbol);
+            builder.registerInstance(new Service()).as(Service).as(symbol);
 
             container.get(Service).should.be.equal(container.get(symbol));
         });

@@ -14,5 +14,5 @@ import { decorateParameterOrProperty } from './decorateParameterOrProperty';
 export function Factory(keyValue: Key<any>) {
     const resolver = FactoryResolver.of(keyValue);
 
-    return decorateParameterOrProperty(x => resolver, 'factory');
+    return decorateParameterOrProperty((x) => resolver, 'factory');
 }

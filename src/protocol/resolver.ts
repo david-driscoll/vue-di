@@ -10,7 +10,9 @@ import { protocol } from './protocol';
  * Decorator: Indicates that the decorated class/object is a custom resolver.
  */
 // tslint:disable-next-line:only-arrow-functions
-export const containerResolver = protocol.create('aurelia:resolver', function(target): string | boolean {
+export const containerResolver = protocol.create('aurelia:resolver', function (
+    target
+): string | boolean {
     if (!(typeof target.get === 'function')) {
         return 'Resolvers must implement: get(container: Container, key: Key): any';
     }

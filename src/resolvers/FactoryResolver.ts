@@ -45,7 +45,7 @@ export class FactoryResolver<F extends FactoryMethod<T>, T = any> implements Res
             _key = (resolver as any).state;
         }
         // tslint:disable-next-line:only-arrow-functions
-        return function(...rest: any[]) {
+        return function (...rest: any[]) {
             return container.invoke(_key as any, rest);
         } as F;
     }

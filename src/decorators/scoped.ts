@@ -14,4 +14,6 @@ import { Registration } from './registration';
  *
  * @export
  */
-export const Scoped = keyedDecorator<any>((key?: Key<any>) => Registration(new ScopedRegistration(key)));
+export const Scoped = keyedDecorator<any>((key?: Key<any>) =>
+    Registration(new ScopedRegistration(key))
+);

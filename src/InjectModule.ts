@@ -52,20 +52,16 @@ class VuexRegistration implements IRegistration<any> {
     }
 
     private createModule(container: Container) {
-        container; //?
         const store = container.get(Store);
         (this.options as any).store = store;
         const module = (() => {
             const moduleItem = this.module();
             const m = getModule(moduleItem as any);
             const proxyModule: any = {};
-            moduleItem._statics; //?
             moduleItem._statics = proxyModule;
             staticStateGenerator(this.target, store, this.getPath, proxyModule);
             for (const [key, descriptor] of Object.entries(Object.getOwnPropertyDescriptors(m))) {
-                key; //?
                 if (Object.getOwnPropertyDescriptor(proxyModule, key)) {
-                    key; //?
                     continue;
                 }
                 Object.defineProperty(proxyModule, key, descriptor);
@@ -112,9 +108,7 @@ class VuexRegistration implements IRegistration<any> {
         for (const [key, prop] of Object.entries(
             Object.getOwnPropertyDescriptors(this.target.prototype)
         )) {
-            key; //?
             if ((module as any)[key] || Object.getOwnPropertyDescriptor(module, key)) {
-                key; //?
                 continue;
             }
             Object.defineProperty(module, key, prop);

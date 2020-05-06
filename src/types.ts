@@ -35,7 +35,6 @@ export function isStrategyResolver(value: any): value is IStrategyResolver<any> 
 
 export type FactoryMethod<T> = (container: Container, key?: Key<T>) => T;
 
-
 export function isResolver(value: any): value is Resolver<any> {
     return value.get && typeof value.get === 'function';
 }

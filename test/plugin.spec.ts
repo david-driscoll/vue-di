@@ -156,12 +156,12 @@ describe('pluginTests', () => {
                     template: '<div>test123 <child-vue></child-vue></div>',
                     createChildContainer: true,
                     inject: {
-                        things: defaultInjectable(DisposableItem)
+                        things: defaultInjectable(DisposableItem),
                     },
                     components: {
                         'child-vue': {
                             inject: {
-                                things: defaultInjectable(DisposableItem)
+                                things: defaultInjectable(DisposableItem),
                             },
                             template: '<div>hello world</div>',
                         },

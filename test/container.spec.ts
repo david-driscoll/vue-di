@@ -361,7 +361,7 @@ describe('container', () => {
             expect(app4.logger).to.be.instanceOf(Logger);
         });
 
-        it('not fail with inherited inject() method', function() {
+        it('not fail with inherited inject() method', function () {
             @AutoInject
             class ParentApp {
                 logger: Logger;
@@ -1012,7 +1012,7 @@ describe('container', () => {
             }
 
             const container = new Container();
-            container.registerHandler(Logger, c => 'something strange');
+            container.registerHandler(Logger, (c) => 'something strange');
 
             const app1 = container.get(App1);
             const app2 = container.get(App2);
@@ -1688,7 +1688,7 @@ describe('container', () => {
                     const asSelf = Symbol.for('asSelf');
                     const parentContainer = new Container();
                     new Builder(parentContainer)
-                        .register(c => {
+                        .register((c) => {
                             return c.get(config);
                         })
                         .as(asSelf)

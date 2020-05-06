@@ -42,9 +42,7 @@ function invokeWithDynamicDependencies(
             case null:
             case undefined:
                 throw new Error(
-                    `Constructor ${
-                        fn.name
-                    } Parameter with index ${i} cannot be null or undefined. Are you trying to inject/register something that doesn't exist with DI?`
+                    `Constructor ${fn.name} Parameter with index ${i} cannot be null or undefined. Are you trying to inject/register something that doesn't exist with DI?`
                 );
             default:
                 args[i] = container.get(lookup);
@@ -522,8 +520,13 @@ export class Container {
         key: Key<T>,
         dynamicDependencies?: any[]
     ) {
-        const value = typeof fn !== 'function' ? fn.get(this, key) : this.invoke(fn, dynamicDependencies);
-        if (typeof key !== 'symbol' && typeof key !== 'string' && Reflect.hasOwnMetadata(constants.wrap, key)) {
+        const value =
+            typeof fn !== 'function' ? fn.get(this, key) : this.invoke(fn, dynamicDependencies);
+        if (
+            typeof key !== 'symbol' &&
+            typeof key !== 'string' &&
+            Reflect.hasOwnMetadata(constants.wrap, key)
+        ) {
             const wrap: IWrappedResolver<any> = Reflect.getOwnMetadata(constants.wrap, key);
             return wrap.get(value, this, key);
         }

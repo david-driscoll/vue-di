@@ -14,4 +14,6 @@ import { Registration } from './registration';
  *
  * @export
  */
-export const Transient = keyedDecorator((key?: Key<any>) => Registration(new TransientRegistration(key)));
+export const Transient = keyedDecorator((key?: Key<any>) =>
+    Registration(new TransientRegistration(key))
+);

@@ -10,5 +10,5 @@ import { decorateParameterOrProperty } from './decorateParameterOrProperty';
 export function Lazy(keyValue: Key<any>) {
     const resolver = LazyResolver.of(keyValue);
 
-    return decorateParameterOrProperty(x => resolver, 'lazy');
+    return decorateParameterOrProperty((x) => resolver, 'lazy');
 }

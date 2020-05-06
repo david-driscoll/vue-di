@@ -14,4 +14,6 @@ import { Registration } from './registration';
  *
  * @export
  */
-export const Singleton = keyedDecorator((key?: Key<any>) => Registration(new SingletonRegistration(key)));
+export const Singleton = keyedDecorator((key?: Key<any>) =>
+    Registration(new SingletonRegistration(key))
+);

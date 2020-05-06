@@ -3,7 +3,7 @@ function alwaysValid() {
 }
 function noCompose() {}
 
-export type ValidateMethod = ((target: any) => string | boolean);
+export type ValidateMethod = (target: any) => string | boolean;
 export type ComposeMethod = (target: any) => void;
 
 // tslint:disable:no-parameter-reassignment
@@ -83,7 +83,7 @@ export const protocol: {
     const options = ensureProtocolOptions(initialOptions);
 
     // tslint:disable-next-line:only-arrow-functions
-    const result: IProtocol = function(target: any) {
+    const result: IProtocol = function (target: any) {
         const resolvedTarget = typeof target === 'function' ? target.prototype : target;
 
         options.compose(resolvedTarget);
@@ -117,14 +117,14 @@ export type ProtocolDecorator = ClassDecorator &
  * @return The protocol decorator;
  */
 // tslint:disable-next-line:only-arrow-functions
-protocol.create = function(
+protocol.create = function (
     name: string,
     initialOptions?: ValidateMethod | IProtocolOptions
 ): ProtocolDecorator {
     const options = ensureProtocolOptions(initialOptions);
     const hidden = 'protocol:' + name;
     // tslint:disable-next-line:only-arrow-functions
-    const result: ProtocolDecorator = function(target: any) {
+    const result: ProtocolDecorator = function (target: any) {
         const decorator = protocol(name, options);
 
         return target ? decorator(target) : decorator;

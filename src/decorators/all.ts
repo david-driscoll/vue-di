@@ -10,5 +10,5 @@ import { decorateParameterOrProperty } from './decorateParameterOrProperty';
 export function All(keyValue: Key<any>) {
     const resolver = AllResolver.of(keyValue);
 
-    return decorateParameterOrProperty(x => resolver, 'all');
+    return decorateParameterOrProperty((x) => resolver, 'all');
 }

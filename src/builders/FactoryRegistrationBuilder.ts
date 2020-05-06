@@ -5,7 +5,10 @@ import { RegistrationBuilderBase } from './RegistrationBuilderBase';
 
 class RegistrationFactoryResolver<T> implements IStrategyResolver<T> {
     private instance!: T;
-    public constructor(private readonly factory: FactoryMethod<T>, public strategy = Strategy.Instance) {}
+    public constructor(
+        private readonly factory: FactoryMethod<T>,
+        public strategy = Strategy.Instance
+    ) {}
 
     public get(container: Container, key: Key<T>): T {
         if (this.strategy === Strategy.Singleton || this.strategy === Strategy.Scoped) {

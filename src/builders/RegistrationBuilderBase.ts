@@ -1,7 +1,10 @@
 import { Container } from '../container/Container';
 import { Key, Resolver, IStrategyResolver } from '../types';
 
-export class RegistrationBuilderBase<T, TResolver extends IStrategyResolver<T> = IStrategyResolver<T>> {
+export class RegistrationBuilderBase<
+    T,
+    TResolver extends IStrategyResolver<T> = IStrategyResolver<T>
+> {
     private registeredKey?: Key<T>;
     public constructor(
         protected readonly container: Container,
