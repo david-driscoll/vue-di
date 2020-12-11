@@ -1,15 +1,16 @@
+import { hasOwnMetadata, getOwnMetadata, hasMetadata, defineMetadata, getMetadata } from '../localReflect'
 import constants from '../constants';
 import { _emptyParameters, clearInvalidParameters } from './validateParameters';
 // tslint:disable: no-unsafe-any
 
 export function getInjectDependencies(target: any) {
-    if (Reflect.hasOwnMetadata(constants.inject, target)) {
-        return Reflect.getOwnMetadata(constants.inject, target);
+    if (hasOwnMetadata(constants.inject, target)) {
+        return getOwnMetadata(constants.inject, target);
     }
 
-    if (Reflect.hasMetadata(constants.inject, target)) {
-        const metadata = Reflect.getMetadata(constants.inject, target);
-        Reflect.defineMetadata(constants.inject, metadata.slice(), target);
+    if (hasMetadata(constants.inject, target)) {
+        const metadata = getMetadata(constants.inject, target);
+        defineMetadata(constants.inject, metadata.slice(), target);
     }
 
     if (target.inject) {
@@ -19,13 +20,13 @@ export function getInjectDependencies(target: any) {
 
         const result = clearInvalidParameters(target, target.inject);
         delete target.inject;
-        Reflect.defineMetadata(constants.inject, result, target);
+        defineMetadata(constants.inject, result, target);
 
         return result;
     }
 
     const dependencies = (
-        Reflect.getMetadata(constants.paramTypes, target) || _emptyParameters
+        getMetadata(constants.paramTypes, target) || _emptyParameters
     ).slice();
     // TypeScript 3.0 metadata for "...rest" gives type "Object"
     // if last parameter is "Object", assume it's a ...rest and remove that metadata.
@@ -34,6 +35,6 @@ export function getInjectDependencies(target: any) {
     }
 
     const result = clearInvalidParameters(target, dependencies);
-    Reflect.defineMetadata(constants.inject, result, target);
+    defineMetadata(constants.inject, result, target);
     return result;
 }

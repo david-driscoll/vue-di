@@ -1730,4 +1730,53 @@ if (!Reflect.hasOwnMetadata) {
     Reflect.hasOwnMetadata = hasOwnMetadata;
 }
 
+//
+
+const reflect_defineMetadata = Reflect.defineMetadata;
+export { reflect_defineMetadata as defineMetadata };
+const reflect_decorate = Reflect.decorate;
+export { reflect_decorate as decorate };
+const reflect_deleteMetadata = Reflect.deleteMetadata;
+export { reflect_deleteMetadata as deleteMetadata };
+const reflect_getMetadata = Reflect.getMetadata;
+export { reflect_getMetadata as getMetadata };
+const reflect_getMetadataKeys = Reflect.getMetadataKeys;
+export { reflect_getMetadataKeys as getMetadataKeys };
+const reflect_getOwnMetadata = Reflect.getOwnMetadata;
+export { reflect_getOwnMetadata as getOwnMetadata };
+const reflect_getOwnMetadataKeys = Reflect.getOwnMetadataKeys;
+export { reflect_getOwnMetadataKeys as getOwnMetadataKeys };
+const reflect_hasMetadata = Reflect.hasMetadata;
+export { reflect_hasMetadata as hasMetadata };
+const reflect_hasOwnMetadata = Reflect.hasOwnMetadata;
+export { reflect_hasOwnMetadata as hasOwnMetadata };
+
+
+const reflect_apply = Reflect.apply;
+export { reflect_apply as apply };
+const reflect_construct = Reflect.construct;
+export { reflect_construct as construct };
+const reflect_defineProperty = Reflect.defineProperty;
+export { reflect_defineProperty as defineProperty };
+const reflect_deleteProperty = Reflect.deleteProperty;
+export { reflect_deleteProperty as deleteProperty };
+const reflect_get = Reflect.get;
+export { reflect_get as get };
+const reflect_getOwnPropertyDescriptor = Reflect.getOwnPropertyDescriptor;
+export { reflect_getOwnPropertyDescriptor as getOwnPropertyDescriptor };
+const reflect_getPrototypeOf = Reflect.getPrototypeOf;
+export { reflect_getPrototypeOf as getPrototypeOf };
+const reflect_has = Reflect.has;
+export { reflect_has as has };
+const reflect_isExtensible = Reflect.isExtensible;
+export { reflect_isExtensible as isExtensible };
+const reflect_ownKeys = Reflect.ownKeys;
+export { reflect_ownKeys as ownKeys };
+const reflect_preventExtensions = Reflect.preventExtensions;
+export { reflect_preventExtensions as preventExtensions };
+const reflect_set = Reflect.set;
+export { reflect_set as set };
+const reflect_setPrototypeOf = Reflect.setPrototypeOf;
+export { reflect_setPrototypeOf as setPrototypeOf };
+
 export default Reflect;

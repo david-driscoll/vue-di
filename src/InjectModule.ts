@@ -1,4 +1,4 @@
-import Reflect from './localReflect';
+import {getOwnMetadata} from './localReflect';
 import { basename, dirname, join } from 'path';
 import Vue from 'vue';
 import { ActionContext, Store } from 'vuex';
@@ -66,7 +66,7 @@ class VuexRegistration implements IRegistration<any> {
                 { inject: {} as any }
             );
             for (const key of Object.keys(inject)) {
-                const type = Reflect.getOwnMetadata(
+                const type = getOwnMetadata(
                     constants.propertyType,
                     this.target.prototype,
                     key

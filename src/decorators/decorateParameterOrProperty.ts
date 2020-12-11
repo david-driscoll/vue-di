@@ -1,4 +1,4 @@
-import Reflect from '../localReflect';
+import { defineMetadata, getOwnMetadata } from '../localReflect';
 import { CompositeDisposable, isDisposable } from 'ts-disposables';
 import Vue, { ComponentOptions } from 'vue';
 import constants from '../constants';
@@ -15,14 +15,14 @@ export function decorateParameterOrProperty(
             const params = getDecoratorDependencies(target, name);
             params[index] = keyProvider(params[index]);
         } else {
-            const propertyType = Reflect.getOwnMetadata(
+            const propertyType = getOwnMetadata(
                 constants.propertyType,
                 target,
                 propertyOrParameterName
             );
             const resolverOrKey = keyProvider(propertyType);
 
-            Reflect.defineMetadata(
+            defineMetadata(
                 constants.resolver,
                 resolverOrKey,
                 target,

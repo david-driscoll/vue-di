@@ -4,7 +4,7 @@
  *
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
-import Reflect from '../localReflect';
+import { construct, getMetadata, getOwnMetadata, hasOwnMetadata } from '../localReflect';
 import { AggregateError } from '../AggregateError';
 import constants from '../constants';
 import { Invoker } from '../invokers/Invoker';
@@ -53,7 +53,7 @@ function invokeWithDynamicDependencies(
         args = args.concat(dynamicDependencies);
     }
 
-    return Reflect.construct(fn, args);
+    return construct(fn, args);
 }
 // tslint:enable:max-line-length
 
@@ -329,7 +329,7 @@ export class Container {
         fn = fn === undefined ? key : fn;
 
         if (typeof fn === 'function') {
-            const registration = Reflect.getMetadata(constants.registration, fn);
+            const registration = getMetadata(constants.registration, fn);
 
             if (registration === undefined) {
                 return this.registerResolver(key, new StrategyResolver(Strategy.Singleton, fn));
@@ -409,7 +409,7 @@ export class Container {
             }
 
             if (typeof key !== 'symbol' && typeof key !== 'string') {
-                const registration: IRegistration<T> = Reflect.getMetadata(
+                const registration: IRegistration<T> = getMetadata(
                     constants.registration,
                     key
                 );
@@ -525,9 +525,9 @@ export class Container {
         if (
             typeof key !== 'symbol' &&
             typeof key !== 'string' &&
-            Reflect.hasOwnMetadata(constants.wrap, key)
+            hasOwnMetadata(constants.wrap, key)
         ) {
-            const wrap: IWrappedResolver<any> = Reflect.getOwnMetadata(constants.wrap, key);
+            const wrap: IWrappedResolver<any> = getOwnMetadata(constants.wrap, key);
             return wrap.get(value, this, key);
         }
         return value;
@@ -582,7 +582,7 @@ export class Container {
         const dependencies = getInjectDependencies(fn);
 
         const invoker =
-            Reflect.getOwnMetadata(constants.invoker, fn) ||
+            getOwnMetadata(constants.invoker, fn) ||
             classInvokers[dependencies.length] ||
             classInvokers.fallback;
 
@@ -632,16 +632,16 @@ export class Container {
       *     }
       *
       *     // property (on constructor)
-      *     result = Reflect.hasOwnMetadata("custom:annotation", Example, "staticProperty");
+      *     result = hasOwnMetadata("custom:annotation", Example, "staticProperty");
       *
       *     // property (on prototype)
-      *     result = Reflect.hasOwnMetadata("custom:annotation", Example.prototype, "property");
+      *     result = hasOwnMetadata("custom:annotation", Example.prototype, "property");
       *
       *     // method (on constructor)
-      *     result = Reflect.hasOwnMetadata("custom:annotation", Example, "staticMethod");
+      *     result = hasOwnMetadata("custom:annotation", Example, "staticMethod");
       *
       *     // method (on prototype)
-      *     result = Reflect.hasOwnMetadata("custom:annotation", Example.prototype, "method");
+      *     result = hasOwnMetadata("custom:annotation", Example.prototype, "method");
       *
       */
     public hasOwnMetadata(metadataKey: any, target: Object, propertyKey: string | symbol) {
@@ -669,20 +669,20 @@ export class Container {
       *     }
       *
       *     // property (on constructor)
-      *     Reflect.defineMetadata("custom:annotation", Number, Example, "staticProperty");
+      *     defineMetadata("custom:annotation", Number, Example, "staticProperty");
       *
       *     // property (on prototype)
-      *     Reflect.defineMetadata("custom:annotation", Number, Example.prototype, "property");
+      *     defineMetadata("custom:annotation", Number, Example.prototype, "property");
       *
       *     // method (on constructor)
-      *     Reflect.defineMetadata("custom:annotation", Number, Example, "staticMethod");
+      *     defineMetadata("custom:annotation", Number, Example, "staticMethod");
       *
       *     // method (on prototype)
-      *     Reflect.defineMetadata("custom:annotation", Number, Example.prototype, "method");
+      *     defineMetadata("custom:annotation", Number, Example.prototype, "method");
       *
       *     // decorator factory as metadata-producing annotation.
       *     function MyAnnotation(options): PropertyDecorator {
-      *         return (target, key) => Reflect.defineMetadata("custom:annotation", options, target, key);
+      *         return (target, key) => defineMetadata("custom:annotation", options, target, key);
       *     }
       *
       */
@@ -710,16 +710,16 @@ export class Container {
       *     }
       *
       *     // property (on constructor)
-      *     result = Reflect.getOwnMetadata("custom:annotation", Example, "staticProperty");
+      *     result = getOwnMetadata("custom:annotation", Example, "staticProperty");
       *
       *     // property (on prototype)
-      *     result = Reflect.getOwnMetadata("custom:annotation", Example.prototype, "property");
+      *     result = getOwnMetadata("custom:annotation", Example.prototype, "property");
       *
       *     // method (on constructor)
-      *     result = Reflect.getOwnMetadata("custom:annotation", Example, "staticMethod");
+      *     result = getOwnMetadata("custom:annotation", Example, "staticMethod");
       *
       *     // method (on prototype)
-      *     result = Reflect.getOwnMetadata("custom:annotation", Example.prototype, "method");
+      *     result = getOwnMetadata("custom:annotation", Example.prototype, "method");
       *
       */
     public getOwnMetadata(metadataKey: any, target: Object, propertyKey: string | symbol) {

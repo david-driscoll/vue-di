@@ -4,7 +4,7 @@
  *
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
-import Reflect from '../localReflect';
+import {defineMetadata} from '../localReflect';
 import constants from '../constants';
 import { IRegistration } from '../registration/Registration';
 
@@ -13,6 +13,6 @@ import { IRegistration } from '../registration/Registration';
  */
 export function Registration(value: IRegistration<any>) {
     return (target: any) => {
-        Reflect.defineMetadata(constants.registration, value, target);
+        defineMetadata(constants.registration, value, target);
     };
 }

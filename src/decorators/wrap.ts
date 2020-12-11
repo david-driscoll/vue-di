@@ -4,7 +4,7 @@
  *
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
-import Reflect from '../localReflect';
+import {hasOwnMetadata, defineMetadata, getOwnMetadata} from '../localReflect';
 import constants from '../constants';
 import { IWrappedResolver } from '../types';
 
@@ -13,12 +13,12 @@ import { IWrappedResolver } from '../types';
  */
 export function Wrap(wrap: IWrappedResolver<any>) {
     return (target: any) => {
-        if (Reflect.hasOwnMetadata(constants.wrap, target)) {
-            const exitingWrap: IWrappedResolver<any> = Reflect.getOwnMetadata(
+        if (hasOwnMetadata(constants.wrap, target)) {
+            const exitingWrap: IWrappedResolver<any> = getOwnMetadata(
                 constants.wrap,
                 target
             );
-            Reflect.defineMetadata(
+            defineMetadata(
                 constants.wrap,
                 {
                     get(v, container, key) {
@@ -28,7 +28,7 @@ export function Wrap(wrap: IWrappedResolver<any>) {
                 target
             );
         } else {
-            Reflect.defineMetadata(constants.wrap, wrap, target);
+            defineMetadata(constants.wrap, wrap, target);
         }
     };
 }

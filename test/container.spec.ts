@@ -26,6 +26,7 @@ import { OptionalResolver } from '../src/resolvers/OptionalResolver';
 import { ParentResolver } from '../src/resolvers/ParentResolver';
 import { IFactory } from '../src/types';
 import { spy } from 'sinon';
+import { defineMetadata } from '../src/localReflect';
 
 describe('container', () => {
     describe('injection', () => {
@@ -1194,7 +1195,7 @@ describe('container', () => {
 
             class Logger extends LoggerBase {}
 
-            Reflect.defineMetadata('something', 'test', Logger);
+            defineMetadata('something', 'test', Logger);
 
             class App1 {
                 public static inject() {

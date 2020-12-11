@@ -1,8 +1,8 @@
-import Reflect from '../localReflect';
+import {defineMetadata} from '../localReflect';
 import constants from '../constants';
 import { ConstructorOf } from '../types';
 export function Dependencies<T>(...rest: ConstructorParameters<ConstructorOf<T>>): ClassDecorator {
     return (target: any) => {
-        Reflect.defineMetadata(constants.inject, rest, target);
+        defineMetadata(constants.inject, rest, target);
     };
 }
