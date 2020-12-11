@@ -1,3 +1,0 @@
---require ./test/env.js
---extension .ts
-./test/**/*.spec.ts

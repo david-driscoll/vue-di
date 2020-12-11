@@ -71,3 +71,4 @@ test/**/*.spec.js
 *.tsbuildinfo
 esm/
 cjs/
+!.mocharc.js
