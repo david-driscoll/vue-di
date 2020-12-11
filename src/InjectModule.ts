@@ -1,24 +1,15 @@
+import Reflect from './localReflect';
 import { basename, dirname, join } from 'path';
 import Vue from 'vue';
-import { ActionContext, Store, Module as Mod } from 'vuex';
+import { ActionContext, Store } from 'vuex';
 import { getModule, Module } from 'vuex-module-decorators';
 import { ModuleOptions } from 'vuex-module-decorators/dist/types/moduleoptions';
 import constants from './constants';
 import { Container } from './container';
 import { Registration } from './decorators';
 import { IRegistration } from './registration/Registration';
-import { ConstructorOf, Resolver, Strategy, TypedKey, Key } from './types';
+import { ConstructorOf, Resolver, Strategy, Key } from './types';
 import { StrategyResolver } from './resolvers';
-
-// tslint:disable: no-unsafe-any strict-boolean-expressions
-function getPath<T>(path: string, defaultValue?: T) {
-    if (path.indexOf('/') === -1) {
-        return (obj: any) => obj[path];
-    }
-
-    const pathItems = path.split('/');
-    return (obj: any) => pathItems.reduce((a, c) => (a && a[c] ? a[c] : defaultValue || null), obj);
-}
 
 function hasDecorators(value: any): value is { __decorators__: Array<(obj: any) => void> } {
     return !!value.__decorators__;
@@ -26,16 +17,11 @@ function hasDecorators(value: any): value is { __decorators__: Array<(obj: any) 
 // tslint:enable: no-unsafe-any strict-boolean-expressions
 
 class VuexRegistration implements IRegistration<any> {
-    private value: any;
-    public name: string;
-    private getPath: (obj: any) => any;
     public constructor(
         private readonly module: () => any,
         private readonly target: ConstructorOf<InjectVuexModule>,
         private readonly options: ModuleOptions
     ) {
-        this.name = options.name!;
-        this.getPath = getPath(this.name);
     }
     public registerResolver(container: Container, key: Key<any>): Resolver<any> {
         const existingResolver = container.getResolver(key, false);
@@ -54,20 +40,9 @@ class VuexRegistration implements IRegistration<any> {
     private createModule(container: Container) {
         const store = container.get(Store);
         (this.options as any).store = store;
-        const module = (() => {
-            const moduleItem = this.module();
-            const m = getModule(moduleItem as any);
-            const proxyModule: any = {};
-            moduleItem._statics = proxyModule;
-            staticStateGenerator(this.target, store, this.getPath, proxyModule);
-            for (const [key, descriptor] of Object.entries(Object.getOwnPropertyDescriptors(m))) {
-                if (Object.getOwnPropertyDescriptor(proxyModule, key)) {
-                    continue;
-                }
-                Object.defineProperty(proxyModule, key, descriptor);
-            }
-            return proxyModule;
-        })();
+
+        const moduleItem = this.module();
+        const module = getModule(moduleItem as any);
         Object.defineProperties(module, {
             store: {
                 configurable: false,
@@ -117,30 +92,6 @@ class VuexRegistration implements IRegistration<any> {
     }
 }
 
-function staticStateGenerator<S>(
-    module: Function & Mod<S, any>,
-    store: Store<any>,
-    getPath: (obj: any) => any,
-    statics: any
-) {
-    const state =
-        typeof module.state === 'function' ? ((module.state as any)() as S) : (module.state as S);
-    Object.keys(state).forEach((key) => {
-        if ((state as any).hasOwnProperty(key)) {
-            // If not undefined or function means it is a state value
-            if (['undefined', 'function'].indexOf(typeof (state as any)[key]) === -1) {
-                Object.defineProperty(statics, key, {
-                    enumerable: true,
-                    configurable: false,
-                    get() {
-                        return getPath(store.state)[key];
-                    },
-                });
-            }
-        }
-    });
-}
-
 export function InjectModule(
     options: ModuleOptions,
     module?: {
@@ -148,17 +99,20 @@ export function InjectModule(
     }
 ) {
     if (module && !options.name) {
-        const id = module.id.replace(/[\\|\/]/g, '/');
-        const path = id.substring(id.indexOf('/store/') + 7);
-        options.name = join(dirname(path), basename(basename(path, '.js'), '.ts')).replace(
+        let id = module.id.replace(/[\\|\/]/g, '/');
+        const idx = id.indexOf('/store/');
+        if (idx > -1 && idx < 10) { // ensure the store is part of the first section only.
+            id = id.substring(id.indexOf('/store/') + 7);
+        }
+        options.name = join(dirname(id), basename(basename(id, '.js'), '.ts')).replace(
             /[\\|\/]/g,
             '/'
         );
         options.namespaced = true;
     }
     return function (target: ConstructorOf<InjectVuexModule>): any {
-        Registration(new VuexRegistration(() => item as any, target, options))(target);
         const item = Module(options)(target);
+        Registration(new VuexRegistration(() => item, target, options))(target);
         return item;
     };
 }

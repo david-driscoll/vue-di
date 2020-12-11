@@ -1,4 +1,4 @@
-import 'reflect-metadata';
+import Reflect from '../localReflect';
 import { CompositeDisposable, isDisposable } from 'ts-disposables';
 import Vue, { ComponentOptions } from 'vue';
 import constants from '../constants';

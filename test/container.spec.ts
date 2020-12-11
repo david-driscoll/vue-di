@@ -125,7 +125,6 @@ describe('container', () => {
                 const parentContainer = new Container();
                 parentContainer.registerInstance(Connection, {});
                 const container = parentContainer.createChild();
-                Reflect.metadata(constants.registration, Connection);
                 const accessor = container.get(SessionAccessor);
                 expect(accessor).be.not.null;
                 expect(accessor.connection).to.be.eq(container.get(Connection));
@@ -141,7 +140,6 @@ describe('container', () => {
                 const parentContainer = new Container();
                 parentContainer.registerInstance(Connection, {});
                 const container = parentContainer.createChild();
-                Reflect.metadata(constants.registration, Connection);
                 const accessor = container.get(SessionAccessor);
                 expect(accessor).be.not.null;
                 expect(accessor.connection).to.be.eq(container.get(Connection));

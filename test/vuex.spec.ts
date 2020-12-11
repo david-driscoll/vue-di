@@ -43,6 +43,39 @@ describe('vuexTests', () => {
         m.title.should.be.eq('default');
     });
 
+    it('standard store based injection... with children...', () => {
+        const NewVue = createLocalVue();
+        NewVue.use(VueContainer, { container: new Container() });
+
+        @InjectModule({ stateFactory: true, name: 'app/layout' })
+        class LayoutModule extends InjectVuexModule {
+            public title = 'default';
+
+            @Mutation
+            public setTitle(title: string) {
+                this.title = title;
+            }
+
+            public getValue() {
+                return this.title;
+            }
+
+            @Action({})
+            public async setValues(value: string) {
+                this.setTitle(this.getValue());
+            }
+        }
+
+        const store = new Store({});
+        NewVue.container.registerInstance(Store, store);
+        store.registerModule('app', {});
+        store.registerModule(['app','layout'], LayoutModule as any);
+
+        const m = NewVue.container.get(LayoutModule);
+
+        m.title.should.be.eq('default');
+    });
+
     it('standard nuxt based injection...', () => {
         const NewVue = createLocalVue();
         NewVue.use(VueContainer, { container: new Container() });

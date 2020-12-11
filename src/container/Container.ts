@@ -5,6 +5,7 @@
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
 import 'reflect-metadata';
+import localReflect from '../localReflect';
 import { AggregateError } from '../AggregateError';
 import constants from '../constants';
 import { Invoker } from '../invokers/Invoker';
@@ -27,7 +28,7 @@ import { _emptyParameters, validateKey } from './validateParameters';
 // tslint:disable:max-line-length
 function invokeWithDynamicDependencies(
     container: Container,
-    fn: { new (...args: any[]): any },
+    fn: { new(...args: any[]): any },
     staticDependencies: any[],
     dynamicDependencies?: any[]
 ) {
@@ -329,7 +330,7 @@ export class Container {
         fn = fn === undefined ? key : fn;
 
         if (typeof fn === 'function') {
-            const registration = Reflect.getMetadata(constants.registration, fn);
+            const registration = localReflect.getMetadata(constants.registration, fn);
 
             if (registration === undefined) {
                 return this.registerResolver(key, new StrategyResolver(Strategy.Singleton, fn));
@@ -409,7 +410,7 @@ export class Container {
             }
 
             if (typeof key !== 'symbol' && typeof key !== 'string') {
-                const registration: IRegistration<T> = Reflect.getMetadata(
+                const registration: IRegistration<T> = localReflect.getMetadata(
                     constants.registration,
                     key
                 );
@@ -525,9 +526,9 @@ export class Container {
         if (
             typeof key !== 'symbol' &&
             typeof key !== 'string' &&
-            Reflect.hasOwnMetadata(constants.wrap, key)
+            localReflect.hasOwnMetadata(constants.wrap, key)
         ) {
-            const wrap: IWrappedResolver<any> = Reflect.getOwnMetadata(constants.wrap, key);
+            const wrap: IWrappedResolver<any> = localReflect.getOwnMetadata(constants.wrap, key);
             return wrap.get(value, this, key);
         }
         return value;
@@ -582,12 +583,149 @@ export class Container {
         const dependencies = getInjectDependencies(fn);
 
         const invoker =
-            Reflect.getOwnMetadata(constants.invoker, fn) ||
+            localReflect.getOwnMetadata(constants.invoker, fn) ||
             classInvokers[dependencies.length] ||
             classInvokers.fallback;
 
         const handler = new InvocationHandler(fn, invoker, dependencies);
 
         return this._onHandlerCreated != null ? this._onHandlerCreated(handler) : handler;
+    }
+
+    private readonly _metadata = new WeakMap<any, Map<string | symbol | undefined, Map<any, any>>>();
+
+    private _getOrCreateMetadataMap(O: any, P: string | symbol | undefined, Create: true): Map<any, any>;
+    private _getOrCreateMetadataMap(O: any, P: string | symbol | undefined, Create: false): Map<any, any> | undefined;
+    private _getOrCreateMetadataMap(O: any, P: string | symbol | undefined, Create: boolean): Map<any, any> | undefined {
+        var targetMetadata = this._metadata.get(O);
+        if (targetMetadata === undefined) {
+            if (!Create)
+                return undefined;
+            targetMetadata = new Map();
+            this._metadata.set(O, targetMetadata);
+        }
+        var metadataMap = targetMetadata.get(P);
+        if (metadataMap === undefined) {
+            if (!Create)
+                return undefined;
+            metadataMap = new Map();
+            targetMetadata.set(P, metadataMap);
+        }
+        return metadataMap;
+    }
+
+    /**
+      * Gets a value indicating whether the target object has the provided metadata key defined.
+      * @param metadataKey A key used to store and retrieve metadata.
+      * @param target The target object on which the metadata is defined.
+      * @param propertyKey The property key for the target.
+      * @returns `true` if the metadata key was defined on the target object; otherwise, `false`.
+      * @internal
+      * @example
+      *
+      *     class Example {
+      *         // property declarations are not part of ES6, though they are valid in TypeScript:
+      *         // static staticProperty;
+      *         // property;
+      *
+      *         static staticMethod(p) { }
+      *         method(p) { }
+      *     }
+      *
+      *     // property (on constructor)
+      *     result = Reflect.hasOwnMetadata("custom:annotation", Example, "staticProperty");
+      *
+      *     // property (on prototype)
+      *     result = Reflect.hasOwnMetadata("custom:annotation", Example.prototype, "property");
+      *
+      *     // method (on constructor)
+      *     result = Reflect.hasOwnMetadata("custom:annotation", Example, "staticMethod");
+      *
+      *     // method (on prototype)
+      *     result = Reflect.hasOwnMetadata("custom:annotation", Example.prototype, "method");
+      *
+      */
+    public hasOwnMetadata(metadataKey: any, target: Object, propertyKey: string | symbol) {
+        const metadataMap = this._getOrCreateMetadataMap(target, propertyKey, /*Create*/ false);
+        if (metadataMap === undefined) return false;
+        return metadataMap.has(metadataKey);
+    }
+
+    /**
+      * Define a unique metadata entry on the target.
+      * @param metadataKey A key used to store and retrieve metadata.
+      * @param metadataValue A value that contains attached metadata.
+      * @param target The target object on which to define metadata.
+      * @param propertyKey The property key for the target.
+      * @internal
+      * @example
+      *
+      *     class Example {
+      *         // property declarations are not part of ES6, though they are valid in TypeScript:
+      *         // static staticProperty;
+      *         // property;
+      *
+      *         static staticMethod(p) { }
+      *         method(p) { }
+      *     }
+      *
+      *     // property (on constructor)
+      *     Reflect.defineMetadata("custom:annotation", Number, Example, "staticProperty");
+      *
+      *     // property (on prototype)
+      *     Reflect.defineMetadata("custom:annotation", Number, Example.prototype, "property");
+      *
+      *     // method (on constructor)
+      *     Reflect.defineMetadata("custom:annotation", Number, Example, "staticMethod");
+      *
+      *     // method (on prototype)
+      *     Reflect.defineMetadata("custom:annotation", Number, Example.prototype, "method");
+      *
+      *     // decorator factory as metadata-producing annotation.
+      *     function MyAnnotation(options): PropertyDecorator {
+      *         return (target, key) => Reflect.defineMetadata("custom:annotation", options, target, key);
+      *     }
+      *
+      */
+    public defineMetadata(metadataKey: any, metadataValue: any, target: any, propertyKey?: string | symbol) {
+        const metadataMap = this._getOrCreateMetadataMap(target, propertyKey, /*Create*/ true);
+        metadataMap.set(metadataKey, metadataValue);
+    }
+
+    /**
+      * Gets the metadata value for the provided metadata key on the target object.
+      * @param metadataKey A key used to store and retrieve metadata.
+      * @param target The target object on which the metadata is defined.
+      * @param propertyKey The property key for the target.
+      * @returns The metadata value for the metadata key if found; otherwise, `undefined`.
+      * @internal
+      * @example
+      *
+      *     class Example {
+      *         // property declarations are not part of ES6, though they are valid in TypeScript:
+      *         // static staticProperty;
+      *         // property;
+      *
+      *         static staticMethod(p) { }
+      *         method(p) { }
+      *     }
+      *
+      *     // property (on constructor)
+      *     result = Reflect.getOwnMetadata("custom:annotation", Example, "staticProperty");
+      *
+      *     // property (on prototype)
+      *     result = Reflect.getOwnMetadata("custom:annotation", Example.prototype, "property");
+      *
+      *     // method (on constructor)
+      *     result = Reflect.getOwnMetadata("custom:annotation", Example, "staticMethod");
+      *
+      *     // method (on prototype)
+      *     result = Reflect.getOwnMetadata("custom:annotation", Example.prototype, "method");
+      *
+      */
+    public getOwnMetadata(metadataKey: any, target: Object, propertyKey: string | symbol) {
+        const metadataMap = this._getOrCreateMetadataMap(target, propertyKey, /*Create*/ false);
+        if (metadataMap === undefined) return undefined;
+        return metadataMap.get(metadataKey);
     }
 }

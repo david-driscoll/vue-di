@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import constants from '../constants';
 import { _emptyParameters, clearInvalidParameters } from './validateParameters';
 // tslint:disable: no-unsafe-any

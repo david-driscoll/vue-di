@@ -4,7 +4,7 @@
  *
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
-import 'reflect-metadata';
+import Reflect from '../localReflect';
 import constants from '../constants';
 import { IRegistration } from '../registration/Registration';
 

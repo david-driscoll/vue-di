@@ -11,7 +11,7 @@
     "browser": "",
     "types": "src/index.d.ts",
     "scripts": {
-        "build": "webpack -p && npm run build:ts",
+        "build": "webpack && npm run build:ts",
         "build:ts": "tsc -p ./tsconfig.json && tsc -p ./tsconfig.cjs.json",
         "test": "npm run build:ts && mocha --config ./test/.mocharc.js",
         "prettier": "prettier **/*.ts --write",
@@ -39,6 +39,7 @@
         "jsdom-global": "^3.0.2",
         "lodash": "^4.17.20",
         "mocha": "^8.2.1",
+        "path-browserify": "^1.0.1",
         "prettier": "^2.2.1",
         "reflect-metadata": "^0.1.13",
         "sinon": "^9.2.2",

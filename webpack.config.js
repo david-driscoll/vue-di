@@ -46,6 +46,7 @@ module.exports = {
     },
     resolve: {
         extensions: ['.ts', '.tsx', '.wasm', '.mjs', '.js', '.jsx', '.json'],
+        fallback: { path: require.resolve("path-browserify") }
     },
     plugins: [new DtsBundlePlugin()],
     externals: {

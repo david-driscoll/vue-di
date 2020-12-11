@@ -4,7 +4,6 @@
  *
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
-import 'reflect-metadata';
 import { getInjectDependencies } from '../container/getInjectDependencies';
 
 /**

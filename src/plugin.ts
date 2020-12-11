@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { CompositeDisposable } from 'ts-disposables';
 import Vue, { VueConstructor } from 'vue';
 import { Container } from './container';
