@@ -13,7 +13,6 @@ See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 
-import 'reflect-metadata';
 
 // Metadata Proposal
 // https://rbuckton.github.io/reflect-metadata/
@@ -152,7 +151,7 @@ const Metadata = new _WeakMap<any, Map<string | symbol | undefined, Map<any, any
   *     Example = Reflect.decorate(decoratorsArray, Example);
   *
   */
-export function decorate(decorators: ClassDecorator[], target: Function): Function;
+function decorate(decorators: ClassDecorator[], target: Function): Function;
 
 /**
   * Applies a set of decorators to a property of a target object.
@@ -190,7 +189,7 @@ export function decorate(decorators: ClassDecorator[], target: Function): Functi
   *
   */
 // @ts-ignore
-export function decorate(decorators: (PropertyDecorator | MethodDecorator)[], target: any, propertyKey: string | symbol, attributes?: PropertyDescriptor | null): PropertyDescriptor | undefined;
+function decorate(decorators: (PropertyDecorator | MethodDecorator)[], target: any, propertyKey: string | symbol, attributes?: PropertyDescriptor | null): PropertyDescriptor | undefined;
 
 /**
   * Applies a set of decorators to a property of a target object.
@@ -227,7 +226,7 @@ export function decorate(decorators: (PropertyDecorator | MethodDecorator)[], ta
   *             Object.getOwnPropertyDescriptor(Example.prototype, "method")));
   *
   */
-export function decorate(decorators: (PropertyDecorator | MethodDecorator)[], target: any, propertyKey: string | symbol, attributes: PropertyDescriptor): PropertyDescriptor;
+function decorate(decorators: (PropertyDecorator | MethodDecorator)[], target: any, propertyKey: string | symbol, attributes: PropertyDescriptor): PropertyDescriptor;
 
 /**
  * Applies a set of decorators to a property of a target object.
@@ -268,8 +267,7 @@ export function decorate(decorators: (PropertyDecorator | MethodDecorator)[], ta
  *             Object.getOwnPropertyDescriptor(Example.prototype, "method")));
  *
  */
-export function decorate(decorators: (ClassDecorator | MemberDecorator)[], target: any, propertyKey?: string | symbol, attributes?: PropertyDescriptor | null): PropertyDescriptor | Function | undefined {
-    Reflect?.decorate?.(decorators as any, target, propertyKey!, attributes!);
+function decorate(decorators: (ClassDecorator | MemberDecorator)[], target: any, propertyKey?: string | symbol, attributes?: PropertyDescriptor | null): PropertyDescriptor | Function | undefined {
     if (!IsUndefined(propertyKey)) {
         if (!IsArray(decorators)) throw new TypeError();
         if (!IsObject(target)) throw new TypeError();
@@ -329,7 +327,7 @@ export function decorate(decorators: (ClassDecorator | MemberDecorator)[], targe
   *     }
   *
   */
-export function metadata(metadataKey: any, metadataValue: any) {
+function metadata(metadataKey: any, metadataValue: any) {
     function decorator(target: Function): void;
     function decorator(target: any, propertyKey: string | symbol): void;
     function decorator(target: any, propertyKey?: string | symbol): void {
@@ -362,7 +360,7 @@ export function metadata(metadataKey: any, metadataValue: any) {
   *     }
   *
   */
-export function defineMetadata(metadataKey: any, metadataValue: any, target: any): void;
+function defineMetadata(metadataKey: any, metadataValue: any, target: any): void;
 
 /**
   * Define a unique metadata entry on the target.
@@ -399,7 +397,7 @@ export function defineMetadata(metadataKey: any, metadataValue: any, target: any
   *     }
   *
   */
-export function defineMetadata(metadataKey: any, metadataValue: any, target: any, propertyKey: string | symbol): void;
+function defineMetadata(metadataKey: any, metadataValue: any, target: any, propertyKey: string | symbol): void;
 
 /**
  * Define a unique metadata entry on the target.
@@ -440,12 +438,9 @@ export function defineMetadata(metadataKey: any, metadataValue: any, target: any
  *     }
  *
  */
-export function defineMetadata(metadataKey: any, metadataValue: any, target: any, propertyKey?: string | symbol): void {
+function defineMetadata(metadataKey: any, metadataValue: any, target: any, propertyKey?: string | symbol): void {
     if (!IsObject(target)) throw new TypeError();
     if (!IsUndefined(propertyKey)) propertyKey = ToPropertyKey(propertyKey);
-    if (!!Reflect.defineMetadata) {
-        Reflect.defineMetadata(metadataKey, metadataValue, target, propertyKey!);
-    }
     return OrdinaryDefineOwnMetadata(metadataKey, metadataValue, target, propertyKey);
 }
 
@@ -466,7 +461,7 @@ export function defineMetadata(metadataKey: any, metadataValue: any, target: any
   *     result = Reflect.hasMetadata("custom:annotation", Example);
   *
   */
-export function hasMetadata(metadataKey: any, target: any): boolean;
+function hasMetadata(metadataKey: any, target: any): boolean;
 
 /**
   * Gets a value indicating whether the target object or its prototype chain has the provided metadata key defined.
@@ -498,7 +493,7 @@ export function hasMetadata(metadataKey: any, target: any): boolean;
   *     result = Reflect.hasMetadata("custom:annotation", Example.prototype, "method");
   *
   */
-export function hasMetadata(metadataKey: any, target: any, propertyKey: string | symbol): boolean;
+function hasMetadata(metadataKey: any, target: any, propertyKey: string | symbol): boolean;
 
 /**
  * Gets a value indicating whether the target object or its prototype chain has the provided metadata key defined.
@@ -534,10 +529,10 @@ export function hasMetadata(metadataKey: any, target: any, propertyKey: string |
  *     result = Reflect.hasMetadata("custom:annotation", Example.prototype, "method");
  *
  */
-export function hasMetadata(metadataKey: any, target: any, propertyKey?: string | symbol): boolean {
+function hasMetadata(metadataKey: any, target: any, propertyKey?: string | symbol): boolean {
     if (!IsObject(target)) throw new TypeError();
     if (!IsUndefined(propertyKey)) propertyKey = ToPropertyKey(propertyKey);
-    return Reflect?.hasMetadata?.(metadataKey, target, propertyKey!) ??  OrdinaryHasMetadata(metadataKey, target, propertyKey);
+    return OrdinaryHasMetadata(metadataKey, target, propertyKey);
 }
 
 // 4.1.5 Reflect.hasOwnMetadata(metadataKey, target [, propertyKey])
@@ -557,7 +552,7 @@ export function hasMetadata(metadataKey: any, target: any, propertyKey?: string 
   *     result = Reflect.hasOwnMetadata("custom:annotation", Example);
   *
   */
-export function hasOwnMetadata(metadataKey: any, target: any): boolean;
+function hasOwnMetadata(metadataKey: any, target: any): boolean;
 
 /**
   * Gets a value indicating whether the target object has the provided metadata key defined.
@@ -589,7 +584,7 @@ export function hasOwnMetadata(metadataKey: any, target: any): boolean;
   *     result = Reflect.hasOwnMetadata("custom:annotation", Example.prototype, "method");
   *
   */
-export function hasOwnMetadata(metadataKey: any, target: any, propertyKey: string | symbol): boolean;
+function hasOwnMetadata(metadataKey: any, target: any, propertyKey: string | symbol): boolean;
 
 /**
  * Gets a value indicating whether the target object has the provided metadata key defined.
@@ -625,10 +620,10 @@ export function hasOwnMetadata(metadataKey: any, target: any, propertyKey: strin
  *     result = Reflect.hasOwnMetadata("custom:annotation", Example.prototype, "method");
  *
  */
-export function hasOwnMetadata(metadataKey: any, target: any, propertyKey?: string | symbol): boolean {
+function hasOwnMetadata(metadataKey: any, target: any, propertyKey?: string | symbol): boolean {
     if (!IsObject(target)) throw new TypeError();
     if (!IsUndefined(propertyKey)) propertyKey = ToPropertyKey(propertyKey);
-    return Reflect?.hasOwnMetadata?.(metadataKey, target, propertyKey!) ?? OrdinaryHasOwnMetadata(metadataKey, target, propertyKey);
+    return OrdinaryHasOwnMetadata(metadataKey, target, propertyKey);
 }
 
 // 4.1.6 Reflect.getMetadata(metadataKey, target [, propertyKey])
@@ -648,7 +643,7 @@ export function hasOwnMetadata(metadataKey: any, target: any, propertyKey?: stri
   *     result = Reflect.getMetadata("custom:annotation", Example);
   *
   */
-export function getMetadata(metadataKey: any, target: any): any;
+function getMetadata(metadataKey: any, target: any): any;
 
 /**
   * Gets the metadata value for the provided metadata key on the target object or its prototype chain.
@@ -680,7 +675,7 @@ export function getMetadata(metadataKey: any, target: any): any;
   *     result = Reflect.getMetadata("custom:annotation", Example.prototype, "method");
   *
   */
-export function getMetadata(metadataKey: any, target: any, propertyKey: string | symbol): any;
+function getMetadata(metadataKey: any, target: any, propertyKey: string | symbol): any;
 
 /**
  * Gets the metadata value for the provided metadata key on the target object or its prototype chain.
@@ -716,10 +711,10 @@ export function getMetadata(metadataKey: any, target: any, propertyKey: string |
  *     result = Reflect.getMetadata("custom:annotation", Example.prototype, "method");
  *
  */
-export function getMetadata(metadataKey: any, target: any, propertyKey?: string | symbol): any {
+function getMetadata(metadataKey: any, target: any, propertyKey?: string | symbol): any {
     if (!IsObject(target)) throw new TypeError();
     if (!IsUndefined(propertyKey)) propertyKey = ToPropertyKey(propertyKey);
-    return Reflect?.getMetadata?.(metadataKey, target, propertyKey!) ?? OrdinaryGetMetadata(metadataKey, target, propertyKey);
+    return OrdinaryGetMetadata(metadataKey, target, propertyKey);
 }
 
 // 4.1.7 Reflect.getOwnMetadata(metadataKey, target [, propertyKey])
@@ -739,7 +734,7 @@ export function getMetadata(metadataKey: any, target: any, propertyKey?: string 
   *     result = Reflect.getOwnMetadata("custom:annotation", Example);
   *
   */
-export function getOwnMetadata(metadataKey: any, target: any): any;
+function getOwnMetadata(metadataKey: any, target: any): any;
 
 /**
   * Gets the metadata value for the provided metadata key on the target object.
@@ -771,7 +766,7 @@ export function getOwnMetadata(metadataKey: any, target: any): any;
   *     result = Reflect.getOwnMetadata("custom:annotation", Example.prototype, "method");
   *
   */
-export function getOwnMetadata(metadataKey: any, target: any, propertyKey: string | symbol): any;
+function getOwnMetadata(metadataKey: any, target: any, propertyKey: string | symbol): any;
 
 /**
  * Gets the metadata value for the provided metadata key on the target object.
@@ -807,10 +802,10 @@ export function getOwnMetadata(metadataKey: any, target: any, propertyKey: strin
  *     result = Reflect.getOwnMetadata("custom:annotation", Example.prototype, "method");
  *
  */
-export function getOwnMetadata(metadataKey: any, target: any, propertyKey?: string | symbol): any {
+function getOwnMetadata(metadataKey: any, target: any, propertyKey?: string | symbol): any {
     if (!IsObject(target)) throw new TypeError();
     if (!IsUndefined(propertyKey)) propertyKey = ToPropertyKey(propertyKey);
-    return Reflect?.getOwnMetadata?.(metadataKey, target, propertyKey!) ?? OrdinaryGetOwnMetadata(metadataKey, target, propertyKey);
+    return OrdinaryGetOwnMetadata(metadataKey, target, propertyKey);
 }
 
 // 4.1.8 Reflect.getMetadataKeys(target [, propertyKey])
@@ -829,7 +824,7 @@ export function getOwnMetadata(metadataKey: any, target: any, propertyKey?: stri
   *     result = Reflect.getMetadataKeys(Example);
   *
   */
-export function getMetadataKeys(target: any): any[];
+function getMetadataKeys(target: any): any[];
 
 /**
   * Gets the metadata keys defined on the target object or its prototype chain.
@@ -860,7 +855,7 @@ export function getMetadataKeys(target: any): any[];
   *     result = Reflect.getMetadataKeys(Example.prototype, "method");
   *
   */
-export function getMetadataKeys(target: any, propertyKey: string | symbol): any[];
+function getMetadataKeys(target: any, propertyKey: string | symbol): any[];
 
 /**
  * Gets the metadata keys defined on the target object or its prototype chain.
@@ -895,10 +890,10 @@ export function getMetadataKeys(target: any, propertyKey: string | symbol): any[
  *     result = Reflect.getMetadataKeys(Example.prototype, "method");
  *
  */
-export function getMetadataKeys(target: any, propertyKey?: string | symbol): any[] {
+function getMetadataKeys(target: any, propertyKey?: string | symbol): any[] {
     if (!IsObject(target)) throw new TypeError();
     if (!IsUndefined(propertyKey)) propertyKey = ToPropertyKey(propertyKey);
-    return Reflect?.getMetadataKeys?.(target, propertyKey!) ?? OrdinaryMetadataKeys(target, propertyKey);
+    return OrdinaryMetadataKeys(target, propertyKey);
 }
 
 // 4.1.9 Reflect.getOwnMetadataKeys(target [, propertyKey])
@@ -917,7 +912,7 @@ export function getMetadataKeys(target: any, propertyKey?: string | symbol): any
   *     result = Reflect.getOwnMetadataKeys(Example);
   *
   */
-export function getOwnMetadataKeys(target: any): any[];
+function getOwnMetadataKeys(target: any): any[];
 
 /**
   * Gets the unique metadata keys defined on the target object.
@@ -948,7 +943,7 @@ export function getOwnMetadataKeys(target: any): any[];
   *     result = Reflect.getOwnMetadataKeys(Example.prototype, "method");
   *
   */
-export function getOwnMetadataKeys(target: any, propertyKey: string | symbol): any[];
+function getOwnMetadataKeys(target: any, propertyKey: string | symbol): any[];
 
 /**
  * Gets the unique metadata keys defined on the target object.
@@ -983,10 +978,10 @@ export function getOwnMetadataKeys(target: any, propertyKey: string | symbol): a
  *     result = Reflect.getOwnMetadataKeys(Example.prototype, "method");
  *
  */
-export function getOwnMetadataKeys(target: any, propertyKey?: string | symbol): any[] {
+function getOwnMetadataKeys(target: any, propertyKey?: string | symbol): any[] {
     if (!IsObject(target)) throw new TypeError();
     if (!IsUndefined(propertyKey)) propertyKey = ToPropertyKey(propertyKey);
-    return Reflect?.getOwnMetadataKeys?.(target, propertyKey!) ?? OrdinaryOwnMetadataKeys(target, propertyKey);
+    return OrdinaryOwnMetadataKeys(target, propertyKey);
 };
 
 // 4.1.10 Reflect.deleteMetadata(metadataKey, target [, propertyKey])
@@ -1006,7 +1001,7 @@ export function getOwnMetadataKeys(target: any, propertyKey?: string | symbol): 
   *     result = Reflect.deleteMetadata("custom:annotation", Example);
   *
   */
-export function deleteMetadata(metadataKey: any, target: any): boolean;
+function deleteMetadata(metadataKey: any, target: any): boolean;
 
 /**
   * Deletes the metadata entry from the target object with the provided key.
@@ -1038,7 +1033,7 @@ export function deleteMetadata(metadataKey: any, target: any): boolean;
   *     result = Reflect.deleteMetadata("custom:annotation", Example.prototype, "method");
   *
   */
-export function deleteMetadata(metadataKey: any, target: any, propertyKey: string | symbol): boolean;
+function deleteMetadata(metadataKey: any, target: any, propertyKey: string | symbol): boolean;
 
 /**
  * Deletes the metadata entry from the target object with the provided key.
@@ -1074,7 +1069,7 @@ export function deleteMetadata(metadataKey: any, target: any, propertyKey: strin
  *     result = Reflect.deleteMetadata("custom:annotation", Example.prototype, "method");
  *
  */
-export function deleteMetadata(metadataKey: any, target: any, propertyKey?: string | symbol): boolean {
+function deleteMetadata(metadataKey: any, target: any, propertyKey?: string | symbol): boolean {
     if (!IsObject(target)) throw new TypeError();
     if (!IsUndefined(propertyKey)) propertyKey = ToPropertyKey(propertyKey);
     const metadataMap = GetOrCreateMetadataMap(target, propertyKey, /*Create*/ false);
@@ -1698,4 +1693,41 @@ function MakeDictionary<T>(obj: T): T {
     return obj;
 }
 
-export default { defineMetadata, decorate, deleteMetadata, getMetadata, getMetadataKeys, getOwnMetadata, getOwnMetadataKeys, hasMetadata, hasOwnMetadata, };
+import 'reflect-metadata';
+if (!Reflect.defineMetadata) {
+    Reflect.defineMetadata = defineMetadata;
+}
+
+if (!Reflect.decorate) {
+    Reflect.decorate = decorate as any;
+}
+
+if (!Reflect.deleteMetadata) {
+    Reflect.deleteMetadata = deleteMetadata;
+}
+
+if (!Reflect.getMetadata) {
+    Reflect.getMetadata = getMetadata;
+}
+
+if (!Reflect.getMetadataKeys) {
+    Reflect.getMetadataKeys = getMetadataKeys;
+}
+
+if (!Reflect.getOwnMetadata) {
+    Reflect.getOwnMetadata = getOwnMetadata;
+}
+
+if (!Reflect.getOwnMetadataKeys) {
+    Reflect.getOwnMetadataKeys = getOwnMetadataKeys;
+}
+
+if (!Reflect.hasMetadata) {
+    Reflect.hasMetadata = hasMetadata;
+}
+
+if (!Reflect.hasOwnMetadata) {
+    Reflect.hasOwnMetadata = hasOwnMetadata;
+}
+
+export default Reflect;

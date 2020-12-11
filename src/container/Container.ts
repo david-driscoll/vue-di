@@ -4,8 +4,7 @@
  *
  * Copyright (c) 2010 - 2018 Blue Spire Inc.
  */
-import 'reflect-metadata';
-import localReflect from '../localReflect';
+import Reflect from '../localReflect';
 import { AggregateError } from '../AggregateError';
 import constants from '../constants';
 import { Invoker } from '../invokers/Invoker';
@@ -330,7 +329,7 @@ export class Container {
         fn = fn === undefined ? key : fn;
 
         if (typeof fn === 'function') {
-            const registration = localReflect.getMetadata(constants.registration, fn);
+            const registration = Reflect.getMetadata(constants.registration, fn);
 
             if (registration === undefined) {
                 return this.registerResolver(key, new StrategyResolver(Strategy.Singleton, fn));
@@ -410,7 +409,7 @@ export class Container {
             }
 
             if (typeof key !== 'symbol' && typeof key !== 'string') {
-                const registration: IRegistration<T> = localReflect.getMetadata(
+                const registration: IRegistration<T> = Reflect.getMetadata(
                     constants.registration,
                     key
                 );
@@ -526,9 +525,9 @@ export class Container {
         if (
             typeof key !== 'symbol' &&
             typeof key !== 'string' &&
-            localReflect.hasOwnMetadata(constants.wrap, key)
+            Reflect.hasOwnMetadata(constants.wrap, key)
         ) {
-            const wrap: IWrappedResolver<any> = localReflect.getOwnMetadata(constants.wrap, key);
+            const wrap: IWrappedResolver<any> = Reflect.getOwnMetadata(constants.wrap, key);
             return wrap.get(value, this, key);
         }
         return value;
@@ -583,7 +582,7 @@ export class Container {
         const dependencies = getInjectDependencies(fn);
 
         const invoker =
-            localReflect.getOwnMetadata(constants.invoker, fn) ||
+            Reflect.getOwnMetadata(constants.invoker, fn) ||
             classInvokers[dependencies.length] ||
             classInvokers.fallback;
 
